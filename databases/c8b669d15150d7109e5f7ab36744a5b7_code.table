@@ -13,45 +13,55 @@ sS'sql'
 p7
 S'CHAR(512)'
 p8
-ssS'course'
+ssS'language'
 p9
 (dp10
-g4
-g5
-sg6
-I4
-sg7
-S'CHAR(512) NOT NULL'
-p11
-ssS'version'
-p12
-(dp13
-g4
-S'integer'
-p14
-sg6
-I1
-sg7
-S'INTEGER NOT NULL'
-p15
-ssS'language'
-p16
-(dp17
 g4
 g5
 sg6
 I5
 sg7
 S'CHAR(512) NOT NULL'
+p11
+ssS'course'
+p12
+(dp13
+g4
+g5
+sg6
+I4
+sg7
+S'CHAR(512) NOT NULL'
+p14
+ssS'version'
+p15
+(dp16
+g4
+S'integer'
+p17
+sg6
+I1
+sg7
+S'INTEGER NOT NULL'
 p18
-ssS'exercise'
+ssS'user'
 p19
 (dp20
+g4
+g17
+sg6
+I6
+sg7
+S'INTEGER NOT NULL'
+p21
+ssS'exercise'
+p22
+(dp23
 g4
 g5
 sg6
 I3
 sg7
 S'CHAR(512) NOT NULL'
-p21
+p24
 ss.
