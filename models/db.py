@@ -115,4 +115,5 @@ db.define_table('code',
     Field('exercise', requires=[IS_IN_DB(db, db.exercise.name)]), 
     Field('course', requires=[IS_IN_DB(db, db.course.name)]), 
     Field('language', requires=[IS_IN_DB(db, db.language.name)]),
-    primarykey=['version', 'exercise', 'course', 'language'])
+    Field('user', 'integer', required=True, requires=[IS_IN_DB(db, db.auth_user.id)]),
+    primarykey=['version', 'exercise', 'course', 'language', 'user'])
