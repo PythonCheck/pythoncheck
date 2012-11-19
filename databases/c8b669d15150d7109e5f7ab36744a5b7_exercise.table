@@ -1,5 +1,5 @@
 (dp1
-S'role'
+S'text'
 p2
 (dp3
 S'type'
@@ -13,26 +13,24 @@ sS'sql'
 p7
 S'CHAR(512)'
 p8
-ssS'id'
+ssS'name'
 p9
 (dp10
 g4
-S'id'
-p11
+g5
 sg6
 I1
 sg7
-S'INTEGER PRIMARY KEY AUTOINCREMENT'
+S'CHAR(50) NOT NULL UNIQUE'
+p11
+ssS'language'
 p12
-ssS'description'
-p13
-(dp14
+(dp13
 g4
-S'text'
-p15
+g5
 sg6
 I3
 sg7
-S'TEXT'
-p16
+S'CHAR(512) NOT NULL'
+p14
 ss.

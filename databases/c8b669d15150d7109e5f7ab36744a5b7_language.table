@@ -1,0 +1,26 @@
+(dp1
+S'name'
+p2
+(dp3
+S'type'
+p4
+S'string'
+p5
+sS'sortable'
+p6
+I1
+sS'sql'
+p7
+S'CHAR(50) NOT NULL UNIQUE'
+p8
+ssS'description'
+p9
+(dp10
+g4
+g5
+sg6
+I2
+sg7
+S'CHAR(512)'
+p11
+ss.

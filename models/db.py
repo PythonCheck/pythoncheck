@@ -98,10 +98,21 @@ db.define_table('course',
 
 db.course.teacher.requires = IS_IN_DB(db, db.auth_user.id)
 
+db.define_table('language', 
+    Field('name', 'string', length=50, required=True, unique=True), 
+    Field('description', 'string', required=False, unique=False), 
+    primarykey=['name'])
+
+db.define_table('exercise',
+    Field('name', 'string', length=50, required=True, unique=True),
+    Field('text', 'string', required=False, unique=False),
+    Field('language', requires=[IS_IN_DB(db, db.language.name)]),
+    primarykey=['name', 'language'])
+
 db.define_table('code', 
     Field('version', 'integer', required=True), 
     Field('code', required=True), 
-    Field('exercise', requires=[IS_IN_DB(db, exercise.name)]), 
-    Field('course', requires=[IS_IN_DB(db, course.name)]), 
-    Field('language', requires=[IS_IN_DB(db, language.name)]),
+    Field('exercise', requires=[IS_IN_DB(db, db.exercise.name)]), 
+    Field('course', requires=[IS_IN_DB(db, db.course.name)]), 
+    Field('language', requires=[IS_IN_DB(db, db.language.name)]),
     primarykey=['version', 'exercise', 'course', 'language'])
