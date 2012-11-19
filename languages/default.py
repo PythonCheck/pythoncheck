@@ -4,5 +4,6 @@
 '!langname!': 'Deutsch (Österreich)',
 'Email': 'Email',
 'First Name': 'Vorname', 
-'Last Name': 'Nachname'
+'Last Name': 'Nachname',
+'Teacher': 'Lehrer'
 }

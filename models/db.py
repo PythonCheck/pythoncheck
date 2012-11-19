@@ -83,3 +83,17 @@ use_janrain(auth, filename='private/janrain.key')
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
+
+db.define_table('course', 
+                Field('name', 
+                      'string', 
+                       length=50, 
+                       required=True, 
+                       unique=True,
+                       label=T('Name', lazy=False)),
+                Field('teacher',
+                      'reference auth_user',
+                       required=True,
+                       label=T('Teacher', lazy=False)))
+
+db.course.teacher.requires = IS_IN_DB(db, db.auth_user.id)
