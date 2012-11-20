@@ -1,4 +1,5 @@
-ROOT=/root/jail
+ROOT=$1
+SRCFILE=$2
 
 files=( /lib64/libtinfo.so.5 /lib64/libdl.so.2 /lib64/librt.so.1 /lib64/libcap.so.2 /lib64/libacl.so.1 /lib64/libc.so.6 
 	/lib64/libdl.so.2 /lib64/ld-linux-x86-64.so.2 /usr/lib64/python26.zip /usr/lib64/python2.6 /usr/lib64/python2.6/plat-linux2 
@@ -21,8 +22,12 @@ do
 	fi
 	cp --parents -r $file $ROOT
 done
+
+# copy binaries
 cp --parent /usr/bin/python /bin/bash /bin/ls $ROOT
 
+# copy src files
+cp $SRCFILE $ROOT/script.py
  
 # finally switch to root
 chroot $ROOT
