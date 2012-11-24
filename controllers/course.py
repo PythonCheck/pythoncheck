@@ -8,7 +8,11 @@ def list():
 		return
 	editable = auth.has_membership('admin')
 	deletable = auth.has_membership('admin')
-	return dict(grid = SQLFORM.grid(db.course, headers={'course.id':'#'}, orderby='course.name', create=True, editable=editable, deletable=deletable))
+	return dict(grid = SQLFORM.grid(db.course, 
+									headers={'course.id':'#'}, 
+									orderby='course.name', 
+									editable=lambda row: auth.has_membership('admin') or row.teacher == auth.user.id,
+									deletable=lambda row: auth.has_membership('admin') or row.teacher == auth.user.id))
 
 ###############################################################################
 
