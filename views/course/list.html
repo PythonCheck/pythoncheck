@@ -1,0 +1,7 @@
+{{extend 'layout.html'}}
+
+{{=grid}}
+
+{{if auth.has_membership('admin'):}}
+	{{=response.toolbar()}}
+{{pass}}

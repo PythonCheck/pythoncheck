@@ -90,11 +90,11 @@ db.define_table('course',
                        length=50, 
                        required=True, 
                        unique=True,
-                       label=T('Name', lazy=False)),
+                       label=T('Name')),
                 Field('teacher',
                       'reference auth_user',
                        required=True,
-                       label=T('Teacher', lazy=False)))
+                       label=T('Teacher')))
 
 db.course.teacher.requires = IS_IN_DB(db, db.auth_user.id)
 
@@ -117,3 +117,23 @@ db.define_table('code',
     Field('language', requires=[IS_IN_DB(db, db.language.name)]),
     Field('user', 'integer', required=True, requires=[IS_IN_DB(db, db.auth_user.id)]),
     primarykey=['version', 'exercise', 'course', 'language', 'user'])
+
+
+
+
+
+
+def requires_role(role):
+    def decorator(fn):
+        def f():
+            if hasattr(auth.user_groups, 'values') and len(auth.user_groups.values()) > 0:
+                roleId = db(db.auth_group.role.like(role.lower())).select()[0].id
+                for group_key in auth.user_groups.keys():
+                    if group_key >= roleId:
+                        return fn()
+                else:
+                    redirect(URL(request.application, 'default/user', 'not_authorized'))
+            else:
+                redirect(URL(request.application, 'default/user', 'login?_next=' + request.env.path_info))
+        return f
+    return decorator

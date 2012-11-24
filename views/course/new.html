@@ -1,2 +1,7 @@
 {{extend 'layout.html'}}
+<h2>{{=T('New Course')}}</h2>
+<a class="w2p_trap button btn" href="/{{=request.application}}/{{=request.controller}}/">
+	<span class="icon leftarrow icon-arrow-left"></span>
+	<span class="buttontext button" title="{{=T('Back')}}">{{=T('Back')}}</span>
+</a>
 {{=form}}
