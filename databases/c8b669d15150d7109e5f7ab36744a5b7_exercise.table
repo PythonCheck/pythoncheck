@@ -10,7 +10,7 @@ p5
 I00
 sS'sortable'
 p6
-I2
+I3
 sS'sql'
 p7
 S'CHAR(512)'
@@ -22,22 +22,22 @@ sS'type'
 p10
 S'string'
 p11
-ssS'name'
+ssS'id'
 p12
 (dp13
 g4
-I50
+I512
 sg5
-I01
+I00
 sg6
 I1
 sg7
-S'CHAR(50) NOT NULL UNIQUE'
+S'INTEGER PRIMARY KEY AUTOINCREMENT'
 p14
 sg9
-I01
+I00
 sg10
-g11
+g12
 ssS'language'
 p15
 (dp16
@@ -46,12 +46,29 @@ I512
 sg5
 I00
 sg6
-I3
+I4
 sg7
-S'CHAR(512) NOT NULL'
+S'INTEGER REFERENCES language (id) ON DELETE CASCADE'
 p17
 sg9
+I00
+sg10
+S'reference language'
+p18
+ssS'name'
+p19
+(dp20
+g4
+I50
+sg5
 I01
+sg6
+I2
+sg7
+S'CHAR(50) UNIQUE'
+p21
+sg9
+I00
 sg10
 g11
 ss.

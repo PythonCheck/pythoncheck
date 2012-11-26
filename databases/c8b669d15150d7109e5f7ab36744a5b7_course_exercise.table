@@ -1,10 +1,10 @@
 (dp1
-S'code'
+S'course'
 p2
 (dp3
 S'length'
 p4
-I32768
+I512
 sS'unique'
 p5
 I00
@@ -13,16 +13,16 @@ p6
 I3
 sS'sql'
 p7
-S'TEXT'
+S'INTEGER REFERENCES course (id) ON DELETE CASCADE'
 p8
 sS'notnull'
 p9
 I00
 sS'type'
 p10
-S'text'
+S'reference course'
 p11
-ssS'version'
+ssS'end_date'
 p12
 (dp13
 g4
@@ -30,41 +30,18 @@ I512
 sg5
 I00
 sg6
-I2
+I5
 sg7
-S'INTEGER'
+S'TIMESTAMP'
 p14
 sg9
 I00
 sg10
-S'integer'
+S'datetime'
 p15
-ssS'text'
+ssS'id'
 p16
 (dp17
-S'sortable'
-p18
-I3
-sS'sql'
-p19
-S'CHAR(512)'
-p20
-sS'length'
-p21
-I512
-sS'notnull'
-p22
-I00
-sS'unique'
-p23
-I00
-sS'type'
-p24
-S'string'
-p25
-ssS'id'
-p26
-(dp27
 g4
 I512
 sg5
@@ -73,15 +50,32 @@ sg6
 I1
 sg7
 S'INTEGER PRIMARY KEY AUTOINCREMENT'
-p28
+p18
 sg9
 I00
 sg10
 S'id'
-p29
+p19
 ssS'exercise'
-p30
-(dp31
+p20
+(dp21
+g4
+I512
+sg5
+I00
+sg6
+I2
+sg7
+S'INTEGER REFERENCES exercise (id) ON DELETE CASCADE'
+p22
+sg9
+I00
+sg10
+S'reference exercise'
+p23
+ssS'start_date'
+p24
+(dp25
 g4
 I512
 sg5
@@ -89,28 +83,10 @@ I00
 sg6
 I4
 sg7
-S'INTEGER REFERENCES exercise (id) ON DELETE CASCADE'
-p32
+S'TIMESTAMP'
+p26
 sg9
 I00
 sg10
-S'reference exercise'
-p33
-ssS'user'
-p34
-(dp35
-g4
-I512
-sg5
-I00
-sg6
-I5
-sg7
-S'INTEGER REFERENCES auth_user (id) ON DELETE CASCADE'
-p36
-sg9
-I00
-sg10
-S'reference auth_user'
-p37
+g15
 ss.

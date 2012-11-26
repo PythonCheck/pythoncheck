@@ -94,29 +94,47 @@ db.define_table('course',
                 Field('teacher',
                       'reference auth_user',
                        required=True,
-                       label=T('Teacher')))
-
-db.course.teacher.requires = IS_IN_DB(db, db.auth_user.id)
+                       label=T('Teacher')),
+                format='%(name)s')
 
 db.define_table('language', 
     Field('name', 'string', length=50, required=True, unique=True), 
-    Field('description', 'string', required=False, unique=False), 
-    primarykey=['name'])
+    Field('description', 'string', required=False, unique=False),
+    format='%(name)s')
 
 db.define_table('exercise',
     Field('name', 'string', length=50, required=True, unique=True),
     Field('text', 'string', required=False, unique=False),
-    Field('language', requires=[IS_IN_DB(db, db.language.name)]),
-    primarykey=['name', 'language'])
+    Field('language', db.language),
+    format='%(name)s (%(language)s)')
 
 db.define_table('code', 
     Field('version', 'integer', required=True), 
-    Field('code', required=True), 
-    Field('exercise', requires=[IS_IN_DB(db, db.exercise.name)]), 
-    Field('course', requires=[IS_IN_DB(db, db.course.name)]), 
-    Field('language', requires=[IS_IN_DB(db, db.language.name)]),
-    Field('user', 'integer', required=True, requires=[IS_IN_DB(db, db.auth_user.id)]),
-    primarykey=['version', 'exercise', 'course', 'language', 'user'])
+    Field('code', 'text', required=True), 
+    Field('exercise', db.exercise, required=True, label=T('Excercise')),
+    Field('user', db.auth_user, required=True, label=T('User')),
+    format=lambda row: '%(user)s: %(exercise)s v%(version)s' % {'user' : row.user.first_name + ' ' + row.user.last_name, 'exercise' : row.exercise, 'version' : row.version})
+
+db.define_table('course_exercise',
+    Field('exercise', db.exercise, required=True, label=T('Excercise')),
+    Field('course', db.course, required=True, label=T('Course')),
+    Field('start_date', 'datetime', required=True, label=T('Start Date')),
+    Field('end_date', 'datetime', required=True, label=T('Due Date')),
+    format='%(exercise)s in %(course)s (%(start_date)s - %(end_date)s)')
+
+db.define_table('enrollment',
+    Field('course', db.course, required=True, label=T('Course')),
+    Field('student', db.auth_user, required=True, label=T('Student')),
+    format='%(student)s in %(course)s')
+
+db.define_table('grade',
+    Field('description', required=True, label=T('Description')),
+    format='%(description)s (%(id)s)')
+
+db.define_table('assertion',
+    Field('code', db.code, required=True, label=T('Code')),
+    Field('grade', db.grade, required=True, label=T('Grade')),
+    format='%(code)s: %(grade)s')
 
 
 
@@ -126,14 +144,22 @@ db.define_table('code',
 def requires_role(role):
     def decorator(fn):
         def f():
-            if hasattr(auth.user_groups, 'values') and len(auth.user_groups.values()) > 0:
-                roleId = db(db.auth_group.role.like(role.lower())).select()[0].id
-                for group_key in auth.user_groups.keys():
-                    if group_key >= roleId:
-                        return fn()
-                else:
-                    redirect(URL(request.application, 'default/user', 'not_authorized'))
-            else:
+            hasRole = has_role(role)
+            if hasRole is None:
                 redirect(URL(request.application, 'default/user', 'login?_next=' + request.env.path_info))
+            elif hasRole == True:
+                return fn()
+            else:
+                redirect(URL(request.application, 'default/user', 'not_authorized'))
         return f
     return decorator
+
+def has_role(role):
+    if hasattr(auth.user_groups, 'values') and len(auth.user_groups.values()) > 0:
+        roleId = db(db.auth_group.role.like(role.lower())).select()[0].id
+        for group_key in auth.user_groups.keys():
+            if group_key >= roleId:
+                return True
+        else:
+            return False
+    return None

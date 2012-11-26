@@ -1,5 +1,5 @@
 (dp1
-S'group_id'
+S'grade'
 p2
 (dp3
 S'length'
@@ -13,16 +13,16 @@ p6
 I3
 sS'sql'
 p7
-S'INTEGER REFERENCES auth_group (id) ON DELETE CASCADE'
+S'INTEGER REFERENCES grade (id) ON DELETE CASCADE'
 p8
 sS'notnull'
 p9
 I00
 sS'type'
 p10
-S'reference auth_group'
+S'reference grade'
 p11
-ssS'user_id'
+ssS'code'
 p12
 (dp13
 g4
@@ -32,12 +32,12 @@ I00
 sg6
 I2
 sg7
-S'INTEGER REFERENCES auth_user (id) ON DELETE CASCADE'
+S'INTEGER REFERENCES code (id) ON DELETE CASCADE'
 p14
 sg9
 I00
 sg10
-S'reference auth_user'
+S'reference code'
 p15
 ssS'id'
 p16
