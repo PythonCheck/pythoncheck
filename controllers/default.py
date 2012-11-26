@@ -17,8 +17,7 @@ def index():
 
     if you need a simple wiki simple replace the two lines below with:
     return auth.wiki()
-    """
-    response.flash = T("Welcome to PythonCheck!")
+    """     
     return dict(message="replace this test")
 
 

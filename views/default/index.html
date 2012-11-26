@@ -1,8 +1,18 @@
 {{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
 {{extend 'layout.html'}}
+{{
+  response.files.insert(0, URL('static', 'js/code.js'))
+  response.include_files()
+}}
 
 {{if 'message' in globals():}}
 <h3>{{=message}}</h3>
+
+<textarea id="code-pane">
+</textarea>
+
+<textarea id="output"></textarea>
+
 
 <h4>{{=T('How did you get here?')}}</h4>
 <ol>
