@@ -53,6 +53,9 @@ mail.settings.sender = 'you@gmail.com'
 mail.settings.login = 'username:password'
 
 ## configure auth policy
+auth.settings.logged_url = URL(c='user', f='me') # if accessing register or similar as logged in user redirect to the me page
+auth.settings.login_next = URL(c='user', f='me') 
+auth.settings.register_next = URL(c='user', f='me') 
 auth.settings.registration_requires_verification = False
 auth.settings.registration_requires_approval = False
 auth.settings.reset_password_requires_verification = True
@@ -146,11 +149,11 @@ def requires_role(role):
         def f():
             hasRole = has_role(role)
             if hasRole is None:
-                redirect(URL(request.application, 'default/user', 'login?_next=' + request.env.path_info))
+                redirect(URL(request.application, 'user', 'login?_next=' + request.env.path_info))
             elif hasRole == True:
                 return fn()
             else:
-                redirect(URL(request.application, 'default/user', 'not_authorized'))
+                redirect(URL(request.application, 'user', 'not_authorized'))
         return f
     return decorator
 
