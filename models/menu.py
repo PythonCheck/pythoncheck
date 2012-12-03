@@ -36,4 +36,6 @@ def _():
     app = request.application
     ctr = request.controller
     # useful links to internal and external resources
+    response.menu.append(('Courses', False, URL(app, 'course', 'list')))
+    response.menu.append(('Exercises', False, URL(app, 'exercise', 'list')))
 _()

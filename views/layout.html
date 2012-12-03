@@ -79,12 +79,12 @@
         <a class="brand" href="http://www.web2py.com/"><b>web<span>2</span>py</b>&trade;&nbsp;</a>
         <ul id="navbar" class="nav pull-right">
           {{ if auth.user_id: }}
-            <li><a href="{{=URL('user', 'logout')}}">Logout</a></li>
+            <li><a href="{{=URL('user', 'logout')}}">Logout&nbsp;&nbsp;&nbsp;<em>{{=auth.user.email}}</em></a></li>
           {{ else: }}
             <li><a href="{{=URL('user', 'login')}}">Login</a></li>
             <li><a href="{{=URL('user', 'register')}}">Register</a></li>
           {{ pass }}
-          <li>@Armin All Nav Links go in HERE</li>
+          <!-- <li>@Armin All Nav Links go in HERE</li> -->
         </ul>
         <div class="nav-collapse">
           {{is_mobile=request.user_agent().is_mobile}}
@@ -137,6 +137,9 @@
 
     <!-- Footer ================================================== -->
     <div class="row">
+      {{if has_role('student'):}}
+        {{=response.toolbar()}}
+      {{pass}}
         <footer class="footer span12" id="footer">
             <div class="footer-content">
                 {{block footer}} <!-- this is default footer -->

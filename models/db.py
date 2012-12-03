@@ -130,14 +130,17 @@ db.define_table('enrollment',
     Field('student', db.auth_user, required=True, label=T('Student')),
     format='%(student)s in %(course)s')
 
-db.define_table('grade',
-    Field('description', required=True, label=T('Description')),
-    format='%(description)s (%(id)s)')
+db.define_table('points',
+    Field('number_of_points', required=True, label=T('Number of Points')),
+    Field('exercise', db.exercise, required=True, label=T('Exercise')),
+    format='Exercise %(exercise)s: %(number_of_points)s points')
 
 db.define_table('assertion',
-    Field('code', db.code, required=True, label=T('Code')),
-    Field('grade', db.grade, required=True, label=T('Grade')),
-    format='%(code)s: %(grade)s')
+    Field('function_name', required=True, label=T('Function Name')),
+    Field('arguments', label=T('Arguments')),
+    Field('expected_result', required=True, label=T('Expected Result')),
+    Field('points', db.points, label=T('Points')),
+    format='%(points)s | %(function_name)s(%(arguments)s) => %(expected_result)s')
 
 
 

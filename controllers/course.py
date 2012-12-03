@@ -42,8 +42,9 @@ def edit():
 		session.flash = 'Unauthorized!'
 		redirect(URL('list'))
 	fields = ['name']
-	grid = SQLFORM(db.course, record, 
-				   fields=['name'])
+	grid = SQLFORM(db.course, record, fields=['name'])
+	if grid.process().accepted:
+		redirect(URL('view/' + request.args[0]))
 	return locals()
 
 ###############################################################################
