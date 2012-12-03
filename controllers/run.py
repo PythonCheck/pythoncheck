@@ -16,6 +16,7 @@ def run():
 	SRC_DIR = "/res/scripts/"
 	DISTOLIST_PATH = "/usr/share/web2py2/applications/PythonCheck/scripts/jail/"
 	SCRIPT_FILE = DISTOLIST_PATH + "create.sh"
+	CLEANUP_FILE = DISTOLIST_PATH + 'cleanup.sh'
 	USER_SCRIPT_PATH = "/script.py"
 
 	src=request.vars.code;
@@ -66,5 +67,7 @@ def run():
 	# capture output and prepare for printing
 	output = p.stdout.read()
 	error = p.stderr.read()
+
+	subprocess.call([CLEANUP_FILE, JAIL_DIR])
 
 	return dict(output=output, error=error, mode=mode)
