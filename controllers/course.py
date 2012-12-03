@@ -35,9 +35,46 @@ def new():
 
 ###############################################################################
 
+def validate_new_enrollment(form):
+	form.vars.course = request.args(0)
+	pass
+
+@requires_role('teacher')
+def enrollment():
+	# is owner or admin
+	record = db.course(request.args(0))
+	if record is None or (record.teacher != auth.user.id and auth.has_membership('admin') == False):
+		session.flash = 'Unauthorized!'
+		redirect(URL('list'))
+
+	course = db.course(request.args(0)) or db.course(request.args(1))
+
+	# new
+	if request.args(1) == 'new':
+		new_enrollment_form = SQLFORM(db.enrollment, fields=['student'])
+		if new_enrollment_form.accepts(request.vars, session, onvalidation=validate_new_enrollment):
+			response.flash = 'Succesfull!'
+		elif new_enrollment_form.errors:
+			response.flash = 'Couldn\'t enroll student'
+	# remove
+	if request.args(1) == 'remove':
+		db(db.enrollment.student == request.args(2)).delete()
+		redirect(URL(request.application, request.controller, 'enrollment/' + request.args(0)))
+	# list
+	else:
+		# enrollment = SQLFORM.grid(query=((db.enrollment.course == request.args(0))), 
+		# 						  fields=[db.enrollment.student],
+		# 						  editable=False,
+		# 						  details=False,
+		# 						  create=False)
+		rows = db(db.enrollment.course == request.args(0)).select()
+	return locals()
+
+###############################################################################
+
 @requires_role('teacher')
 def edit():
-	record = db.course(request.args(0)) or redirect(URL('list'))
+	record = db.course(request.args[0])
 	if record.teacher != auth.user.id and auth.has_membership('admin') == False:
 		session.flash = 'Unauthorized!'
 		redirect(URL('list'))

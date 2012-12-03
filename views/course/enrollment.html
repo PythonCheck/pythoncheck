@@ -1,0 +1,48 @@
+{{extend 'layout.html'}}
+
+<h2>»{{=course.name}}« Enrollment</h2>
+
+<a class="w2p_trap button btn" href="/{{=request.application}}/{{=request.controller}}/edit/{{=request.args(0)}}">
+	<span class="icon leftarrow icon-arrow-left"></span>
+	<span class="buttontext button" title="{{=T('Course')}}">{{=T('Course')}}</span>
+</a>
+
+{{if request.args(1) == 'new':}}
+
+	<a class="w2p_trap button btn" href="/{{=request.application}}/{{=request.controller}}/enrollment/{{=request.args(0)}}">
+		<span class="icon leftarrow icon-arrow-left"></span>
+		<span class="buttontext button" title="{{=T('Enrollment')}}">{{=T('Enrollment')}}</span>
+	</a>
+
+	{{=new_enrollment_form}}
+
+{{else:}}
+
+	<a class="w2p_trap button btn" href="/{{=request.application}}/{{=request.controller}}/enrollment/{{=request.args(0)}}/new">
+		<span class="icon plus icon-plus"></span>
+		<span class="buttontext button" title="{{=T('Add')}}">{{=T('Add')}}</span>
+	</a>
+
+	<table>
+		<thead>
+			<tr>
+				<th>Student</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+		{{for row in rows:}}
+			<tr>
+				<td>{{=row.student.last_name}}, {{=row.student.first_name}}</td>
+				<td>
+					<a class="w2p_trap button btn" href="/{{=request.application}}/{{=request.controller}}/enrollment/{{=request.args(0)}}/remove/{{=row.student}}">
+						<span class="icon trash icon-trash"></span>
+						<span class="buttontext button" title="{{=T('Remove')}}">{{=T('Remove')}}</span>
+					</a>
+				</td>
+			</tr>
+		{{pass}}
+		</tbody>
+	</table>
+
+{{pass}}
