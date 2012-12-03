@@ -3,7 +3,7 @@
 <h2>{{=T('Edit Course')}}</h2>
 <a class="w2p_trap button btn" href="/{{=request.application}}/{{=request.controller}}/">
 	<span class="icon leftarrow icon-arrow-left"></span>
-	<span class="buttontext button" title="{{=T('Back')}}">{{=T('Back')}}</span>
+	<span class="buttontext button" title="{{=T('Course List')}}">{{=T('Course List')}}</span>
 </a>
 <a class="w2p_trap button btn" href="/{{=request.application}}/{{=request.controller}}/view/{{=request.args(0)}}">
 	<span class="icon magnifier icon-zoom-in"></span>
@@ -11,7 +11,3 @@
 </a>
 
 {{=grid}}
-
-{{if auth.has_membership('admin'):}}
-	{{=response.toolbar()}}
-{{pass}}
