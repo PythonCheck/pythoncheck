@@ -142,6 +142,13 @@ db.define_table('assertion',
     Field('points', db.points, label=T('Points')),
     format='%(points)s | %(function_name)s(%(arguments)s) => %(expected_result)s')
 
+db.define_table('current_builds',
+    Field('PID', 'integer', required=True),
+    Field('BuildId', 'string', required=True, unique=True),
+    Field('start_time', 'datetime', required=True),
+    Field('finished', 'boolean', required=False, default=False),
+    Field('output', 'string', required=False),
+    Field('error', 'string', required=False))
 
 
 

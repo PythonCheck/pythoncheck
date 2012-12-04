@@ -1,8 +1,18 @@
 # coding: utf8
 import subprocess
 import platform
+import random
+import string
 
 from subprocess import PIPE
+from gluon.serializers import json
+
+## CONFIG
+SRC_DIR = "/res/scripts/"
+WEB2PY_BIN = '/usr/share/web2py2/web2py.py'
+BUILD_ID_LENGTH = 512
+CLIENT_TIMEOUT = 1500
+BUILD_SCRIPT = 'applications/PythonCheck/private/build.py'
 
 def submit():
 	print "Hi. We will now run the test."
@@ -11,14 +21,6 @@ def submit():
 # user code is run
 # the output is caputured and replied
 def run():
-	# CONFIG
-	JAIL_DIR = "/tmp/jail" 
-	SRC_DIR = "/res/scripts/"
-	DISTOLIST_PATH = "/usr/share/web2py2/applications/PythonCheck/scripts/jail/"
-	SCRIPT_FILE = DISTOLIST_PATH + "create.sh"
-	CLEANUP_FILE = DISTOLIST_PATH + 'cleanup.sh'
-	USER_SCRIPT_PATH = "/script.py"
-
 	src=request.vars.code;
 	language=request.vars.language
 	exercise=request.vars.exercise
@@ -42,32 +44,32 @@ def run():
 		print 'test only!'
 		mode='test'
 
-	## run code
-
 	# write src code into file
 	file=open(SRC_DIR + "main.py", 'w')
 	file.write(src)
 	file.close()
 
-	# determine distro and therefore distro's .list file
-	listfile = DISTOLIST_PATH + platform.dist()[0].lower() + "_" + platform.dist()[1].lower() + '.list'
-	print listfile
+	# generate build id
+	buildId = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(BUILD_ID_LENGTH))
 
-	# create jail and copy src code into jail
-	subprocess.call([SCRIPT_FILE, JAIL_DIR, SRC_DIR + "main.py", listfile]);
-
-	# enter jail
-	p = subprocess.Popen(["chroot", JAIL_DIR, "python", USER_SCRIPT_PATH], stdout=PIPE, stderr=PIPE)
-	#TODO register in global process table for scheduler
-
-	# wait for output
-	p.wait()
-
+	# invoke build
+	p = subprocess.Popen(['python', WEB2PY_BIN, '-S', 'PythonCheck', '-M', '-R', BUILD_SCRIPT, '-A', buildId])
 	
-	# capture output and prepare for printing
-	output = p.stdout.read()
-	error = p.stderr.read()
+	# notify the client that the build is in progress now
+	return dict(mode=mode, buildId=buildId, timeout=CLIENT_TIMEOUT)
 
-	subprocess.call([CLEANUP_FILE, JAIL_DIR])
+def result():
+	data = db(db.current_builds.BuildId == request.vars.buildId).select().first()
 
-	return dict(output=output, error=error, mode=mode)
+	# if the data is not available throw an error
+	if data == None:
+		errorObject = {'message':'Build ID does not exist'}
+		raise HTTP(422, json(errorObject))
+
+	# if data is available and the build has finsihed return the outputs
+	if data.finished:
+		return dict(finished=data.finished, output=data.output, error=data.error)
+
+	# if data is available and the build is still running tell the client to wait
+	else:
+		return dict(finished=data.finished, timeout=CLIENT_TIMEOUT)

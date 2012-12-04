@@ -9,7 +9,10 @@ var Code = function(code, output) {
 	this.options = {
 		path: '/PythonCheck/run/',
 		run: 'run.json',
-		submit: 'submit'
+		submit: 'submit',
+		retrieve: 'result.json',
+		defaultTimeout: 1000
+
 	}
 	this.console = output;
 }
@@ -40,16 +43,49 @@ Code.prototype.wrap = function(url) {
 			code: this.code.val()
 		},
 		dataType: 'JSON', 
-		success: this.output.bind(this)
+		success: this.wait.bind(this)
 	}
 	return settings;
 };
 
-Code.prototype.output = function(data, textStatus, jqXHR) {
+Code.prototype.wait = function(data, textStatus, jqXHR) {
+	this.printMessages("Building...");
+	
+	//-- Closure Variables
+	var options = this.options;
+	var buildId = data.buildId;
+	var output = this.output.bind(this);
+
+	var interval = setInterval(function() {
+		// make ajax request to see if the results are ready
+		$.ajax({
+			type: 'GET',
+			url: options.path + options.retrieve,
+			data: {
+				buildId: buildId
+			},
+			dataType: 'JSON',
+			success: function(resultData, resultTextStatus, resultJqXHR) {
+				// if the results are ready --> PARTY!
+				if(resultData.finished) {
+					clearInterval(interval);
+					output(resultData);
+				}
+			}
+		});
+	}, data.timeout || this.options.defaultTimeout);
+}
+
+//-- Prints results to the console
+Code.prototype.output = function(data) {
 	this.printMessages("Done!");
 	this.printMessages(data.output);
-	console.log(data);
 };
+
+//-- Helper function to stop all running requests
+Code.prototype.cancel = function() {
+	clearTimeout();
+}
 
 var _c;
 $(document).ready(function() {
