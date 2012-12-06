@@ -3,61 +3,44 @@ import subprocess
 import platform
 import random
 import string
+import run as runsystem
 
 from subprocess import PIPE
 from gluon.serializers import json
 
 ## CONFIG
-SRC_DIR = "/res/scripts/"
-WEB2PY_BIN = '/usr/share/web2py2/web2py.py'
 BUILD_ID_LENGTH = 512
 CLIENT_TIMEOUT = 1500
-BUILD_SCRIPT = 'applications/PythonCheck/private/build.py'
 
 def submit():
 	print "Hi. We will now run the test."
+
+	src=request.vars.code;
+	language=request.vars.language
+	exercise=request.vars.exercise
+	course=request.vars.course
+	buildId = runsystem.generateBuildId(BUILD_ID_LENGTH)
+
+	runsystem.invokeBuild(code=src, mode='submit', buildId=buildId, exercise=exercise, course=course, language=language)
+
+
+
 
 # user code is saved to database
 # user code is run
 # the output is caputured and replied
 def run():
-	src=request.vars.code;
-	language=request.vars.language
-	exercise=request.vars.exercise
-	course=request.vars.course
-	mode=None
+	src=request.vars.code
+	buildId = runsystem.generateBuildId(BUILD_ID_LENGTH)
 
-	# check if we are developing for an exercise or just so
-	if (language != None) & (exercise != None) & (course != None):
-
-		highestRev=0
-
-		# (db.code.language==language) & (db.code.exercise==exercise) & (db.code.course==course)
-		for row in db((db.code.language==language) & (db.code.exercise==exercise) & (db.code.course==course)).select(db.code.version):
-			if row.version > highestRev:
-				highestRev=row.version
-		print 'highestRev:', highestRev
-
-		mode='submit'
-		#db.code.insert()
-	else:
-		print 'test only!'
-		mode='test'
-
-	# write src code into file
-	file=open(SRC_DIR + "main.py", 'w')
-	file.write(src)
-	file.close()
-
-	# generate build id
-	buildId = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(BUILD_ID_LENGTH))
-
-	# invoke build
-	p = subprocess.Popen(['python', WEB2PY_BIN, '-S', 'PythonCheck', '-M', '-R', BUILD_SCRIPT, '-A', buildId])
+	runsystem.invokeBuild(code=src, mode='test', buildId=buildId)
 	
-	# notify the client that the build is in progress now
-	return dict(mode=mode, buildId=buildId, timeout=CLIENT_TIMEOUT)
+	return dict(mode='run', buildId=buildId, timeout=CLIENT_TIMEOUT)
 
+
+
+# the result of a build is fetched and retuned to the user
+# if the buildId is unknown, an HTTP 422 error is raised
 def result():
 	data = db(db.current_builds.BuildId == request.vars.buildId).select().first()
 

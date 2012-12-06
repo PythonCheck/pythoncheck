@@ -32,6 +32,3 @@ cp --parent /usr/bin/python /bin/bash /bin/ls $ROOT
 
 # copy src files
 cp $SRCFILE $ROOT/script.py
- 
-# finally switch to root
-echo "DONE!"

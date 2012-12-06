@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from gluon.custom_import import track_changes; track_changes(True)
 #########################################################################
 ## This scaffolding model makes your app work on Google App Engine too
 ## File is released under public domain and you can use without limitations
