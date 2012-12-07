@@ -153,7 +153,7 @@ db.define_table('current_builds',
 
 
 
-
+@auth.requires_login()
 def requires_role(role):
     def decorator(fn):
         def f():

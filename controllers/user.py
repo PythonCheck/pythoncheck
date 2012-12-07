@@ -8,7 +8,7 @@ def register():
 def login():
 	if auth.user_id:
 		redirect(URL('user', 'me'))
-	return dict(form=auth.login(next=auth.settings.login_next))
+	return dict(form=auth.login())
 
 @auth.requires_login()
 def logout():

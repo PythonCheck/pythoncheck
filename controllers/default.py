@@ -38,6 +38,9 @@ def call():
     """
     return service()
 
+def user():
+    redirect(URL(request.application, 'user', request.args(0) + '?_next=' + request.vars['_next']))
+
 
 @auth.requires_signature()
 def data():
