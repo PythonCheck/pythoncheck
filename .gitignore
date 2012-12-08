@@ -3,3 +3,4 @@ cache
 __init__.pyc
 sql.log
 progress.log
+static/css/.sass-cache
