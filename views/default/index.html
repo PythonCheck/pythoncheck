@@ -1,7 +1,33 @@
 {{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
 {{extend 'layout.html'}}
 {{
-  response.files.insert(0, URL('static', 'js/code.js'))
+  response.files.insert(2, URL('static', 'js/ide.js'))
+  response.files.insert(2, URL('static', 'css/ide.css'))
+  response.files.insert(0, URL('static', 'codemirror/lib/codemirror.js'))
+  response.files.insert(0, URL('static', 'codemirror/lib/codemirror.css'))
+  response.files.insert(2, URL('static', 'codemirror/mode/python/python.js'))
+  
+
+  # <link rel="stylesheet" type="text/css" href="../static/codemirror/theme/blackboard.css">
+  # <link rel="stylesheet" type="text/css" href="../static/codemirror/theme/elegant.css">
+  # <link rel="stylesheet" type="text/css" href="../static/codemirror/theme/neat.css">
+  # <link rel="stylesheet" type="text/css" href="../static/codemirror/theme/rubyblue.css">
+  # <link rel="stylesheet" type="text/css" href="../static/codemirror/theme/ambiance-mobile.css">
+  # <link rel="stylesheet" type="text/css" href="../static/codemirror/theme/cobalt.css">
+  # <link rel="stylesheet" type="text/css" href="../static/codemirror/theme/erlang-dark.css">
+  # <link rel="stylesheet" type="text/css" href="../static/codemirror/theme/night.css">
+  # <link rel="stylesheet" type="text/css" href="../static/codemirror/theme/vibrant-ink.css">
+  # <link rel="stylesheet" type="text/css" href="../static/codemirror/theme/xq-dark.css">
+  # <link rel="stylesheet" type="text/css" href="../static/codemirror/theme/eclipse.css">
+  
+
+  # these are the most beautiful
+  response.files.insert(2, URL('static', 'codemirror/theme/monokai.css'))
+  response.files.insert(2, URL('static', 'codemirror/theme/twilight.css'))
+  response.files.insert(2, URL('static', 'codemirror/theme/ambiance.css'))
+
+  response.files.insert(2, URL('static', 'css/ide.css'))
+
   response.include_files()
 }}
 
