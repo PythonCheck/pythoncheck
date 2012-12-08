@@ -1,0 +1,10 @@
+{{ extend 'layout.html' }}
+
+<h2>{{= T('Create new Exercise') }}</h2>
+
+<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/">
+	<span class="icon leftarrow icon-arrow-left"></span>
+	<span class="buttontext button" title="{{= T('Exercise Pool') }}">{{= T('Exercise Pool') }}</span>
+</a>
+
+{{= form }}

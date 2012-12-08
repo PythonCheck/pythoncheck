@@ -1,3 +1,41 @@
-{{extend 'layout.html'}}
+{{ extend 'layout.html' }}
 
-{{=exercise_list}}
+<h2>{{= T('Exercise Pool') }}</h2>
+
+<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/new">
+	<span class="icon plus icon-plus"></span>
+	<span class="buttontext button" title="{{=T('Create Exercise')}}">{{=T('Create Exercise')}}</span>
+</a>
+
+<table>
+	<thead>
+		<tr>
+			<th>{{= T('#') }}</th>
+			<th>{{= T('Name') }}</th>
+			<th>{{= T('Language') }}</th>
+			<th>{{= T('Description') }}</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+	{{ for row in exercises: }}
+		<tr>
+			<td>{{= row.id }}</td>
+			<td>{{= row.name }}</td>
+			<td>{{= row.language.name }}</td>
+			<td>{{= row.text }}</td>
+			<td>
+				<td>
+					<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/edit/{{= row.id }}">
+						<span class="icon pen icon-pencil"></span>
+						<span class="buttontext button" title="{{= T('Edit') }}">{{= T('Edit') }}</span>
+					</a>
+					<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/assertions/{{= row.id }}">
+						<span class="buttontext button" title="{{= T('Assertions') }}">{{= T('Assertions') }}</span>
+					</a>
+				</td>
+			</td>
+		</tr>
+	{{ pass }}
+	</tbody>
+</table>

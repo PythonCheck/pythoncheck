@@ -107,8 +107,9 @@ db.define_table('language',
 
 db.define_table('exercise',
     Field('name', 'string', length=50, required=True, unique=True),
-    Field('text', 'string', required=False, unique=False),
     Field('language', db.language),
+    Field('text', 'text', required=True, unique=False),
+    Field('preset', 'text', required=False, unique=False),
     format='%(name)s (%(language)s)')
 
 db.define_table('code', 
@@ -131,7 +132,7 @@ db.define_table('enrollment',
     format='%(student)s in %(course)s')
 
 db.define_table('points',
-    Field('number_of_points', required=True, label=T('Number of Points')),
+    Field('number_of_points', 'integer', required=True, label=T('Number of Points')),
     Field('exercise', db.exercise, required=True, label=T('Exercise')),
     format='Exercise %(exercise)s: %(number_of_points)s points')
 

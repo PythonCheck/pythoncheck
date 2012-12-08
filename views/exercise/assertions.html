@@ -1,0 +1,71 @@
+{{ extend 'layout.html' }}
+
+<h2>{{= T('Assertions for »%(exercise)s« in %(language)s') % { 'exercise' : exercise.name, 'language' : exercise.language.name } }}</h2>
+
+<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/">
+	<span class="icon leftarrow icon-arrow-left"></span>
+	<span class="buttontext button" title="{{= T('Back to Exercise') }}">{{= T('Back to Exercise') }}</span>
+</a>
+
+<table>
+	<thead>
+		<tr>
+			<th></th>
+			<th>{{= T('Function Call') }}</th>
+			<th>{{= T('Expected Result') }}</th>
+		</tr>
+	</thead>
+	<tbody>
+	{{ for point_group in point_groups: }}
+		{{ assertions = db( db.assertion.points == point_group.id ).select() }}
+		<tr>
+			<td rowspan="{{= len(assertions) + 1 if len(assertions) > 0 else 2 }}">{{= T('%(points)s points') % { 'points' : point_group.number_of_points } }}</td>
+			{{ if len(assertions) > 0: }}
+				{{ assertion = assertions[0] }}
+				{{ assertions = assertions[1:] }}
+				<td>{{= assertion.function_name }}({{= assertion.arguments }})</td>
+				<td>{{= assertion.expected_result }}</td>
+				<td><a href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/remove/{{= assertion.id }}">Remove</a><td>
+			{{ else: }}
+				<td colspan="2"><em>No assertions in this point group</em></td>
+			{{ pass }}
+		</tr>
+		{{ for assertion in assertions: }}
+			<tr>
+				<td>{{= assertion.function_name }}({{= assertion.arguments }})</td>
+				<td>{{= assertion.expected_result }}</td>
+				<td><a href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/remove/{{= assertion.id }}">Remove</a><td>
+			</tr>
+		{{ pass }}
+		<tr>
+			<form method="post">
+				<input type="hidden" name="_formname" value="new_assertion" />
+				<input type="hidden" name="point_group" value="{{= point_group.id }}" />
+				<td><input type="text" name="function_call" placeholder="function(with, [1, 'lot', 'of'], params)" /></td>
+				<td><input type="text" name="expected_result" placeholder="e.g.: 5; 5, 6; ['Hallo', 9]; …" /></td>
+				<td><input type="submit" name="new_assertion_submit" value="{{= T('Submit') }}" /></td>
+			</form>
+		</tr>
+	{{ pass }}
+	</tbody>
+</table>
+
+{{ if request.args(1) == 'add_point_group': }}
+	{{
+	def validate_assertion(form):
+		form.vars.exercise = request.args(0)
+	pass
+
+	form = SQLFORM(db.points, fields=['number_of_points'])
+	if form.accepts(request.vars, session, onvalidation=validate_assertion):
+		session.flash = 'Added Point Group'
+		redirect(URL(request.function + '/' + request.args(0)))
+	pass
+	}}
+	{{= form }}
+{{ else: }}
+	<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/add_point_group">
+		<span class="icon plus icon-plus"></span>
+		<span class="buttontext button" title="{{=T('Add Point Group')}}">{{=T('Add Point Group')}}</span>
+	</a>
+{{ pass }}
