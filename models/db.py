@@ -111,13 +111,6 @@ db.define_table('exercise',
     Field('language', db.language),
     format='%(name)s (%(language)s)')
 
-db.define_table('code', 
-    Field('version', 'integer', required=True), 
-    Field('code', 'text', required=True), 
-    Field('exercise', db.exercise, required=True, label=T('Excercise')),
-    Field('user', db.auth_user, required=True, label=T('User')),
-    format=lambda row: '%(user)s: %(exercise)s v%(version)s' % {'user' : row.user.first_name + ' ' + row.user.last_name, 'exercise' : row.exercise, 'version' : row.version})
-
 db.define_table('course_exercise',
     Field('exercise', db.exercise, required=True, label=T('Excercise')),
     Field('course', db.course, required=True, label=T('Course')),
@@ -151,7 +144,17 @@ db.define_table('current_builds',
     Field('error', 'string', required=False))
 
 
-
+db.define_table('files',
+    Field('unique_identifier', required=True, unique=True),
+    Field('user', db.auth_user, required=True),
+    Field('filename', 'string', required=True),
+    Field('edited', 'datetime', required=True, default='now()'),
+    Field('course', db.course, required=False),
+    Field('project', 'string', required=True),
+    Field('projectIsExercise', 'boolean', required=True),
+    Field('content', 'string'),
+    Field('version', 'integer'),
+    primarykey=['user', 'filename', 'course', 'project'])
 
 
 def requires_role(role):

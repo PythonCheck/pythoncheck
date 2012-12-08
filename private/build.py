@@ -22,7 +22,7 @@ args = sys.argv[1].split(' ')
 # retrieve build id
 buildId = args[0]
 
-# retrieve source code file
+# retrieve source code file dir
 srcCode = args[1]
 
 # retrieve module path

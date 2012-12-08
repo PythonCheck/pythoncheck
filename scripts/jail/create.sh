@@ -4,7 +4,7 @@
 ROOT=$1
 
 # where the user sourcecode is located at the moment
-SRCFILE=$2
+SRCFILES=$2
 
 # where the distroname_distroversion.list file is located to load the necessary files
 DISTROFILE=$3
@@ -31,4 +31,4 @@ done
 cp --parent /usr/bin/python /bin/bash /bin/ls $ROOT
 
 # copy src files
-cp $SRCFILE $ROOT/script.py
+cp -R $SRCFILES/* $ROOT

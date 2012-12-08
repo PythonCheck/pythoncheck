@@ -12,16 +12,18 @@ from gluon.serializers import json
 BUILD_ID_LENGTH = 512
 CLIENT_TIMEOUT = 1500
 
+@auth.requires_login()
 def submit():
 	print "Hi. We will now run the test."
 
-	src=request.vars.code;
-	language=request.vars.language
-	exercise=request.vars.exercise
+	# src=request.vars.code;
+	# language=request.vars.language
+	project=request.vars.project
 	course=request.vars.course
+	main=request.vars.execute
 	buildId = runsystem.generateBuildId(BUILD_ID_LENGTH)
 
-	runsystem.invokeBuild(code=src, mode='submit', buildId=buildId, exercise=exercise, course=course, language=language)
+	runsystem.invokeBuild(mode='submit', buildId=buildId, project=project, course=course, main=main)
 
 
 
@@ -29,18 +31,27 @@ def submit():
 # user code is saved to database
 # user code is run
 # the output is caputured and replied
+@auth.requires_login()
 def run():
-	src=request.vars.code
-	buildId = runsystem.generateBuildId(BUILD_ID_LENGTH)
+	# src=request.vars.code
 
-	runsystem.invokeBuild(code=src, mode='test', buildId=buildId)
+	buildId = runsystem.generateBuildId(BUILD_ID_LENGTH)
+	project=request.vars.project
+	course=request.vars.course
+	main=request.vars.execute
+
+	if len(course) == 0:
+		print 'course no exist'
+		course = None
+
+	runsystem.invokeBuild(mode='test', buildId=buildId, main=main, project=project, course=course)
 	
 	return dict(mode='run', buildId=buildId, timeout=CLIENT_TIMEOUT)
 
 
-
 # the result of a build is fetched and retuned to the user
 # if the buildId is unknown, an HTTP 422 error is raised
+@auth.requires_login()
 def result():
 	data = db(db.current_builds.BuildId == request.vars.buildId).select().first()
 
