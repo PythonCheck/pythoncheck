@@ -1,10 +1,33 @@
 def index():
 	redirect(URL('list'))
 
-@requires_role('teacher')
+@requires_role('student')
 def list():
-	exercises = db().select(db.exercise.ALL)
-	return locals()
+	# exercises = db(exercises_condition).select()
+
+	if has_role('teacher'):
+		exercises = db(db.exercise).select()
+	elif has_role('student'):
+		# exercises = db( & (db.course_exercise.exercise == db.exercise.id)) \
+		# 				.select()
+		exercises = {}
+		courses = db((auth.user.id == db.enrollment.student) & (db.enrollment.course == db.course_exercise.course)).select(db.course_exercise.ALL)
+		for c in courses:
+			if c.course not in exercises:
+				course = {}
+				course['id'] = c.course
+				course['name'] = c.course.name
+				course['exercises'] = []
+				exercises[c.course] = course
+			else: 
+				course = exercises[c.course]
+			course['exercises'].append({
+							'name' : c.exercise.name,
+							'start_date' : c.start_date,
+							'end_date' : c.end_date
+						})
+
+	return dict(exercises=exercises)
 
 @requires_role('teacher')
 def new():

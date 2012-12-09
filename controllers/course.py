@@ -4,7 +4,7 @@ def index():
 def validate_new_course(form):
 	form.vars.teacher = auth.user_id
 
-@requires_role('teacher')
+@requires_role('student')
 def list():
 	new_form = SQLFORM(db.course, fields=['name'])
 	if new_form.accepts(request.vars, session, onvalidation=validate_new_course):
@@ -13,8 +13,11 @@ def list():
 	elif new_form.errors:
 		response.flash = 'form has errors'
 
+	course_list_contiditon = db.course if has_role('teacher') else ((db.enrollment.student == auth.user.id) & (db.course.id == db.enrollment.course))
+	course_list_rows = db(course_list_contiditon).select()
+
 	return dict(new_form = new_form,
-				course_list_rows = db(db.course).select())
+				course_list_rows = course_list_rows)
 
 ###############################################################################
 

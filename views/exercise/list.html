@@ -1,41 +1,77 @@
 {{ extend 'layout.html' }}
 
-<h2>{{= T('Exercise Pool') }}</h2>
+{{ if has_role('teacher'): }}
+	<h2>{{= T('Exercise Pool') }}</h2>
 
-<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/new">
-	<span class="icon plus icon-plus"></span>
-	<span class="buttontext button" title="{{=T('Create Exercise')}}">{{=T('Create Exercise')}}</span>
-</a>
+	<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/new">
+		<span class="icon plus icon-plus"></span>
+		<span class="buttontext button" title="{{=T('Create Exercise')}}">{{=T('Create Exercise')}}</span>
+	</a>
 
-<table>
-	<thead>
-		<tr>
-			<th>{{= T('#') }}</th>
-			<th>{{= T('Name') }}</th>
-			<th>{{= T('Language') }}</th>
-			<th>{{= T('Description') }}</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-	{{ for row in exercises: }}
-		<tr>
-			<td>{{= row.id }}</td>
-			<td>{{= row.name }}</td>
-			<td>{{= row.language.name }}</td>
-			<td>{{= row.text }}</td>
-			<td>
+	<table>
+		<thead>
+			<tr>
+				<th>{{= T('#') }}</th>
+				<th>{{= T('Name') }}</th>
+				<th>{{= T('Language') }}</th>
+				<th>{{= T('Description') }}</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+		{{ for row in exercises: }}
+			<tr>
+				<td>{{= row.id }}</td>
+				<td>{{= row.name }}</td>
+				<td>{{= row.language.name }}</td>
+				<td>{{= row.text }}</td>
 				<td>
-					<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/edit/{{= row.id }}">
-						<span class="icon pen icon-pencil"></span>
-						<span class="buttontext button" title="{{= T('Edit') }}">{{= T('Edit') }}</span>
-					</a>
-					<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/assertions/{{= row.id }}">
-						<span class="buttontext button" title="{{= T('Assertions') }}">{{= T('Assertions') }}</span>
-					</a>
+					<td>
+						<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/edit/{{= row.id }}">
+							<span class="icon pen icon-pencil"></span>
+							<span class="buttontext button" title="{{= T('Edit') }}">{{= T('Edit') }}</span>
+						</a>
+						<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/assertions/{{= row.id }}">
+							<span class="buttontext button" title="{{= T('Assertions') }}">{{= T('Assertions') }}</span>
+						</a>
+					</td>
 				</td>
-			</td>
-		</tr>
-	{{ pass }}
-	</tbody>
-</table>
+			</tr>
+		{{ pass }}
+		</tbody>
+	</table>
+
+{{ elif has_role('student'): }}
+	<h2>{{= T('My Exercises') }}</h2>
+
+	<table border="1">
+		<tbody>
+		{{ for course_id in exercises: }}
+			{{ course_nr = 1 }}
+			{{ course = exercises[course_id] }}
+			<tr>
+				<td rowspan="{{= 1 if len(course['exercises']) <= 1 else len(course['exercises']) }}">{{= course['name'] }}</td>
+				{{ if len(course['exercises']) > 0: }}
+					{{ exercise = course['exercises'][0] }}
+					{{ course['exercises'] = course['exercises'][1:] }}
+					<td>{{= course_nr }}</td>
+					<td>{{= exercise['name'] }}</td>
+					<td>{{= exercise['start_date'] }}</td>
+					<td>{{= exercise['end_date'] }}</td>
+				{{ else: }}
+					<td colspan="4"><em>No Exercises in this Course!</em></td>
+				{{ pass }}
+			</tr>
+			{{ for exercise in course['exercises']: }}
+				{{ course_nr += 1 }}
+				<tr>
+					<td>{{= course_nr }}</td>
+					<td>{{= exercise['name'] }}</td>
+					<td>{{= exercise['start_date'] }}</td>
+					<td>{{= exercise['end_date'] }}</t
+				</tr>
+			{{ pass }}
+		{{ pass }}
+		</tbody>
+	</table>
+{{ pass }}

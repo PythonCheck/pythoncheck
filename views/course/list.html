@@ -2,40 +2,56 @@
 
 <h2>{{=T('Courses')}}</h2>
 
-<h3>{{=T('Create New Course')}}</h3>
-{{=new_form}}
+{{ if has_role('teacher'): }}
+	<h3>{{=T('Create New Course')}}</h3>
+	{{=new_form}}
+{{ pass }}
 
-<h3>{{=T('Existing Courses')}}</h3>
-<table>
-	<thead>
-		<tr>
-			<th>{{=T('Name')}}</th>
-			<th>{{=T('Teacher')}}</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-	{{ for row in course_list_rows: }}
-		<tr>
-			<td>
-			{{ if row.teacher == auth.user.id: }}
-				<a href="/{{=request.application}}/{{=request.controller}}/edit/{{=row.id}}">{{=row.name}}</a>
-			{{ elif has_role('admin'): }}
-				<a href="/{{=request.application}}/{{=request.controller}}/view/{{=row.id}}">{{=row.name}}</a>
-			{{ else: }}
-				{{=row.name}}
-			{{ pass }}
-			</td>
-			<td>{{=row.teacher.last_name}}, {{=row.teacher.first_name}}</td>
-			<td>
-			{{ if has_role('admin') or row.teacher == auth.user.id: }}
-				<!-- <a class="w2p_trap button btn" href="/{{=request.application}}/{{=request.controller}}/edit/{{=row.id}}">
-					<span class="icon pen icon-pencil"></span>
-					<span class="buttontext button" title="{{=T('Edit')}}">{{=T('Edit')}}</span>
-				</a> -->
-			{{ pass }}
-			</td>
-		</tr>
-	{{ pass }}
-	</tbody>
-</table>
+{{ if has_role('teacher'): }}
+	<h3>{{=T('Existing Courses')}}</h3>
+{{ elif has_role('student'): }}
+	<h3>{{=T('My Courses')}}</h3>
+{{ pass }}
+
+{{ if len(course_list_rows) > 0: }}
+	<table>
+		<thead>
+			<tr>
+				<th>{{=T('Name')}}</th>
+				<th>{{=T('Teacher')}}</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+		{{ for row in course_list_rows: }}
+			{{ 
+			if 'course' in row:
+				row = row['course']
+			pass
+			}}
+			<tr>
+				<td>
+				{{ if row.teacher == auth.user.id: }}
+					<a href="/{{=request.application}}/{{=request.controller}}/edit/{{=row.id}}">{{=row.name}}</a>
+				{{ elif has_role('student') and has_role('teacher') != True or has_role('admin'): }}
+					<a href="/{{=request.application}}/{{=request.controller}}/view/{{=row.id}}">{{=row.name}}</a>
+				{{ else: }}
+					{{=row.name}}
+				{{ pass }}
+				</td>
+				<td>{{=row.teacher.last_name}}, {{=row.teacher.first_name}}</td>
+				<td>
+				{{ if has_role('admin') or row.teacher == auth.user.id: }}
+					<!-- <a class="w2p_trap button btn" href="/{{=request.application}}/{{=request.controller}}/edit/{{=row.id}}">
+						<span class="icon pen icon-pencil"></span>
+						<span class="buttontext button" title="{{=T('Edit')}}">{{=T('Edit')}}</span>
+					</a> -->
+				{{ pass }}
+				</td>
+			</tr>
+		{{ pass }}
+		</tbody>
+	</table>
+{{ else: }}
+	<em>No Courses!</em>
+{{ pass }}
