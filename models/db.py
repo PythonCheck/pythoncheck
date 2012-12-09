@@ -141,7 +141,8 @@ db.define_table('current_builds',
     Field('start_time', 'datetime', required=True),
     Field('finished', 'boolean', required=False, default=False),
     Field('output', 'string', required=False),
-    Field('error', 'string', required=False))
+    Field('error', 'string', required=False),
+    Field('buildError', 'boolean', required=False))
 
 
 db.define_table('files',

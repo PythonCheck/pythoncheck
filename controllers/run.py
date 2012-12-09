@@ -8,10 +8,6 @@ import run as runsystem
 from subprocess import PIPE
 from gluon.serializers import json
 
-## CONFIG
-BUILD_ID_LENGTH = 512
-CLIENT_TIMEOUT = 1500
-
 @auth.requires_login()
 def submit():
 	print "Hi. We will now run the test."
@@ -62,7 +58,12 @@ def result():
 
 	# if data is available and the build has finsihed return the outputs
 	if data.finished:
-		return dict(finished=data.finished, output=data.output, error=data.error)
+		out = dict(finished=data.finished, output=data.output, error=data.error)
+		
+		if data.buildError:
+			raise HTTP(500, out)
+
+		return out
 
 	# if data is available and the build is still running tell the client to wait
 	else:

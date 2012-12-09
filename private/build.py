@@ -3,17 +3,10 @@ import subprocess
 import platform
 import datetime
 import imp
+import os
 
 from subprocess import PIPE
 
-## CONFIG
-JAIL_BASE_DIR = '/tmp/jails/' 
-DISTOLIST_PATH = "/usr/share/web2py2/applications/PythonCheck/scripts/jail/"
-SCRIPT_FILE = DISTOLIST_PATH + 'create.sh'
-CLEANUP_FILE = DISTOLIST_PATH + 'cleanup.sh'
-USER_SCRIPT_PATH = "/script.py"
-BUILD_ID_LENGTH = 512
-BUILD_ID_SHORT_LENGTH = 32
 
 ## ---- ENVIRONMENT SECTION ----
 
@@ -38,6 +31,11 @@ listfile = DISTOLIST_PATH + platform.dist()[0].lower() + "_" + platform.dist()[1
 
 # write into database before creating the jail
 db.current_builds.insert(PID=None, BuildId=buildId, start_time=datetime.datetime.today())
+
+# check if we found a valid listfile. if not generate an error and stop building
+if not os.path.exists(listfile):
+	db(db.current_builds.BuildId == buildId).update(buildError=True, error='No correct disfile found', finished=True)
+	exit(1)
 
 # determine path for the jail
 buildJail = JAIL_BASE_DIR + buildId[:BUILD_ID_SHORT_LENGTH]
@@ -65,7 +63,7 @@ db(db.current_builds.PID==p.pid).update(output=p.stdout.read(), error=p.stderr.r
 
 ## ---- CLEANUP SECTION ----
 
-cleanupProcess = subprocess.Popen([CLEANUP_FILE, buildJail]);
+cleanupProcess = subprocess.Popen([CLEANUP_FILE, buildJail, srcCode]);
 cleanupProcess.wait()
 
 
