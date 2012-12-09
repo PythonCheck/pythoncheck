@@ -1,0 +1,64 @@
+{{ if request.function == 'edit' and request.args(1) == 'remove_student': }}
+	{{
+	db((db.enrollment.course == request.args(0)) & (db.enrollment.student == request.args(2))).delete()
+	session.flash = 'Removed Student from Course'
+	redirect(URL(request.function + '/' + request.args(0)))
+	}}
+{{ else: }}
+	{{ if request.function == 'edit' and request.args(1) == 'add_student': }}
+		{{
+		def validate_exercise(form):
+			form.vars.course = request.args(0)
+		pass
+
+		new_student = SQLFORM(db.enrollment, fields=['student'])
+		if new_student.accepts(request.vars, session, onvalidation=validate_exercise):
+			session.flash = 'Enrolled Student'
+			redirect(URL(request.function + '/' + request.args(0)))
+		pass
+		}}
+		{{= new_student }}
+	{{ elif request.function == 'edit': }}
+		<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/add_student">
+			<span class="icon plus icon-plus"></span>
+			<span class="buttontext button" title="{{=T('Add')}}">{{=T('Add')}}</span>
+		</a>
+	{{ pass }}
+
+	{{ if len(students) > 0: }}
+		<table>
+			<thead>
+				<tr>
+					<th>{{= T('#') }}</th>
+					<th>{{= T('Last Name') }}</th>
+					<th>{{= T('First Name') }}</th>
+				{{ if request.function == 'edit': }}
+					<th></th>
+				{{ pass }}
+				</tr>
+			</thead>
+			<tbody>
+			{{ n = 0 }}
+			{{ for row in students: }}
+				{{ n += 1 }}
+				<tr>
+					<td>{{= n }}</td>
+					<td>{{= row.student.last_name }}</td>
+					<td>{{= row.student.first_name }}</td>
+				{{ if request.function == 'edit': }}
+					<td>
+						<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/remove_student/{{= row.student }}">
+							<span class="icon trash icon-trash"></span>
+							<span class="buttontext button" title="{{=T('Remove')}}">{{=T('Remove')}}</span>
+						</a>
+					</td>
+				{{ pass }}
+				</tr>
+			{{ pass }}
+			</tbody>
+		</table>
+	{{ else: }}
+		<p><em>{{= T('No students in this course') }}</em></p>
+	{{ pass }}
+
+{{ pass }}
