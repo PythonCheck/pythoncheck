@@ -7,12 +7,13 @@
 	<span class="buttontext button" title="{{= T('Back to Exercise') }}">{{= T('Back to Exercise') }}</span>
 </a>
 
-<table>
+<table border="1">
 	<thead>
 		<tr>
 			<th></th>
 			<th>{{= T('Function Call') }}</th>
 			<th>{{= T('Expected Result') }}</th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -25,16 +26,16 @@
 				{{ assertions = assertions[1:] }}
 				<td>{{= assertion.function_name }}({{= assertion.arguments }})</td>
 				<td>{{= assertion.expected_result }}</td>
-				<td><a href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/remove/{{= assertion.id }}">Remove</a><td>
+				<td><a href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/remove/{{= assertion.id }}">Remove</a></td>
 			{{ else: }}
-				<td colspan="2"><em>No assertions in this point group</em></td>
+				<td colspan="3"><em>No assertions in this point group</em></td>
 			{{ pass }}
 		</tr>
 		{{ for assertion in assertions: }}
 			<tr>
 				<td>{{= assertion.function_name }}({{= assertion.arguments }})</td>
 				<td>{{= assertion.expected_result }}</td>
-				<td><a href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/remove/{{= assertion.id }}">Remove</a><td>
+				<td><a href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/remove/{{= assertion.id }}">Remove</a></td>
 			</tr>
 		{{ pass }}
 		<tr>
