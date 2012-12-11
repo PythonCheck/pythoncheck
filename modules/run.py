@@ -17,23 +17,20 @@ def invokeBuild(mode, buildId, main, language='Python', project=None, course=Non
 	config = exec_environment('applications/PythonCheck/models/config.py')
 
 	# check if we are developing for an exercise or just so
-	if (project != None) & (course != None) & (mode=='submit'):
-		# retrieve version number of the code
-		# for codeFile in db((db.files.project==project) & (db.files.course==course)).select(db.files.ALL):
-			# if row.version > highestRev:
-			#	highestRev=row.version
-		# print 'highestRev:', highestRev
+	if (project != None) & (course != None) & (mode=='submit'):	
+		
 		print 'fetching asserts'
 	else:
 		mode='run'
 
-	filePath=SRC_DIR + buildId[:BUILD_ID_SHORT_LENGTH]
+	filePath=config.SRC_DIR + buildId[:config.BUILD_ID_SHORT_LENGTH]
 
 	# ensure that the dirs are there
 	if not os.path.exists(filePath):
 		os.makedirs(filePath)
 
-	for codeFile in env.db((env.db.files.project==project) & (env.db.files.course==course)).select():
+	for codeFile in env.db((env.db.files.project == project) & (env.db.files.course == course)).select():
+		print codeFile.filename
 		# write src code into file
 		file=None
 		
@@ -41,8 +38,9 @@ def invokeBuild(mode, buildId, main, language='Python', project=None, course=Non
 			file = open(filePath + config.USER_SCRIPT_PATH, 'w')
 		else:
 			file = open(filePath + '/' + codeFile.filename, 'w')
-		file.write(codeFile.content)
+		file.write(codeFile.content or '')
 		file.close()
 
 	buildArgs = buildId + ' ' + filePath + ' ' + buildModule
-	p = subprocess.Popen(['python', WEB2PY_BIN, '-S', 'PythonCheck', '-M', '-R', BUILD_SCRIPT, '-A', buildArgs])
+
+	p = subprocess.Popen(['python', config.WEB2PY_BIN, '-S', 'PythonCheck', '-M', '-R', config.BUILD_SCRIPT, '-A', buildArgs])

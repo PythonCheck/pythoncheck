@@ -19,9 +19,12 @@ def submit():
 	main=request.vars.execute
 	buildId = runsystem.generateBuildId(BUILD_ID_LENGTH)
 
+	if len(course) == 0:
+		raise HTTP(422, 'We can\'t do anything for you until you specify a course')
+
 	runsystem.invokeBuild(mode='submit', buildId=buildId, project=project, course=course, main=main)
 
-
+	return dict(mode='submit', buildId=buildId, timeout=CLIENT_TIMEOUT)
 
 
 # user code is saved to database
@@ -37,7 +40,6 @@ def run():
 	main=request.vars.execute
 
 	if len(course) == 0:
-		print 'course no exist'
 		course = None
 
 	runsystem.invokeBuild(mode='test', buildId=buildId, main=main, project=project, course=course)

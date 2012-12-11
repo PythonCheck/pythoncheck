@@ -123,14 +123,19 @@ def list():
 	courses = db(db.enrollment.student == auth.user_id).select(db.course.id, db.course.name, join=db.course.on(db.course.id==db.enrollment.course))
 	for course in courses:
 		files['courses'][course.name] = dict()
+		files['courses'][course.name]['id'] = course.id
 		files['courses'][course.name]['exercises'] = dict()
 
-		exercises = db((db.enrollment.student == auth.user_id) & (db.enrollment.course == course)).select(db.course_exercise.exercise)
+		exercises = db((db.enrollment.student == auth.user_id) & (db.enrollment.course == course)).select(db.course_exercise.exercise, join=db.course_exercise.on(db.course_exercise.course == db.enrollment.course))
+		print db._lastsql
 
 		for exercise in exercises:
-			exerciseName = db(db.exercise.id==exercise.exercise).select().first().name
+			print exercise
+			exerciseDetails = db(db.exercise.id==exercise.exercise).select().first()
+			exerciseName = exerciseDetails.name
 
 			files['courses'][course.name]['exercises'][exerciseName] = dict()
+			files['courses'][course.name]['exercises'][exerciseName]['id'] = exerciseDetails.id
 			files['courses'][course.name]['exercises'][exerciseName]['files'] = dict()
 
 			filesPerExercise = db((db.enrollment.student == auth.user_id) & (db.enrollment.course == course) & (db.files.project == exercise.exercise) & (db.files.projectIsExercise == True)).select()
