@@ -66,6 +66,7 @@
 'End Date': 'End Date',
 'Enrollment': 'Enrollment',
 'enter an integer between %(min)g and %(max)g': 'enter an integer between %(min)g and %(max)g',
+'Errors in form, please check it out.': 'Errors in form, please check it out.',
 'Excercise': 'Excercise',
 'Exercise': 'Exercise',
 'Exercise Pool': 'Exercise Pool',
