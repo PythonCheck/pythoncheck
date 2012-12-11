@@ -12,6 +12,7 @@
 		apiList: 'file/list.json',
 		apiFileDetails: 'file/details.json',
 		apiRun: 'run/run.json',
+		apiSubmit: 'run/submit.json',
 		apiResult: 'run/result.json',
 		defaultTimeout: 1500,
 		fileListWidth: 250
@@ -28,6 +29,8 @@
 		this.menuPanel = null;
 		this.codePanel = null;
 		this.filePanel = null;
+		this.filePanelMenu = null;
+		this.filePanelContent = null;
 		this.listPuller = null;
 		this.internalCodeMirror = null;
 		this.currentCourse = false;
@@ -35,8 +38,6 @@
 		this.mainFile = false;
 		this.currentlyOpenFiles = [];
 		this.focusedFileReadURL = null;
-
-		//this.buildHTMLStructure(appendTo)
 	};
 
 	IDE.fn = IDE.prototype = {
@@ -45,11 +46,23 @@
 		buildHTMLStructure: function(appendTo, codeMirror, codeMirrorOptions) {
 			$(appendTo)
 				.append(this.tabPanel = $('<nav class="' + this.options.tabPanelClass + '"></nav>'))
-				.append(this.menuPanel = $('<div class="' + this.options.menuPanelClass + '"></div>'))
+				.append(this.menuPanel = $('<nav class="' + this.options.menuPanelClass + '"></nav>'))
 				.append(this.codePanel = $('<div class="' + this.options.codePanelClass + '"></div>'))
-				.append(this.filePanel = $('<div class="' + this.options.filePanelClass + '"></div>'));
+				.append(
+					this.filePanel = $('<div class="' + this.options.filePanelClass + '"></div>')
+						.append(
+							this.filePanelMenu = $('<nav></nav>')
+								.append($('<a>New Project</a>'))
+						)
+						.append(
+							this.filePanelContent = $('<section class="filelist"></section>')
+						)
+				);
 
-			this.menuPanel.append(this.listPuller = $('<a class="icon-chevron-left icon-white ' + this.options.listTriggerClass + '"></a>'));
+			this.menuPanel
+				.append($('<a>Run</a>').on('click', function() { this.run(); }.bind(this)))
+				.append($('<a>Save</a>').on('click', function() { this.syncFile(); }.bind(this)))
+				.append(this.listPuller = $('<a class="icon-chevron-left icon-white ' + this.options.listTriggerClass + '">Files</a>'));
 
 			if(arguments.length > 1) {
 				this.codeMirror(arguments[1], arguments[2]);
@@ -59,8 +72,15 @@
 		},
 
 		registerActions: function() {
+			
+			// file list
 			$(this.listPuller).click(this.openFileList.bind(this));
+
+			// save/edit actions
 			this.internalCodeMirror.setOption('onChange', this.contentUpdated.bind(this));
+
+			// new file
+
 		},
 
 		contentUpdated: function(cm, changeObject) {
@@ -133,17 +153,27 @@
 
 		populateFilePanel: function(files) {
 			var list = $('<ul></ul>');
-			$(this.filePanel).empty().append(list);
+			$(this.filePanelContent).empty().append(list);
 
 			if(files.courses) {
 				for(var coursename in files.courses) {
 
 					var course;
-					list.append($('<li>' + coursename + '</li>').append(course = $('<ul></ul>')))
+					var courseCaption;
+					list.append((courseCaption = $('<li>' + coursename + '</li>')).append(course = $('<ul></ul>')))
+					courseCaption.attr({
+						'data-type': 'course',
+						'data-course': files.courses[coursename].id
+					});
 
 					for(var exercisename in files.courses[coursename].exercises) {
-						var ex, fileObj, details; 
-						course.append($('<li>' + exercisename + '</li>').append(ex = $('<ul></ul>')))
+						var ex, fileObj, details, exerciseCaption; 
+						course.append((exerciseCaption = $('<li>' + exercisename + '</li>')).append(ex = $('<ul></ul>')))
+
+						exerciseCaption.attr({
+							'data-type': 'project',
+							'data-project': files.courses[coursename].exercises[exercisename].id
+						});
 
 						for(var filename in files.courses[coursename].exercises[exercisename].files) {
 							details = this.fileDetails(files.courses[coursename].exercises[exercisename].files[filename]);
@@ -198,6 +228,7 @@
 			else {
 				this.focusFile(file);
 			}
+			this.internalCodeMirror.setOption('readOnly', false);
 		},
 
 		saveFile: function(file, content, callbacks) {
@@ -268,10 +299,12 @@
 			var tabText = this.currentlyOpenFiles[index].tab.text();
 			// file is newly saved
 			if(statusChanged && saved) {
+				// remove the * indicating that the file is unsaved
 				this.currentlyOpenFiles[index].tab.text(tabText.substring(0, tabText.length-1));
 			}
 			// file is newly not saved (just edited)
 			else if (statusChanged && !saved) {
+				// add the * indicating that the file is unsaved
 				this.currentlyOpenFiles[index].tab.text(tabText + '*');
 			}
 		},
@@ -298,6 +331,10 @@
 		},
 
 		syncFile: function(fileObj) {
+			if(!fileObj) {
+				fileObj = this.getFocusedFile();
+			}
+
 			var openFile = this.getOpenFile(fileObj);
 
 			if(openFile.readURL == fileObj.readURL) {
@@ -430,30 +467,74 @@
 				file = this.getFocusedFile();
 			}
 
+			console.log(file);
 			this.api(this.options.apiRun, {
 				execute: file.filename,
 				course: file.course,
 				project: file.project
 			}, function(data) {
+				this.results(data);
+			}.bind(this));
+		},
+
+		submit: function(file) {
+			if(!file) {
+				file = this.getFocusedFile();
+			}
+
+			this.api(this.options.apiSubmit, {
+				execute: file.filename,
+				course: file.course,
+				project: file.project
+			}, function(data) {
+				this.results(data, function() {
+					console.log('submitted');
+				});
+			}.bind(this));
+		},
+
+		results: function(error, output) {
+
+			// results({ obj with build data }) or results({ obj with build data }, callback)
+			if(typeof(arguments[0]) == 'object' && (arguments.length == 1) || (arguments.length == 2 && typeof(arguments[1]) == 'function')) {
+				var data = arguments[0];
+				var callback;
+				
+				if(arguments.length == 2 && typeof(arguments[1]) == 'function') {
+					callback = arguments[1];
+				}
+
 				var interval = setInterval(function() {
 					this.api(this.options.apiResult, {buildId: data.buildId}, function(resultData, resultTextStatus, resultJqXHR) {
 							// if the results are ready --> PARTY!
 							if(resultData.finished) {
 								clearInterval(interval);
 								this.results(resultData.error, resultData.output);
+								
+								if(callback) {
+									callback({
+										'error': resultData.error, 
+										'output': resultData.output,
+										'requestData': data
+									})
+								}
 							}
 						}.bind(this));
 				}.bind(this), data.timeout || this.options.defaultTimeout);
-			}.bind(this));
-		},
-
-		results: function(error, output) {
-			this.output('error:', error, 'output:', output);
+			}
+			else {
+				if(error) {
+					this.output('errors: ', error);
+				}
+				if(output) {
+					this.output('outputs: ', output);
+				}
+			}
 		},
 
 		output: function() {
 			for(var i = 0; i < arguments.length; i++) {
-				console.log(arguments[i]);
+				this.console(arguments[i]);
 			}
 		},
 
@@ -482,7 +563,65 @@
 				this.internalCodeMirror = codeMirror;
 			}
 			this.internalCodeMirror.IDE = this;
+			this.internalCodeMirror.setOption('readOnly', true);
 			return this.internalCodeMirror;
+		},
+
+		console: function() {
+			var doOpen;
+			var str = null;
+			// console() --> inverts console state
+			if(arguments.length == 0) {
+				this.doOpen = !this.consoleIsOpen
+			}
+			
+			// console(bool) --> set console state
+			if(arguments.length >= 1 && typeof(arguments[0]) == 'boolean') {
+				doOpen = arguments[0];
+
+				// console(bool, str) --> set console state and add output
+				if(arguments.length >= 2 && typeof(arguments[1]) == 'string') {
+					str = arguments[1]
+				}
+			}
+			// console(str) --> open console if not open and add output
+			else if (arguments.length >= 1 && typeof(arguments[0]) == 'string') {
+				doOpen = true;
+				str = arguments[0];
+			}
+
+			if(doOpen || this.consoleIsOpen) {
+				if(doOpen && !this.consoleIsOpen) {
+					//open console
+					if(this.console.open && typeof(this.console.open) == 'function') {
+						this.console.open(this);
+					}
+					this.consoleIsOpen = true;
+				}
+				else if (!doOpen){
+					// close console
+					if(this.console.close && typeof(this.console.close) == 'function') {
+						this.console.close(this);
+					}
+					this.consoleIsOpen = false;
+				}
+			}
+
+			if(str != null) {
+				// add output to console
+				$('.output').append(this.htmlify(str)).animate({scrollTop: $('.output').prop('scrollHeight')});
+
+			}
+		},
+
+		htmlify: function(str) {
+			str = str.replace(/(\r\n)|(\r)|(\n)/g, '<br>');
+			if(str.match(/.*<br>$/)) {
+				return str;
+			}
+			else {
+				return str + '<br>';
+			}
 		},
 
 		api: function(action, data, callback) {
@@ -508,7 +647,7 @@
 				console.log(cm);
 			},
 			"Cmd-S": function(cm) {
-				cm.IDE.syncFile(cm.IDE.getFocusedFile());
+				cm.IDE.syncFile();
 			}
 		},
 	};
@@ -517,13 +656,83 @@
 
 })(window);
 
-var _m;
 $(function() {
 	window.ide = new IDE($('#codingsohard'));
 	window.ide.buildHTMLStructure($('#codingsohard'), true, {
 		theme: "monokai",
 		lineNumbers: true
 	});
+
+	window.ide.console.open = function(ide) {
+		$('footer .legal').fadeOut();
+		$('#console').css({
+			'left': $('#console').position().left, 
+			'width': 'auto'
+		});
+		$('#console .output').css({
+			'right': '0px'
+		});
+
+		$('#console').animate({
+			left: '0px',
+			height: '200px'
+		});
+
+		$('.content').animate({
+			bottom: '230px'
+		});
+
+		$('footer').animate({
+			margin: '0px 20px',
+			width: '-=40px',
+			height: '200px'
+		}, {
+			complete: function() {
+				$('#console #closeTrigger').fadeIn();
+			}
+		});
+	}
+
+	window.ide.console.close = function(ide) {
+		$('#console #closeTrigger').fadeOut();
+
+		
+		$('#console .output').css({
+			'right': '0px'
+		});
+
+		$('#console').animate({
+			'left': ($(document).width()-40) + 'px', 
+			'width': '40px',
+			'height': '40px'
+		});
+
+		$('.content').animate({
+			bottom: '70px'
+		});
+
+		$('footer').animate({
+			margin: '0px',
+			width: '+=40px',
+			height: '40px'
+		}, {
+			complete: function() {
+				$('footer .legal').fadeIn();
+				$('#console').removeAttr('style');
+				$('#output').removeAttr('style');
+				$('#console #closeTrigger').removeAttr('style');
+			}
+		});
+	}
+
+	$('#console .prompt pre').on('click', function() {
+			window.ide.console(true);
+	}.bind(this));
+
+	$('#console #closeTrigger').on('click', function() {
+		window.ide.console(false);
+	});
+
 	ide.getFileList(ide.populateFilePanel.bind(ide));
 	ide.openFileList();
 });

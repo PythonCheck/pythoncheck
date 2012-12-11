@@ -2,7 +2,6 @@
 {{extend 'layout.html'}}
 {{
   response.files.insert(2, URL('static', 'js/ide.js'))
-  response.files.insert(2, URL('static', 'css/ide.css'))
   response.files.insert(0, URL('static', 'codemirror/lib/codemirror.js'))
   response.files.insert(0, URL('static', 'codemirror/lib/codemirror.css'))
   response.files.insert(2, URL('static', 'codemirror/mode/python/python.js'))
@@ -26,8 +25,6 @@
   response.files.insert(2, URL('static', 'codemirror/theme/twilight.css'))
   response.files.insert(2, URL('static', 'codemirror/theme/ambiance.css'))
 
-  response.files.insert(2, URL('static', 'css/ide.css'))
-
   response.include_files()
 }}
 
@@ -35,8 +32,6 @@
 <div id="codingsohard">
 </div>
 
-<textarea id="output"></textarea>
 
-{{=A(T("Administrative Interface"), _href=URL('admin','default','index'), _class='btn',
-     _style='margin-top: 1em;')}}
+<!-- {{=A(T("Administrative Interface"), _href=URL('admin','default','index'), _class='btn', _style='margin-top: 1em;')}} -->
 
