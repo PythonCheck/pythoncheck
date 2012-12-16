@@ -1,100 +1,65 @@
+* {
+  margin: 0px;
+  padding: 0px; }
+
 html {
   height: 100%;
   width: 100%; }
 
 body {
-  font: 100%/1.4 "Myriad Pro", Verdana, Arial, Helvetica, sans-serif;
-  background-color: #5B5B5B;
+  font-size: 16px;
+  line-height: 20px;
+  font-family: "Myriad Pro", Verdana, Arial, Helvetica, sans-serif;
+  background-color: #5b5b5b;
   margin: 0;
   padding: 0;
-  color: #FFF;
+  color: white;
   height: 100%; }
-
-#navcontainer ul, ol, dl {
-  padding: 0;
-  margin: 0; }
 
 h1, h2, h3, h4, h5, h6, p {
   margin-top: 0;
+  margin-bottom: 1em;
   padding-right: 15px;
   padding-left: 15px; }
+
+ul {
+  padding-left: 40px; }
 
 a img {
   border: none; }
 
-header a {
-  text-decoration: none; }
-
 a:link, a:visited {
-  color: #FFF;
+  color: white;
   text-decoration: none; }
 
 a:hover, a:active, a:focus {
   text-decoration: underline; }
 
-.container {
-  width: 100%;
-  height: 100%; }
-
 header {
   background-color: #404040;
-  height: 40px;
-  padding-top: 10px;
-  padding-left: 15px; }
-
-#navcontainer {
-  float: right;
-  margin-right: 15px; }
-
-#user {
-  float: left; }
-
-header p#user a {
-  color: white; }
-header p.flash {
-  float: left; }
-
-#navlist li {
-  float: left;
-  list-style-type: none; }
-  #navlist li a {
-    display: inline-block;
-    height: 27px;
-    padding: 5px 5px 2px;
-    color: #FFF;
-    text-decoration: none; }
-    #navlist li a:hover {
-      background-color: #141529; }
-
-#console {
-  overflow: hidden;
-  width: 40px;
-  height: 40px;
-  background-color: #000;
-  float: right;
-  position: absolute;
-  right: 0px; }
-  #console #closeTrigger {
-    display: none; }
-  #console .prompt {
-    width: 40px;
-    float: left;
-    height: 200px;
-    position: absolute;
-    bottom: 0px; }
-    #console .prompt pre {
-      position: absolute;
-      bottom: 0px;
-      width: 40px;
-      height: 40px;
-      margin: 0px;
-      line-height: 40px; }
-  #console .output {
-    height: 200px;
-    position: absolute;
-    bottom: 0px;
-    left: 40px;
-    overflow: scroll; }
+  height: 40px; }
+  header #navlist {
+    float: right;
+    margin: 0 0 0 15px; }
+    header #navlist li {
+      float: left;
+      list-style-type: none;
+      height: 40px; }
+      header #navlist li a {
+        display: inline-block;
+        color: #FFF;
+        padding: 10px;
+        text-decoration: none; }
+        header #navlist li a:hover {
+          background-color: #141529; }
+  header > * {
+    margin: 10px; }
+  header p#user {
+    float: left; }
+    header p#user a {
+      color: white; }
+  header p.flash {
+    float: left; }
 
 .content {
   background-color: #404040;
@@ -107,7 +72,8 @@ header p.flash {
   bottom: 70px;
   left: 20px;
   right: 20px;
-  padding: 20px; }
+  padding: 20px;
+  overflow-y: scroll; }
 
 footer {
   width: 100%;
@@ -119,6 +85,36 @@ footer {
   footer .legal {
     margin: 5px 0px 0px 5px;
     float: left; }
+  footer #console {
+    overflow: hidden;
+    width: 40px;
+    height: 40px;
+    background-color: #000;
+    float: right;
+    position: absolute;
+    right: 0px; }
+    footer #console #closeTrigger {
+      display: none; }
+    footer #console .prompt {
+      width: 40px;
+      float: left;
+      height: 200px;
+      position: absolute;
+      bottom: 0px; }
+      footer #console .prompt pre {
+        position: absolute;
+        bottom: 0px;
+        width: 40px;
+        height: 40px;
+        margin: 0px;
+        line-height: 40px; }
+    footer #console .output {
+      height: 200px;
+      position: absolute;
+      bottom: 0px;
+      left: 40px;
+      padding-left: 20px;
+      overflow: scroll; }
 
 #codingsohard {
   background-color: #AAA;

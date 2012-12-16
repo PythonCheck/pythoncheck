@@ -31,8 +31,6 @@
 </script>
 
 <body>
-  <div class="container">
-
   <header>
     <p id="user">
       {{ if auth.user_id: }}
@@ -43,13 +41,11 @@
           {{ pass }}
       </p>
       <p class="flash">{{=response.flash or ''}}</p>
-    <div id="navcontainer">
       <ul id="navlist">
         <li><a href="#">MEINE SEITE</a></li>
         <li><a href="#">AUFGABEN</a></li>
         <li><a href="#">PROGRAMMIEREN</a></li>
       </ul>
-    </div>
     <!-- end header -->
   </header>
 
@@ -75,7 +71,6 @@
       <div class="output"></div>
     </div>
   </footer>
-  </div>
 </body>
 </html>
 
