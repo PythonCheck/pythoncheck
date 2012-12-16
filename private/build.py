@@ -8,6 +8,8 @@ import os
 from subprocess import PIPE
 
 
+GRADING_FILE = 'grades.grd'
+
 ## ---- ENVIRONMENT SECTION ----
 
 args = sys.argv[1].split(' ')
@@ -20,6 +22,16 @@ srcCode = args[1]
 
 # retrieve module path
 modulePath = args[2]
+
+# retrieve build mode
+buildMode = args[3]
+
+course, project, user = None, None, None
+
+if buildMode == 'submit':
+	course = args[4]
+	project = args[5]
+	user = args[6]
 
 # retrieve build module
 buildModule = imp.load_source('buildsystem.module', modulePath)
@@ -60,6 +72,21 @@ p.wait()
 
 # update the database and distribute output
 db(db.current_builds.PID==p.pid).update(output=p.stdout.read(), error=p.stderr.read(), finished=True)
+
+## ---- GRADING SECTION ----
+if buildMode == 'submit':
+	print 'checking assertions'
+	enrollmentId = db((db.enrollment.student == user) & (db.enrollment.course == course)).select().first().id
+	exerciseCourseId = db((db.course_exercise.exercise == project) & (db.course_exercise.course == course)).select().first().id
+
+	grading = db.grading.insert(course=enrollmentId, exercise=exerciseCourseId, unique_identifier=(str(enrollmentId) + '::' + str(exerciseCourseId)))
+
+	grades = open(buildJail + '/' + GRADING_FILE)
+	lines = grades.read().strip().split('\r')
+	for assessment in lines:
+		pointId, passed = assessment.strip().split(':')
+		db.points_grading.insert(grading=grading, points=pointId, succeeded=(passed=='1'))
+
 
 ## ---- CLEANUP SECTION ----
 

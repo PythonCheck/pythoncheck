@@ -74,6 +74,13 @@ def new():
 	filetype = request.vars.type
 	project = request.vars.project
 	course = request.vars.course
+	content = ''
+
+	# rename the file to whatever the mainfile is called in every exercise
+	if filetype == 'exercise' and EXERCISE_CONTAINS_SINGLE_FILE:
+		filename = EXERCISE_MAIN_FILE
+		content = db(db.exercise.id == project).select().first().preset
+
 
 	uniqueIdentifier = str(filename) + '::' + str(course) + '::' + str(project) + '::' + str(auth.user_id)	
 
@@ -105,7 +112,7 @@ def new():
 
 		else:
 			try:
-				db.files.insert(unique_identifier=uniqueIdentifier, user=auth.user_id, filename=filename, project=project, projectIsExercise=True, edited=datetime.today(), course=course)
+				db.files.insert(unique_identifier=uniqueIdentifier, user=auth.user_id, filename=filename, project=project, projectIsExercise=True, edited=datetime.today(), course=course, content=content)
 			except Exception, e:	
 				raise HTTP(422, 'invalid filename: file exists')
 
@@ -127,10 +134,8 @@ def list():
 		files['courses'][course.name]['exercises'] = dict()
 
 		exercises = db((db.enrollment.student == auth.user_id) & (db.enrollment.course == course)).select(db.course_exercise.exercise, join=db.course_exercise.on(db.course_exercise.course == db.enrollment.course))
-		print db._lastsql
 
 		for exercise in exercises:
-			print exercise
 			exerciseDetails = db(db.exercise.id==exercise.exercise).select().first()
 			exerciseName = exerciseDetails.name
 

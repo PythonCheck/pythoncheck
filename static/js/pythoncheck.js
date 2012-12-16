@@ -24,10 +24,15 @@
 					});
 				}
 			})
-
-
+		}, 
+		numberOfProperties: function(obj) {
+			var count = 0;
+			for(k in obj) {
+				count++;
+			}
+			return count;
 		}
-	}
+	};
 
 	window.Utils = new Utils();
 })(window);

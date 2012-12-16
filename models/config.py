@@ -58,3 +58,9 @@ USER_SCRIPT_PATH = '/script.py'
 BUILD_ID_LENGTH = 512
 # the length of the shortened buildID used in the filesystem
 BUILD_ID_SHORT_LENGTH = 32
+
+###
+### really dangerous to change. Vary the behaviour of the application
+###
+EXERCISE_CONTAINS_SINGLE_FILE = True
+EXERCISE_MAIN_FILE = 'main.py'

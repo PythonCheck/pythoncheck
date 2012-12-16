@@ -145,7 +145,6 @@ db.define_table('current_builds',
     Field('error', 'string', required=False),
     Field('buildError', 'boolean', required=False))
 
-
 db.define_table('files',
     Field('unique_identifier', required=True, unique=True),
     Field('user', db.auth_user, required=True),
@@ -157,6 +156,16 @@ db.define_table('files',
     Field('content', 'string'),
     Field('version', 'integer'),
     primarykey=['user', 'filename', 'course', 'project'])
+
+db.define_table('grading', 
+    Field('course', db.enrollment, required=True), # contains the userid
+    Field('exercise', db.course_exercise, required=True),
+    Field('unique_identifier', 'string', unique=True, required=True))
+
+db.define_table('points_grading', 
+    Field('grading', db.grading, required=True),
+    Field('points', db.points, required=True), 
+    Field('succeeded', 'boolean', required=True, default=False))
 
 @auth.requires_login()
 def requires_role(role):

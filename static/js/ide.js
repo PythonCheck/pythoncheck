@@ -1,5 +1,10 @@
 
+// depends on 
+// Utils
 (function(window) {
+
+	var EXERCISE_CONTAINS_SINGLE_FILE = true;
+	var EXERCISE_MAIN_FILE = 'main.py';
 
 	var defaultOptions = {
 		tabPanelClass: 'tabs',
@@ -60,8 +65,9 @@
 				);
 
 			this.menuPanel
-				.append($('<a>Run</a>').on('click', function() { this.run(); }.bind(this)))
-				.append($('<a>Save</a>').on('click', function() { this.syncFile(); }.bind(this)))
+				.append($('<a>Run</a>').on('click',    function() { this.run();      }.bind(this)))
+				.append($('<a>Save</a>').on('click',   function() { this.syncFile(); }.bind(this)))
+				.append($('<a>Submit</a>').on('click', function() { this.submit();   }.bind(this)))
 				.append(this.listPuller = $('<a class="icon-chevron-left icon-white ' + this.options.listTriggerClass + '">Files</a>'));
 
 			if(arguments.length > 1) {
@@ -78,8 +84,6 @@
 
 			// save/edit actions
 			this.internalCodeMirror.setOption('onChange', this.contentUpdated.bind(this));
-
-			// new file
 
 		},
 
@@ -131,18 +135,25 @@
 
 		newFile: function(filename) {
 
-			fileInformation = {
-				filename: filename
-			}
+			fileInformation = {};
 
-			if(this.currentCourse && this.currentProject) {
-				fileInformation["type"] = 'exercise';
-				fileInformation.course = this.currentCourse;
-				fileInformation.project = this.currentProject;
+			if(typeof(filename) == 'string') {
+				fileInformation.filename = filename;
+
+				if(this.currentCourse && this.currentProject) {
+					fileInformation["type"] = 'exercise';
+					fileInformation.course = this.currentCourse;
+					fileInformation.project = this.currentProject;
+				}
+				else {
+					fileInformation["type"] = 'project';
+					fileInformation.project = this.currentProject;	
+				}
 			}
 			else {
-				fileInformation["type"] = 'project';
-				fileInformation.project = this.currentProject;	
+				fileInformation['type'] = 'exercise';
+				fileInformation.project = filename.project;
+				fileInformation.course = filename.course;
 			}
 
 			this.api(this.options.apiNew, fileInformation, 
@@ -168,17 +179,44 @@
 
 					for(var exercisename in files.courses[coursename].exercises) {
 						var ex, fileObj, details, exerciseCaption; 
-						course.append((exerciseCaption = $('<li>' + exercisename + '</li>')).append(ex = $('<ul></ul>')))
 
-						exerciseCaption.attr({
-							'data-type': 'project',
-							'data-project': files.courses[coursename].exercises[exercisename].id
-						});
+						// if an exercise is allowed to contain more than one file, list all files
+						if(!EXERCISE_CONTAINS_SINGLE_FILE || EXERCISE_CONTAINS_SINGLE_FILE === false) {
+							course.append((exerciseCaption = $('<li>' + exercisename + '</li>')).append(ex = $('<ul></ul>')))
 
-						for(var filename in files.courses[coursename].exercises[exercisename].files) {
-							details = this.fileDetails(files.courses[coursename].exercises[exercisename].files[filename]);
-							
-							this.createFileLink(details, 'filename', ex, this.openFile.bind(this))
+							exerciseCaption.attr({
+								'data-type': 'project',
+								'data-project': files.courses[coursename].exercises[exercisename].id
+							});
+						
+							for(var filename in files.courses[coursename].exercises[exercisename].files) {
+								details = this.fileDetails(files.courses[coursename].exercises[exercisename].files[filename]);
+
+								this.createFileLink(details, 'filename', ex, this.openFile.bind(this))
+							}
+						}
+						else {
+							var numberOfFiles = (Utils.numberOfProperties(files.courses[coursename].exercises[exercisename].files));
+							console.log(numberOfFiles);
+							if(numberOfFiles == 0) {
+								details = {
+									'exercisename': exercisename,
+									'filename': EXERCISE_MAIN_FILE,
+									'course': files.courses[coursename].id,
+									'project': files.courses[coursename].exercises[exercisename].id
+								}
+
+								this.createFileLink(details, 'exercisename', course, this.newFile.bind(this))
+							}
+							else {
+								console.log(coursename);
+								details = {};
+								for(var k in files.courses[coursename].exercises[exercisename].files) {
+									details = files.courses[coursename].exercises[exercisename].files[k];
+								}
+								details.filename = exercisename;
+								this.createFileLink(details, 'filename', course, this.openFile.bind(this));
+							}
 						}
 					}
 				}
