@@ -24,13 +24,19 @@
   response.files.insert(2, URL('static', 'codemirror/theme/monokai.css'))
   response.files.insert(2, URL('static', 'codemirror/theme/twilight.css'))
   response.files.insert(2, URL('static', 'codemirror/theme/ambiance.css'))
+  response.files.insert(2, URL('static', 'js/coding.js'))
 
   response.include_files()
 }}
 
-
-<div id="codingsohard">
-</div>
+{{ if auth.user_id: }}
+  <div id="codingsohard">
+  </div>
+{{ else: }}
+  <div>
+    Content
+  </div>
+{{pass}}
 
 
 <!-- {{=A(T("Administrative Interface"), _href=URL('admin','default','index'), _class='btn', _style='margin-top: 1em;')}} -->
