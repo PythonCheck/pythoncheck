@@ -22,9 +22,18 @@ response.google_analytics_id = None
 ## this is the main application menu add/remove items as required
 #########################################################################
 
-response.menu = [
-    (T('Home'), False, URL('default', 'index'), [])
-]
+response.menu = [  ]
+
+if has_role( 'teacher' ):
+	response.menu.append( ( T( 'Exercise Pool' ), False, URL( 'exercise', 'list' ), [  ] ) )
+	response.menu.append( ( T( 'Courses' ), False, URL( 'course', 'list' ), [  ] ) )
+elif has_role( 'student' ):
+	response.menu.append( T( 'My' ), False, URL( 'user', 'my' ), [  ] )
+	response.menu.append( T( 'My Courses' ), False, URL( 'course', 'list' ), [  ] )
+	response.menu.append( T( 'My Exercises' ), False, URL( 'exercise', 'list' ), [  ] )
+
+
+response.menu.append( ( T( 'IDE' ), False, URL( 'default', 'index' ), [  ] ) )
 
 #########################################################################
 ## provide shortcuts for development. remove in production
@@ -38,4 +47,4 @@ def _():
     # useful links to internal and external resources
     response.menu.append(('Courses', False, URL(app, 'course', 'list')))
     response.menu.append(('Exercises', False, URL(app, 'exercise', 'list')))
-_()
+# _()
