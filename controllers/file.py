@@ -79,7 +79,31 @@ def new():
 	# rename the file to whatever the mainfile is called in every exercise
 	if filetype == 'exercise' and EXERCISE_CONTAINS_SINGLE_FILE:
 		filename = EXERCISE_MAIN_FILE
-		content = db(db.exercise.id == project).select().first().preset
+		text = db(db.exercise.id == project).select().first().text
+		
+		# insert instructions
+		text_lines = [ line.split() for line in text.split('\n')]
+		lines = []
+
+		for line in text_lines:
+			char_count = 0
+			current_index = 0
+			for i in range(len(line)):
+				if char_count > 70:
+					lines.append('# ' + " ".join(line[current_index:i]))
+					current_index = i
+					char_count = 0
+				char_count += len(line[i])
+			
+			lines.append('# ' + " ".join(line[current_index:]))
+
+		content = '\n'.join(lines) + '\n\n'
+
+		# crazy shit: copyright jonas (wasn't me)
+		# content = "\n".join(['# %(t)s' % dict(t=ex.text[i*70:(i+1)*70]) for i in range(len(ex.text) / 70)])
+
+		# insert presets (eg function signatures, ...)
+		content += db(db.exercise.id == project).select().first().preset
 
 
 	uniqueIdentifier = str(filename) + '::' + str(course) + '::' + str(project) + '::' + str(auth.user_id)	

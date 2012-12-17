@@ -75,7 +75,6 @@ db(db.current_builds.PID==p.pid).update(output=p.stdout.read(), error=p.stderr.r
 
 ## ---- GRADING SECTION ----
 if buildMode == 'submit':
-	print 'checking assertions'
 	enrollmentId = db((db.enrollment.student == user) & (db.enrollment.course == course)).select().first().id
 	exerciseCourseId = db((db.course_exercise.exercise == project) & (db.course_exercise.course == course)).select().first().id
 
