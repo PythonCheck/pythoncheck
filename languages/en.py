@@ -99,6 +99,7 @@
 'Login': 'Login',
 'Lost Password': 'Lost Password',
 'Manage Cache': 'Manage Cache',
+'Me': 'Me',
 'Modified By': 'Modified By',
 'Modified On': 'Modified On',
 'My': 'My',

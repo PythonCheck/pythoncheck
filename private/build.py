@@ -80,11 +80,14 @@ if buildMode == 'submit':
 
 	grading = db.grading.insert(course=enrollmentId, exercise=exerciseCourseId, unique_identifier=(str(enrollmentId) + '::' + str(exerciseCourseId)))
 
-	grades = open(buildJail + '/' + GRADING_FILE)
-	lines = grades.read().strip().split('\r')
-	for assessment in lines:
-		pointId, passed = assessment.strip().split(':')
-		db.points_grading.insert(grading=grading, points=pointId, succeeded=(passed=='1'))
+	if os.path.exists(buildJail + '/' + GRADING_FILE):
+		grades = open(buildJail + '/' + GRADING_FILE)
+		lines = grades.read().strip().split('\r')
+		for assessment in lines:
+			pointId, passed = assessment.strip().split(':')
+			db.points_grading.insert(grading=grading, points=pointId, succeeded=(passed=='1'))
+	else:
+		db(db.current_builds.BuildId == buildId).update(buildError=True, error='No grading file found', finished=True)
 
 
 ## ---- CLEANUP SECTION ----

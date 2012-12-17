@@ -158,8 +158,8 @@
 
 			this.api(this.options.apiNew, fileInformation, 
 				function(data) {
-					console.log(data);
-				})
+					this.getFileList(this.populateFilePanel.bind(this));
+				}.bind(this))
 		},
 
 		populateFilePanel: function(files) {
@@ -197,7 +197,6 @@
 						}
 						else {
 							var numberOfFiles = (Utils.numberOfProperties(files.courses[coursename].exercises[exercisename].files));
-							console.log(numberOfFiles);
 							if(numberOfFiles == 0) {
 								details = {
 									'exercisename': exercisename,
@@ -209,7 +208,6 @@
 								this.createFileLink(details, 'exercisename', course, this.newFile.bind(this))
 							}
 							else {
-								console.log(coursename);
 								details = {};
 								for(var k in files.courses[coursename].exercises[exercisename].files) {
 									details = files.courses[coursename].exercises[exercisename].files[k];
@@ -545,6 +543,7 @@
 				var interval = setInterval(function() {
 					this.api(this.options.apiResult, {buildId: data.buildId}, function(resultData, resultTextStatus, resultJqXHR) {
 							// if the results are ready --> PARTY!
+							console.log(resultTextStatus)
 							if(resultData.finished) {
 								clearInterval(interval);
 								this.results(resultData.error, resultData.output);
