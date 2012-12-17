@@ -1,76 +1,76 @@
 <!DOCTYPE html>
 <head>
-  <meta charset="utf-8" />
-  <!--[if IE]>
-      <meta http-equiv="X-UA-Compatible" content="IE=edge{{=not request.is_local and ',chrome=1' or ''}}">
-  <![endif]-->
+	<meta charset="utf-8" />
+	<!--[if IE]>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge{{=not request.is_local and ',chrome=1' or ''}}">
+	<![endif]-->
 
-  <title>{{=response.title or request.application}}</title>
+	<title>{{=response.title or request.application}}</title>
 
-  <meta name="application-name" content="{{=request.application}}" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="application-name" content="{{=request.application}}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
-  <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
+	<link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
+	<link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
 
-  <!-- include stylesheets -->
-  {{
-  response.files.append(URL('static','css/pythoncheck.css'))
-  response.files.append(URL('static','js/jquery.js'))
-  response.files.append(URL('static','js/pythoncheck.js'))
-  response.include_files()
+	<!-- include stylesheets -->
+	{{
+	response.files.append(URL('static','css/pythoncheck.css'))
+	response.files.append(URL('static','js/jquery.js'))
+	response.files.append(URL('static','js/pythoncheck.js'))
+	response.include_files()
 
-  # clear the files buffer
-  response.files = []
-  }}
+	# clear the files buffer
+	response.files = []
+	}}
 </head>
 <script type="text/javascript">
-  $(function() {
-    window.Utils.flash();
-  })
+	$(function() {
+		window.Utils.flash();
+	})
 </script>
 
 <body>
-  <header>
-    <p id="user">
-      {{ if auth.user_id: }}
-            <a href="{{=URL('user', 'logout')}}">Logout&nbsp;&nbsp;&nbsp;<em>{{=auth.user.email}}</em></a>
-          {{ else: }}
-            <a href="{{=URL('user', 'login')}}">Login</a>
-            <a href="{{=URL('user', 'register')}}">Register</a>
-          {{ pass }}
-      </p>
-      <p class="flash">{{=response.flash or ''}}</p>
-      <ul id="navlist">
-        <li><a href="#">MEINE SEITE</a></li>
-        <li><a href="#">AUFGABEN</a></li>
-        <li><a href="#">PROGRAMMIEREN</a></li>
-      </ul>
-    <!-- end header -->
-  </header>
+	<header>
+		<p id="user">
+			{{ if auth.user_id: }}
+				<a href="{{=URL('user', 'logout')}}">Logout&nbsp;&nbsp;&nbsp;<em>{{=auth.user.email}}</em></a>
+			{{ else: }}
+				<a href="{{=URL('user', 'login')}}">Login</a>
+				<a href="{{=URL('user', 'register')}}">Register</a>
+			{{ pass }}
+			</p>
+			<p class="flash">{{=response.flash or ''}}</p>
+			<ul id="navlist">
+			{{ for m in response.menu: }}
+				<li><a href="{{= m[2] }}">{{= m[0] }}</a></li>
+			{{ pass }}
+			</ul>
+		<!-- end header -->
+	</header>
 
-  <div class="content">
-    <section id="main" class="main row">
-            {{block center}}
-            {{include}}
-            {{end}}
-    </section>
-  </div>
+	<div class="content">
+		<section id="main" class="main row">
+						{{block center}}
+						{{include}}
+						{{end}}
+		</section>
+	</div>
 
-  <footer> 
-    <p class="legal">
-      &amp;copy;2012 IMPRESSUM KONTAKT
-    </p>
-    <div id="console">
-      <div class="prompt">
-        <a id="closeTrigger">
-          {{=T('close')}}
-        </a>
-        <pre>$</pre>
-      </div>
-      <div class="output"></div>
-    </div>
-  </footer>
+	<footer> 
+		<p class="legal">
+			&amp;copy;2012 IMPRESSUM KONTAKT
+		</p>
+		<div id="console">
+			<div class="prompt">
+				<a id="closeTrigger">
+					{{=T('close')}}
+				</a>
+				<pre>$</pre>
+			</div>
+			<div class="output"></div>
+		</div>
+	</footer>
 </body>
 </html>
 
