@@ -22,9 +22,9 @@
 		{{ for row in exercises: }}
 			<tr>
 				<td>{{= row.id }}</td>
-				<td>{{= row.name }}</td>
+				<td><a href="/{{= request.application }}/{{= request.controller }}/edit/{{= row.id }}">{{= row.name }}</a></td>
 				<td>{{= row.language.name }}</td>
-				<td>{{= row.text }}</td>
+				<td>{{= row.text[:50] }}…</td>
 				<td>
 					<td>
 						<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/edit/{{= row.id }}">
@@ -56,8 +56,8 @@
 					{{ course['exercises'] = course['exercises'][1:] }}
 					<td>{{= course_nr }}</td>
 					<td>{{= exercise['name'] }}</td>
-					<td>{{= exercise['start_date'] }}</td>
-					<td>{{= exercise['end_date'] }}</td>
+					<td>{{= exercise['start_date'].strftime( T( '%A, %d %b %Y at %H:%M', lazy=False ) ) }}</td>
+					<td>{{= exercise['end_date'].strftime( T( '%A, %d %b %Y at %H:%M', lazy=False ) ) }}</td>
 				{{ else: }}
 					<td colspan="4"><em>No Exercises in this Course!</em></td>
 				{{ pass }}
@@ -67,8 +67,8 @@
 				<tr>
 					<td>{{= course_nr }}</td>
 					<td>{{= exercise['name'] }}</td>
-					<td>{{= exercise['start_date'] }}</td>
-					<td>{{= exercise['end_date'] }}</t
+					<td>{{= exercise['start_date'].strftime( T( '%A, %d %b %Y at %H:%M', lazy=False ) ) }}</td>
+					<td>{{= exercise['end_date'].strftime( T( '%A, %d %b %Y at %H:%M', lazy=False ) ) }}</t
 				</tr>
 			{{ pass }}
 		{{ pass }}

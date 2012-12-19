@@ -39,6 +39,7 @@ def edit():
 
 @requires_role('student')
 def view():
+	import datetime
 	record = db.course(request.args(0)) or redirect(URL('list'))
 
 	if record.teacher == auth.user.id and has_role('admin') != True:
@@ -46,6 +47,11 @@ def view():
 	elif db.enrollment(course=record.id, student=auth.user.id) is None and has_role('admin') == False:
 		redirect(URL(request.application, 'user', 'not_authorized'))
 
+	if has_role('teacher'):
+		exercises = db(db.course_exercise.course == request.args(0)).select(orderby=db.course_exercise.start_date)
+	else:
+		exercises = db((db.course_exercise.course == request.args(0)) & (db.course_exercise.start_date <= datetime.datetime.now())).select(orderby=db.course_exercise.start_date)
+
 	return dict(record = record,
-				exercises = db(db.course_exercise.course == request.args(0)).select(orderby=db.course_exercise.start_date),
+				exercises = exercises,
 				students = db(db.enrollment.course == request.args(0)).select(orderby=db.enrollment.student))

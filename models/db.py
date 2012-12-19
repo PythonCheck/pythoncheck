@@ -107,7 +107,7 @@ db.define_table('language',
 
 db.define_table('exercise',
     Field('name', 'string', length=50, required=True, unique=True),
-    Field('language', db.language),
+    Field('language', db.language, required=True),
     Field('text', 'text', required=True, unique=False),
     Field('preset', 'text', required=False, unique=False),
     format='%(name)s (%(language)s)')
