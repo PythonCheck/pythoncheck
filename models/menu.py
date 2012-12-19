@@ -28,9 +28,9 @@ if has_role( 'teacher' ):
 	response.menu.append( ( T( 'Exercise Pool' ), False, URL( 'exercise', 'list' ), [  ] ) )
 	response.menu.append( ( T( 'Courses' ), False, URL( 'course', 'list' ), [  ] ) )
 elif has_role( 'student' ):
-	response.menu.append( T( 'My' ), False, URL( 'user', 'my' ), [  ] )
-	response.menu.append( T( 'My Courses' ), False, URL( 'course', 'list' ), [  ] )
-	response.menu.append( T( 'My Exercises' ), False, URL( 'exercise', 'list' ), [  ] )
+	response.menu.append( ( T( 'Me' ), False, URL( 'user', 'me' ), [  ] ) )
+	response.menu.append( ( T( 'My Courses' ), False, URL( 'course', 'list' ), [  ] ) )
+	response.menu.append( ( T( 'My Exercises' ), False, URL( 'exercise', 'list' ), [  ] ) )
 
 
 response.menu.append( ( T( 'IDE' ), False, URL( 'default', 'index' ), [  ] ) )
