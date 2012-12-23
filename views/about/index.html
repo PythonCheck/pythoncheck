@@ -1,0 +1,8 @@
+{{extend 'layout.html'}}
+<h2>{{=T('About')}}</h2>
+	{{=peopleCaption}}
+	{{
+	for person in people:
+	}}
+	<li><span>{{=person['name']}}: </span>{{=person['job']}}</li>
+	{{pass}}
