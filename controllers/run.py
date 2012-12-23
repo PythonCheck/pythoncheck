@@ -22,7 +22,11 @@ def submit():
 	if len(course) == 0:
 		raise HTTP(422, 'We can\'t do anything for you until you specify a course')
 
-	runsystem.invokeBuild(mode='submit', buildId=buildId, project=project, course=course, main=main, userId=auth.user_id)
+	try:
+		runsystem.invokeBuild(mode='submit', buildId=buildId, project=project, course=course, main=main, userId=auth.user_id)
+	except Exception, e:
+		raise HTTP(500, 'We got an error while trying to build the project: ' + str(e))
+	
 
 	return dict(mode='submit', buildId=buildId, timeout=CLIENT_TIMEOUT)
 
@@ -42,7 +46,10 @@ def run():
 	if len(course) == 0:
 		course = None
 
-	runsystem.invokeBuild(mode='test', buildId=buildId, main=main, project=project, course=course)
+	try:
+		runsystem.invokeBuild(mode='test', buildId=buildId, main=main, project=project, course=course)
+	except Exception, e:
+		raise HTTP(500, 'We got an error while trying to build the project:' + str(e))
 	
 	return dict(mode='run', buildId=buildId, timeout=CLIENT_TIMEOUT)
 
@@ -63,7 +70,7 @@ def result():
 		out = dict(finished=data.finished, output=data.output, error=data.error)
 		
 		if data.buildError:
-			raise HTTP(500, out)
+			raise HTTP(500, XML(json(out)))
 
 		return out
 

@@ -20,7 +20,13 @@
 		apiSubmit: 'run/submit.json',
 		apiResult: 'run/result.json',
 		defaultTimeout: 1500,
-		fileListWidth: 250
+		maxApiFailures: 4,
+		fileListWidth: 250,
+		errorWrapperClass: 'errorMessage',
+		successWrapperClass: 'successMessage',
+		neutralWrapperClass: 'outputMessage',
+		defaultCommandSuffix: '/index.commandline'
+
 	};
 
 	var IDE = function(appendTo, options) {
@@ -57,7 +63,7 @@
 					this.filePanel = $('<div class="' + this.options.filePanelClass + '"></div>')
 						.append(
 							this.filePanelMenu = $('<nav></nav>')
-								.append($('<a>New Project</a>'))
+								.append($('<a>New File</a>'))
 						)
 						.append(
 							this.filePanelContent = $('<section class="filelist"></section>')
@@ -77,14 +83,69 @@
 			this.registerActions();
 		},
 
+		dragNDrop: function() {
+			// dragNDrop(jqueryObj or string) initialize the dragNDrop
+			if(!this.dragNDropInitialized && arguments.length == 1 && (typeof(arguments[0]) == 'string' || arguments[0].on)) {
+				var dropZone = $(arguments[0]);
+				dropZone.on('drop', this.dragNDrop.bind(this));
+				this.dragNDropInitialized = true;
+			}
+			else {
+				var e = arguments[0].originalEvent;
+				var files = e.dataTransfer.files;
+				if(files.length > 0) {
+					var file = files[0];
+					var reader = new FileReader();
+
+					reader.onload = function(evt) {
+							if(this.internalCodeMirror.getOption('readOnly') === false) {
+								this.internalCodeMirror.setValue(reader.result);
+							}
+						}.bind(this);
+
+					reader.readAsText(file);
+				}
+			}
+
+		},
+
+		cmd: function() {
+			// dragNDrop(jqueryObj or string) initialize the dragNDrop
+			if(!this.cmdInitialized && arguments.length == 1 && (typeof(arguments[0]) == 'string' || arguments[0].on)) {
+				var input = $(arguments[0]);
+				input.keypress(function(evt) {
+					if(evt.which == 13) { // enter key
+						evt.preventDefault();
+						this.cmd(evt.target);
+					}
+				}.bind(this));
+			}
+			else {
+				var target = $(arguments[0]);
+				var input = target.val().split(' ');
+				target.val("");
+				
+				var structure = {
+					command: input[0],
+					args: input.slice(1)
+				};
+
+				this.success(input.join(' '));
+
+				
+				this.api(structure.command + this.options.defaultCommandSuffix, structure, function(result, resultTextStatus, resultJqXHR) {
+					this.output(result.toString());
+				}.bind(this));
+			}
+
+		},
+
 		registerActions: function() {
-			
 			// file list
 			$(this.listPuller).click(this.openFileList.bind(this));
 
 			// save/edit actions
 			this.internalCodeMirror.setOption('onChange', this.contentUpdated.bind(this));
-
 		},
 
 		contentUpdated: function(cm, changeObject) {
@@ -455,7 +516,6 @@
 				return false;
 			}
 			else {
-
 				this.updateView(openFile);
 				this.focusedFileReadURL = openFile.readURL;
 
@@ -503,7 +563,8 @@
 				file = this.getFocusedFile();
 			}
 
-			console.log(file);
+			this.success('Compiling....')
+
 			this.api(this.options.apiRun, {
 				execute: file.filename,
 				course: file.course,
@@ -540,10 +601,10 @@
 					callback = arguments[1];
 				}
 
+				var failureCount = 0;
 				var interval = setInterval(function() {
 					this.api(this.options.apiResult, {buildId: data.buildId}, function(resultData, resultTextStatus, resultJqXHR) {
 							// if the results are ready --> PARTY!
-							console.log(resultTextStatus)
 							if(resultData.finished) {
 								clearInterval(interval);
 								this.results(resultData.error, resultData.output);
@@ -556,23 +617,47 @@
 									})
 								}
 							}
-						}.bind(this));
+						}.bind(this), function(resultJqXHR, resultTextStatus, errorThrown) {
+							if(failureCount++ > this.options.maxApiFailures) {
+								clearInterval(interval);
+								this.error('Couldn\'t get results: ' + errorThrown);
+							}
+						}.bind(this)
+						);
 				}.bind(this), data.timeout || this.options.defaultTimeout);
 			}
+			// results(str, str) output the results
 			else {
+				this.success('Build finished:')
 				if(error) {
-					this.output('errors: ', error);
+					this.error(error);
 				}
 				if(output) {
-					this.output('outputs: ', output);
+					this.output(output);
 				}
+			}
+		},
+
+		error: function () {
+			for(var i = 0; i < arguments.length; i++) {
+				this.console(this.wrapInSpan(this.htmlify(arguments[i]), this.options.errorWrapperClass));
 			}
 		},
 
 		output: function() {
 			for(var i = 0; i < arguments.length; i++) {
-				this.console(arguments[i]);
+				this.console(this.wrapInSpan(this.htmlify(arguments[i]), this.options.neutralWrapperClass));
 			}
+		},
+
+		success: function (argument) {
+			for(var i = 0; i < arguments.length; i++) {
+				this.console(this.wrapInSpan(this.htmlify(arguments[i]), this.options.successWrapperClass));
+			}	
+		},
+
+		wrapInSpan: function(output, classes) {
+			return $('<span class="' + classes + '">' + output + '</span>')
 		},
 
 		getFileList: function(callback) {
@@ -605,6 +690,7 @@
 		},
 
 		console: function() {
+
 			var doOpen;
 			var str = null;
 			// console() --> inverts console state
@@ -622,7 +708,7 @@
 				}
 			}
 			// console(str) --> open console if not open and add output
-			else if (arguments.length >= 1 && typeof(arguments[0]) == 'string') {
+			else if (arguments.length >= 1 && (typeof(arguments[0]) == 'string' || typeof(arguments[0]) == 'object')) {
 				doOpen = true;
 				str = arguments[0];
 			}
@@ -646,7 +732,7 @@
 
 			if(str != null) {
 				// add output to console
-				$('.output').append(this.htmlify(str)).animate({scrollTop: $('.output').prop('scrollHeight')});
+				$('.output').append(str).animate({scrollTop: $('.output').prop('scrollHeight')});
 
 			}
 		},
@@ -661,18 +747,20 @@
 			}
 		},
 
-		api: function(action, data, callback) {
+		api: function(action, data, callback, errorCallback) {
 			if(typeof(data) == 'function') {
+				errorCallback = callback;
 				callback = data;
 				data = {};
-			} 
+			}
 
 			$.ajax({
 				type: 'POST',
 				url: this.options.apiURL + action,
 				data: data,
 				dataFormat: 'JSON',
-				success: callback
+				success: callback, 
+				error: errorCallback
 			});
 		},
 

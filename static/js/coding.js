@@ -11,9 +11,6 @@ $(function() {
 			'left': $('#console').position().left, 
 			'width': 'auto'
 		});
-		$('#console .output').css({
-			'right': '0px'
-		});
 
 		$('#console').animate({
 			left: '0px',
@@ -37,11 +34,6 @@ $(function() {
 
 	window.ide.console.close = function(ide) {
 		$('#console #closeTrigger').fadeOut();
-
-		
-		$('#console .output').css({
-			'right': '0px'
-		});
 
 		$('#console').animate({
 			'left': ($(document).width()-40) + 'px', 
@@ -75,6 +67,10 @@ $(function() {
 		window.ide.console(false);
 	});
 
+	window.ide.dragNDrop($('#codingsohard'));
+	window.ide.cmd($('footer .cmdLine input'));
+
 	ide.getFileList(ide.populateFilePanel.bind(ide));
 	ide.openFileList();
+	ide.console(true);
 });

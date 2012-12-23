@@ -3,6 +3,7 @@ import imp
 import random
 import string
 import os
+from datetime import datetime
 from gluon.shell import exec_environment
 
 def generateBuildId(length):
@@ -24,6 +25,21 @@ def invokeBuild(mode, buildId, main, language='Python', project=None, course=Non
 
 	# check if we are developing for an exercise or just so
 	if (project != None) & (course != None) & (mode=='submit'):	
+
+		# check if exercise exists
+		enrollment = env.db((env.db.enrollment.student==userId) & (env.db.enrollment.course==course)).select().first()
+		if not(enrollment):
+			raise StandardError('Exercise does not exist')
+
+		# check if the date is valid
+		course_exercise = env.db((env.db.course_exercise.exercise == project) & (env.db.course_exercise.course == course)).select().first()
+		if (course_exercise.start_date > datetime.now()) or (course_exercise.end_date < datetime.now()):
+			raise StandardError('Start or Enddate dont match')
+
+		# check if the exercise was graded before
+		if len(env.db((env.db.grading.course==enrollment.id) & (env.db.grading.exercise==course_exercise.id)).select()) != 0:
+			raise StandardError('Exercise was graded before')
+
 		pointCode = []
 		for pointSet in env.db((env.db.points.exercise == project)).select():
 			assertionCode = []
@@ -47,7 +63,6 @@ def invokeBuild(mode, buildId, main, language='Python', project=None, course=Non
 		os.makedirs(filePath)
 
 	for codeFile in env.db((env.db.files.project == project) & (env.db.files.course == course)).select():
-		print codeFile.filename
 		# write src code into file
 		file=None
 		

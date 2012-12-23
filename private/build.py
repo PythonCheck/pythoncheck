@@ -46,7 +46,7 @@ db.current_builds.insert(PID=None, BuildId=buildId, start_time=datetime.datetime
 
 # check if we found a valid listfile. if not generate an error and stop building
 if not os.path.exists(listfile):
-	db(db.current_builds.BuildId == buildId).update(buildError=True, error='No correct disfile found', finished=True)
+	db(db.current_builds.BuildId == buildId).update(buildError=True, error='No correct distfile found', finished=True)
 	exit(1)
 
 # determine path for the jail
@@ -92,8 +92,8 @@ if buildMode == 'submit':
 
 ## ---- CLEANUP SECTION ----
 
-cleanupProcess = subprocess.Popen([CLEANUP_FILE, buildJail, srcCode]);
-cleanupProcess.wait()
+#cleanupProcess = subprocess.Popen([CLEANUP_FILE, buildJail, srcCode]);
+#cleanupProcess.wait()
 
 
 
