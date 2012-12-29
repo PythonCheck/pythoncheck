@@ -136,11 +136,10 @@ p35
 sg9
 I00
 sg10
-S'id'
-p36
+g33
 ssS'result'
-p37
-(dp38
+p36
+(dp37
 g4
 I32768
 sg5
@@ -149,7 +148,7 @@ sg6
 I7
 sg7
 S'TEXT'
-p39
+p38
 sg9
 I00
 sg10
