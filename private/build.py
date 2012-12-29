@@ -70,8 +70,18 @@ db.commit()
 # wait until the build has finished
 p.wait()
 
+errors = p.stderr.read()
+hadBuildErrors = False
+
+if p.returncode != 0:
+	hadBuildErrors = True
+
+	# killed by build_monitor
+	if p.returncode == -9:
+		errors='The build timed out!'
+
 # update the database and distribute output
-db(db.current_builds.PID==p.pid).update(output=p.stdout.read(), error=p.stderr.read(), finished=True)
+db(db.current_builds.PID==p.pid).update(output=p.stdout.read(), error=errors, finished=True, buildError=hadBuildErrors)
 
 ## ---- GRADING SECTION ----
 if buildMode == 'submit':
