@@ -10,6 +10,14 @@ $linkColor: $fontColor;
 $headerColor: #404040;
 $headerHeight: 40px;
 
+$promptWidth: 40px;
+$promptPaddingLeft: 15px;
+$cmdHeight: 21px;
+
+$successMessageColor: rgb(118, 184, 42);
+$errorMessageColor: rgb(255, 0, 0);
+$outputMessageColor: $fontColor;
+
 * {
 	margin: 0px;
 	padding: 0px;
@@ -139,10 +147,12 @@ footer {
 
 		#closeTrigger {
 			display: none;
+			width: $promptWidth;
+			height: 21px;
 		}
 
 		.prompt {
-			width: 40px;
+			width: $promptWidth;
 			float: left;
 			height: 200px;
 			position: absolute;
@@ -151,19 +161,54 @@ footer {
 			pre {
 				position: absolute;
 				bottom: 0px;
-				width: 40px;
+				width: $promptWidth - $promptPaddingLeft;
+				padding-left: $promptPaddingLeft;
 				height: 40px;
 				margin: 0px;
 				line-height: 40px;
+
 			}
 		}
 		.output {
-			height: 200px;
+			height: 200px - $cmdHeight;
 			position: absolute;
-			bottom: 0px;
-			left: 40px;
+			bottom: $cmdHeight;
+			left: $promptWidth;
 			padding-left: 20px;
 			overflow: scroll;
+
+			.successMessage {
+				color: $successMessageColor;
+			}
+
+			.errorMessage {
+				color: $errorMessageColor;
+			}
+
+			.outputMessage {
+				color: $outputMessageColor;
+			}
+
+		}
+
+		.cmd {
+			height: $cmdHeight;
+			position: absolute;
+			left: $promptWidth;
+			bottom: 0px;
+			right: 0px;
+
+			input {
+				position: absolute;
+				display: block;
+				left: 0px;
+				right: 0px;
+				top: 0px;
+				bottom: 0px;
+				background-color: #000;
+				outline: none;
+				color: #FFF;
+			}
 		}
 	}
 }	

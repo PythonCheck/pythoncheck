@@ -94,7 +94,9 @@ footer {
     position: absolute;
     right: 0px; }
     footer #console #closeTrigger {
-      display: none; }
+      display: none;
+      width: 40px;
+      height: 21px; }
     footer #console .prompt {
       width: 40px;
       float: left;
@@ -104,17 +106,40 @@ footer {
       footer #console .prompt pre {
         position: absolute;
         bottom: 0px;
-        width: 40px;
+        width: 25px;
+        padding-left: 15px;
         height: 40px;
         margin: 0px;
         line-height: 40px; }
     footer #console .output {
-      height: 200px;
+      height: 179px;
       position: absolute;
-      bottom: 0px;
+      bottom: 21px;
       left: 40px;
       padding-left: 20px;
       overflow: scroll; }
+      footer #console .output .successMessage {
+        color: #76b82a; }
+      footer #console .output .errorMessage {
+        color: red; }
+      footer #console .output .outputMessage {
+        color: white; }
+    footer #console .cmd {
+      height: 21px;
+      position: absolute;
+      left: 40px;
+      bottom: 0px;
+      right: 0px; }
+      footer #console .cmd input {
+        position: absolute;
+        display: block;
+        left: 0px;
+        right: 0px;
+        top: 0px;
+        bottom: 0px;
+        background-color: #000;
+        outline: none;
+        color: #FFF; }
 
 #codingsohard {
   background-color: #AAA;
