@@ -3,7 +3,7 @@ import subprocess
 import platform
 import random
 import string
-import run as runsystem
+import runsystem as runsystem
 
 from subprocess import PIPE
 from gluon.serializers import json
