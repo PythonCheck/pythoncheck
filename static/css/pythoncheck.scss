@@ -232,16 +232,25 @@ footer {
 			width: auto;
 			height: 20px;
 			max-width: 200px;
-			background-color: #CCC;
+			background-color: #FFF;
 			float: left;
 			padding: 10px;
 			text-decoration: none;
-			color: #000; 
+			color: #000;
 
 			&:hover, 
-			&:focus, 
+			&:focus {
+
+			}
+
 			&.active {
-				background-color: #FFF; 
+				background-color: #CCC; 
+			}
+
+			img.loading {
+				padding-left: 5px;
+				position: relative;
+				top: 2px;
 			}
 		}
 	}

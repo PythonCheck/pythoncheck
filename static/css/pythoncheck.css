@@ -158,13 +158,17 @@ footer {
       width: auto;
       height: 20px;
       max-width: 200px;
-      background-color: #CCC;
+      background-color: #FFF;
       float: left;
       padding: 10px;
       text-decoration: none;
       color: #000; }
-      #codingsohard nav a:hover, #codingsohard nav a:focus, #codingsohard nav a.active {
-        background-color: #FFF; }
+      #codingsohard nav a.active {
+        background-color: #CCC; }
+      #codingsohard nav a img.loading {
+        padding-left: 5px;
+        position: relative;
+        top: 2px; }
   #codingsohard .files {
     position: absolute;
     height: 100%;

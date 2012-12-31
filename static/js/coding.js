@@ -68,7 +68,7 @@ $(function() {
 	});
 
 	window.ide.dragNDrop($('#codingsohard'));
-	window.ide.cmd($('footer .cmdLine input'));
+	window.ide.cmd($('footer .cmd input'));
 
 	ide.getFileList(ide.populateFilePanel.bind(ide));
 	ide.openFileList();
