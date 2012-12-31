@@ -43,6 +43,7 @@ listfile = DISTOLIST_PATH + platform.dist()[0].lower() + "_" + platform.dist()[1
 
 # write into database before creating the jail
 db.current_builds.insert(PID=None, BuildId=buildId, start_time=datetime.datetime.today())
+db.commit()
 
 # check if we found a valid listfile. if not generate an error and stop building
 if not os.path.exists(listfile):

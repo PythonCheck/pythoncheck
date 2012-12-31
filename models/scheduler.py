@@ -22,6 +22,4 @@ scheduler = Scheduler(db, discard_results=False, heartbeat=1)
 
 
 # build_monitor task - drop and reinsert to avoid time stamp conflicts
-# db(db.scheduler_task.uuid == TASK_UUID).delete()
-# db.commit()
-scheduler.queue_task('build_monitor', task_name='build_monitor', repeats=0, period=2, timeout=2, uuid=TASK_UUID)
+scheduler.queue_task('build_monitor', task_name='build_monitor', repeats=0, period=2, timeout=2, uuid=TASK_UUID, retry_failed=-1)

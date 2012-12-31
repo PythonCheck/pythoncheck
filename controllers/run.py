@@ -10,10 +10,6 @@ from gluon.serializers import json
 
 @auth.requires_login()
 def submit():
-	print "Hi. We will now run the test."
-
-	# src=request.vars.code;
-	# language=request.vars.language
 	project=request.vars.project
 	course=request.vars.course
 	main=request.vars.execute
@@ -36,8 +32,6 @@ def submit():
 # the output is caputured and replied
 @auth.requires_login()
 def run():
-	# src=request.vars.code
-
 	buildId = runsystem.generateBuildId(BUILD_ID_LENGTH)
 	project=request.vars.project
 	course=request.vars.course

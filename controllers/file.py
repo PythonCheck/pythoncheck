@@ -74,7 +74,7 @@ def new():
 	filetype = request.vars.type
 	project = request.vars.project
 	course = request.vars.course
-	content = ''
+	content = '# -*- coding: utf-8 -*-\n'
 
 	# rename the file to whatever the mainfile is called in every exercise
 	if filetype == 'exercise' and EXERCISE_CONTAINS_SINGLE_FILE:
@@ -113,7 +113,7 @@ def new():
 			raise HTTP(422, 'invalid project identifier')
 		else:
 			try:
-				db.files.insert(unique_identifier=uniqueIdentifier, user=auth.user_id, filename=filename, project=project, projectIsExercise=False, edited=datetime.today(), course=None)
+				db.files.insert(unique_identifier=uniqueIdentifier, user=auth.user_id, filename=filename, project=project, projectIsExercise=False, edited=datetime.today(), course=None, content=content)
 			except Exception, e:
 				raise HTTP(422, 'invalid filename: file exists')
 			

@@ -10,10 +10,11 @@ def generateBuildId(length):
 	return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(length))
 
 def invokeBuild(mode, buildId, main, language='Python', project=None, course=None, userId=None):
+
 	# import the build system
 	buildModule = '/usr/share/web2py2/applications/PythonCheck/modules/build/' + language.lower() + '.py'
 	build = imp.load_source('buildsystem.module', buildModule)
-	
+
 	env = exec_environment('applications/PythonCheck/models/db.py')
 	config = exec_environment('applications/PythonCheck/models/config.py')
 
@@ -68,7 +69,7 @@ def invokeBuild(mode, buildId, main, language='Python', project=None, course=Non
 		
 		if codeFile.filename == main:
 			file = open(filePath + config.USER_SCRIPT_PATH, 'w')
-			codeFile.content += '\r\n' + ass
+			codeFile.content = (codeFile.content or '') + '\r\n' + ass
 		else:
 			file = open(filePath + '/' + codeFile.filename, 'w')
 		file.write(codeFile.content or '')
