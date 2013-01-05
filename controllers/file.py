@@ -4,26 +4,28 @@ from array import array
 # opens a file
 @auth.requires_login()
 def open():
-	return details()
+
+
+	course = request.args[0]
+	project = request.args[1]
+	filename = None
+
+	if len(request.args) > 2:
+		filename = request.args[2]
+
+	if filename == None:
+		filename = project
+		project = course
+		course = None
+
+	return details(filename=filename, project=project, course=course)
 
 # opens a file
 @auth.requires_login()
 def details(filename=None, course=None, project=None, includeContent=True):
 
 	result = None
-
-	if (filename == None) | (course == None) | (project == None):
-		course = request.args[0]
-		project = request.args[1]
-		if len(request.args) > 2:
-			filename = request.args[2]
-
-		if filename == None:
-			filename = project
-			project = course
-			course = None
-
-	query = (db.files.filename == filename) & (db.files.project == project)	
+	query = ((db.files.filename == filename) & (db.files.project == project))
 
 	if (course == None) | (course == False):
 		result = db(query & (db.files.projectIsExercise == False)).select()
@@ -63,7 +65,7 @@ def save():
 	if len(db((db.files.filename == filename) & (db.files.user == auth.user_id) & (db.files.project == project)).select()) != 1:
 		raise HTTP(422, 'invalid file identifier. file does not exist')
 
-	dbfile = db((db.files.filename == filename) & (db.files.user == auth.user_id) & (db.files.project == project)).update(content=code)
+	dbfile = db((db.files.filename == filename) & (db.files.user == auth.user_id) & (db.files.project == project)).update(content=code, edited=datetime.today())
 
 	response.view = 'file/save.json'
 	return dict(success=True)

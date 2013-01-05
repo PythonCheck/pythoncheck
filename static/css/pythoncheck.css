@@ -116,6 +116,7 @@ footer {
       position: absolute;
       bottom: 21px;
       left: 40px;
+      right: 0px;
       padding-left: 20px;
       overflow: scroll; }
       footer #console .output .successMessage {
@@ -162,7 +163,8 @@ footer {
       float: left;
       padding: 10px;
       text-decoration: none;
-      color: #000; }
+      color: #000;
+      cursor: default; }
       #codingsohard nav a.active {
         background-color: #CCC; }
       #codingsohard nav a img.loading {
@@ -179,6 +181,8 @@ footer {
     width: 250px;
     margin-top: 80px;
     background-color: #AAA; }
+    #codingsohard .files li {
+      cursor: default; }
   #codingsohard .menu {
     height: 40px;
     width: auto;
