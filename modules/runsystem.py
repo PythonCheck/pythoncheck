@@ -15,7 +15,6 @@ def rate_limit_exeeded(userId, maxConcurrentBuilds):
 	auth = env.db
 
 	query = db((db.current_builds.user == userId) & (db.current_builds.finished==False)).count()
-	print query
 
 	return query > maxConcurrentBuilds
 
