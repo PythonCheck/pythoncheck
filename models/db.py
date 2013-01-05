@@ -143,7 +143,8 @@ db.define_table('current_builds',
     Field('finished', 'boolean', required=False, default=False),
     Field('output', 'string', required=False),
     Field('error', 'string', required=False),
-    Field('buildError', 'boolean', required=False))
+    Field('buildError', 'boolean', required=False),
+    Field('user', db.auth_user, required=True))
 
 db.define_table('files',
     Field('unique_identifier', required=True, unique=True),

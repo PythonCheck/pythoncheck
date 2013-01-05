@@ -8,10 +8,12 @@ def build_monitor():
 	for build in running_builds:
 		# check which of the running builds are running too long
 		if (build.start_time + timedelta(seconds=MAX_BUILD_TIME)) < datetime.now():
-			print 'The build', build.id, 'has timed out!'
-
-			# kill the build. the build module will resume and take care of cleanup, etc.
-			os.kill(build.PID, SIGKILL)
+			if build.PID == None:
+				print 'The build with the ', build.id, 'has not started yet but has already timed out. It is probably garbage.'
+			else:
+				# kill the build. the build module will resume and take care of cleanup, etc.
+				print 'The build', build.id, 'has timed out!'
+				os.kill(build.PID, SIGKILL)
 
 	return True
 

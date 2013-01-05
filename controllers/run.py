@@ -41,7 +41,7 @@ def run():
 		course = None
 
 	try:
-		runsystem.invokeBuild(mode='test', buildId=buildId, main=main, project=project, course=course)
+		runsystem.invokeBuild(mode='test', buildId=buildId, main=main, project=project, course=course, userId=auth.user_id)
 	except Exception, e:
 		raise HTTP(500, 'We got an error while trying to build the project:' + str(e))
 	

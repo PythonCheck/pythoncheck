@@ -9,7 +9,21 @@ from gluon.shell import exec_environment
 def generateBuildId(length):
 	return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(length))
 
-def invokeBuild(mode, buildId, main, language='Python', project=None, course=None, userId=None):
+def rate_limit_exeeded(userId, maxConcurrentBuilds):
+	env = exec_environment('applications/PythonCheck/models/db.py')
+	db = env.db
+	auth = env.db
+
+	query = db((db.current_builds.user == userId) & (db.current_builds.finished==False)).count()
+	print query
+
+	return query > maxConcurrentBuilds
+
+
+def invokeBuild(mode, buildId, main, userId, language='Python', project=None, course=None):
+
+	if rate_limit_exeeded(userId=userId, maxConcurrentBuilds=1):
+		raise StandardError('Rate Limit Exeeded!')
 
 	# import the build system
 	buildModule = '/usr/share/web2py2/applications/PythonCheck/modules/build/' + language.lower() + '.py'
@@ -76,6 +90,11 @@ def invokeBuild(mode, buildId, main, language='Python', project=None, course=Non
 		file.close()
 
 	buildArgs = buildId + ' ' + filePath + ' ' + buildModule + ' ' + mode + ' ' + extendedBuildArgs
+
+
+	# write into database before creating the jail
+	env.db.current_builds.insert(PID=None, BuildId=buildId, start_time=datetime.today(), user=userId)
+	env.db.commit()
 
 	p = subprocess.Popen(['python', config.WEB2PY_BIN, '-S', 'PythonCheck', '-M', '-R', config.BUILD_SCRIPT, '-A', buildArgs])
 
