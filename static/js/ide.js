@@ -33,7 +33,20 @@
 		neutralWrapperClass: 'outputMessage',
 		defaultCommandSuffix: '/index.commandline',
 		loaderImageURL: 'static/images/ajax-loader.gif',
-		loadingImageClass: 'loading'
+		loadingImageClass: 'loading',
+
+		filePanelOptions: {
+			headerTag: '<h4></h4>',
+			childContainer: '<div></div>',
+			childTag: '<a></a>',
+			childContainerInHeader: false,
+			container: false,
+			useJQUIAccordion: true,
+			accordionOptions: {
+				header: 'h4',
+				heightStyle: 'content'
+			}
+		}
 
 	};
 
@@ -329,15 +342,47 @@
 		//
 		// returns: undefined
 		populateFilePanel: function(files) {
-			var list = $('<ul></ul>');
-			$(this.filePanelContent).empty().append(list);
+			var options = this.options.filePanelOptions;
+			var headerTag = /*'<h4></h4>'*/'<li></li>';
+			var childContainer = '<ul></ul>';
+			var childTag = /*'<div></div>'*/'<li></li>';
+
+			var childContainerInHeader = false;
+			var container = $('<ul></ul>');
+
+			$(this.filePanelContent).empty();
+
+			var list;
+			// if the container is given, insert it into the file panel
+			if(options.container) {
+				$(this.filePanelContent).append(list = container);
+			}
+			// otherwise the filepanel is the container
+			else {
+				list = $(this.filePanelContent);
+			}
 
 			if(files.courses) {
 				for(var coursename in files.courses) {
 
 					var course;
 					var courseCaption;
-					list.append((courseCaption = $('<li>' + coursename + '</li>')).append(course = $('<ul></ul>')))
+
+					courseCaption = $(options.headerTag).append(coursename);
+					course = $(options.childContainer);
+
+					// put the caption into the container
+					list.append(courseCaption);	
+
+					if(options.childContainerInHeader) {
+						courseCaption.append(course)
+					}
+					else {
+						courseCaption.after(course);
+					}
+					
+					
+					// give data to the html objects
 					courseCaption.attr({
 						'data-type': 'course',
 						'data-course': files.courses[coursename].id
@@ -345,43 +390,32 @@
 
 					for(var exercisename in files.courses[coursename].exercises) {
 						var ex, fileObj, details, exerciseCaption; 
-
-						// if an exercise is allowed to contain more than one file, list all files
-						if(!EXERCISE_CONTAINS_SINGLE_FILE || EXERCISE_CONTAINS_SINGLE_FILE === false) {
-							course.append((exerciseCaption = $('<li>' + exercisename + '</li>')).append(ex = $('<ul></ul>')))
-
-							exerciseCaption.attr({
-								'data-type': 'project',
-								'data-project': files.courses[coursename].exercises[exercisename].id
-							});
 						
-							for(var filename in files.courses[coursename].exercises[exercisename].files) {
-								details = this.fileDetails(files.courses[coursename].exercises[exercisename].files[filename]);
+						//TODO this is ugly, should be replaced by server side counting
+						var numberOfFiles = (Utils.numberOfProperties(files.courses[coursename].exercises[exercisename].files));
+						if(numberOfFiles == 0) {
 
-								this.createFileLink(details, 'filename', ex, this.openFile.bind(this))
+							// this is the descriptor of a non existing file, that will be used to create a file
+							// whenever the user tries to open that file
+							details = {
+								'exercisename': exercisename,
+								'filename': EXERCISE_MAIN_FILE,
+								'course': files.courses[coursename].id,
+								'project': files.courses[coursename].exercises[exercisename].id
 							}
+
+							course.append(this.createFileLink(details, 'exercisename', this.newFile.bind(this)));
 						}
 						else {
-							var numberOfFiles = (Utils.numberOfProperties(files.courses[coursename].exercises[exercisename].files));
-							if(numberOfFiles == 0) {
-								details = {
-									'exercisename': exercisename,
-									'filename': EXERCISE_MAIN_FILE,
-									'course': files.courses[coursename].id,
-									'project': files.courses[coursename].exercises[exercisename].id
-								}
+							// chooses the last file found
+							for(var k in files.courses[coursename].exercises[exercisename].files) {
+								details = files.courses[coursename].exercises[exercisename].files[k];
+							}
+							details.filename = exercisename;
 
-								this.createFileLink(details, 'exercisename', course, this.newFile.bind(this))
-							}
-							else {
-								details = {};
-								for(var k in files.courses[coursename].exercises[exercisename].files) {
-									details = files.courses[coursename].exercises[exercisename].files[k];
-								}
-								details.filename = exercisename;
-								this.createFileLink(details, 'filename', course, this.openFile.bind(this));
-							}
+							course.append(this.createFileLink(details, 'filename', this.openFile.bind(this)));
 						}
+					
 					}
 				}
 			}
@@ -389,15 +423,67 @@
 			if (files.projects) {
 				for(var projectname in files.projects) {
 					var project;
-					list.append($('<li>' + projectname + '</li>').append(project = $('<ul></ul>')))
+
+					var projectCaption = $(options.headerTag).append(projectname);
+					var project = $(options.childContainer);
+					
+					list.append(projectCaption);
+
+					if(options.childContainerInHeader) {
+						projectCaption.append(project)
+					}
+					else {
+						projectCaption.after(project);
+					}
 
 					for(var filename in files.projects[projectname].files) {
 						details = this.fileDetails(files.projects[projectname].files[filename]);
 
-						this.createFileLink(details, 'filename', project, this.openFile.bind(this))
+						project.append(this.createFileLink(details, 'filename', this.openFile.bind(this)))
 					}
 				}
 			}
+
+			if(options.useJQUIAccordion) {
+				if(list.hasClass('ui-accordion')) {
+					list.accordion('destroy');
+				}
+
+				list.accordion(options.accordionOptions);
+			}
+		},
+
+		// creates a link for a file in the filepanel
+		//
+		// The link will have the following format:
+		// <li>details.nameProperty</li> and will be appended to $(appendTo)
+		// Additionaly a onclick callback will be added (using on('click')). When a click occurs, the callback will be called like so
+		// callback(details)
+		//
+		// returns: undefined
+		createFileLink: function(details, nameProperty, callback) {
+			var options = this.options.filePanelOptions;
+			var item = $(options.childTag);
+			var title;
+
+			// set the title/text of the link
+			if(nameProperty && details[nameProperty]) {
+				title = details[nameProperty];
+			}
+			else if(!nameProperty && details['title']) {
+				title = details['title'];	
+			}
+			else {
+				title = '';		
+			}
+
+			item.append(title);
+			item.data(details);
+
+			item.on('click', function() {
+				callback(details);
+			});
+			return item;
 		},
 
 		// filters neccessary information out of a fileObject
@@ -688,37 +774,6 @@
 				callback(file);
 			});
 			return tab;
-		},
-
-		// creates a link for a file in the filepanel
-		//
-		// The link will have the following format:
-		// <li>details.nameProperty</li> and will be appended to $(appendTo)
-		// Additionaly a onclick callback will be added (using on('click')). When a click occurs, the callback will be called like so
-		// callback(details)
-		//
-		// returns: undefined
-		createFileLink: function(details, nameProperty, appendTo, callback) {
-			var item = $('<li></li>');
-			var title;
-
-			if(nameProperty && details[nameProperty]) {
-				title = details[nameProperty];
-			}
-			else if(!nameProperty && details['title']) {
-				title = details['title'];	
-			}
-			else {
-				title = '';		
-			}
-
-			item.append(title);
-			item.data(details);
-
-			item.on('click', function() {
-				callback(details);
-			});
-			appendTo.append(item);
 		},
 
 		// focuses a file that is already open

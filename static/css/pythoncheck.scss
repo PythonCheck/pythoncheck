@@ -4,6 +4,7 @@ $baseURL: '/PythonCheck/static/images/';
 $tabHeight: 40px;
 
 $backgroundColor: #5B5B5B;
+$contentColor: #404040;
 $fontColor: #FFF;
 $linkColor: $fontColor;
 
@@ -18,6 +19,18 @@ $successMessageColor: rgb(118, 184, 42);
 $errorMessageColor: rgb(255, 0, 0);
 $outputMessageColor: $fontColor;
 
+$formFocusOutlineColor: $successMessageColor;
+$formTextfieldWidth: 200px;
+
+/*
+MIXINS
+*/
+@mixin border-radius($radius) {
+	-webkit-border-radius: $radius;
+	-moz-border-radius: $radius;
+	border-radius: $radius;
+}
+
 * {
 	margin: 0px;
 	padding: 0px;
@@ -27,11 +40,14 @@ html {
 	height: 100%;
 	width: 100%;
 }
+
 body {
 	font-size: 16px;
-	line-height: 20px; 
-	font-family: "Myriad Pro", Verdana, Arial, Helvetica, sans-serif;
+	font-family: "MyriadPro-Regular", "Myriad Pro", Verdana, Arial, Helvetica, sans-serif;
 	background-color: $backgroundColor;
+	font-weight: normal;
+	font-style: normal;
+	font-variant: normal;
 	margin: 0;
 	padding: 0;
 	color: $fontColor;
@@ -40,7 +56,7 @@ body {
 
 h1, h2, h3, h4, h5, h6, p {
 	margin-top: 0;
-	margin-bottom: 1em;
+	margin-bottom: 2em;
 	padding-right: 15px;
 	padding-left: 15px;
 
@@ -109,7 +125,7 @@ header {
 }
 
 .content {
-	background-color: #404040;
+	background-color: $contentColor;
 	-webkit-border-radius: 10px;
 	-khtml-border-radius: 10px;
 	-moz-border-radius: 10px;
@@ -121,6 +137,106 @@ header {
 	right: 20px;
 	padding: 20px;
 	overflow-y: scroll;
+
+	#showcase {
+		width: 100%;
+		height: 100%;
+
+		.col {
+			margin-left: 6%;
+			margin-right: 6%;
+			width: 20%;
+			float: left;
+			height: 100%;
+
+			.imagewrap {
+				overflow: hidden;
+				width: 100%;
+				height: 100px;
+				margin: 0px auto;
+				background-color: #000;
+
+				@include border-radius(10px);
+			}
+
+			h4 {
+				margin-top: 20px;
+				margin-bottom: 20px;
+			}
+		}
+
+		
+	}
+
+	h2 {
+		text-align: center;
+		font-weight: normal;
+	}
+
+	form {
+		table {
+			margin: 0px auto;
+
+			tr {
+
+				td {
+					padding: 5px;
+
+					&:first-child {
+						padding-right: 20px;
+					}
+
+					input {
+						padding: 4px;
+
+						&[type='text'],
+						&[type='password'],
+						&[type='email'] {
+							width: $formTextfieldWidth;
+							border: 1px solid;
+							outline: none;
+
+							&:focus {
+								outline-style: auto; 
+								outline-color: $formFocusOutlineColor;
+								outline-width: 5px;
+							}
+
+							&.invalidinput {
+								outline-style: auto;
+								outline-color: $errorMessageColor;
+								outline-width: 5px;
+							}
+						}
+					}
+
+					div.error_wrapper {
+						position: relative;
+						left: $formTextfieldWidth + 20px;
+						top: -20px;
+						height: 0px;
+					}
+				}
+			}
+
+			td.w2p_fc {
+				display: none;
+			}
+		}
+	}
+
+	input[type="submit"],
+	.button {
+		background-color: $contentColor;
+		color: $fontColor;
+		border-width: 1px;
+		border-style: solid;
+		border-color: $fontColor;
+		padding: 5px;
+		font-size: 13px;
+		@include border-radius(5px);
+	}
+
 }
 
 footer {
@@ -200,6 +316,7 @@ footer {
 			right: 0px;
 
 			input {
+				border: none;
 				position: absolute;
 				display: block;
 				left: 0px;
@@ -270,8 +387,9 @@ footer {
 		margin-top: 80px;
 		background-color: #AAA;
 
-		li {
+		a {
 			cursor: default;
+			display: block;
 		}
 
 		

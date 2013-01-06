@@ -1,7 +1,11 @@
-{{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
 {{extend 'layout.html'}}
 {{
+
+  response.files.insert(2, URL('static', 'js/jquery-ui.js'))
+  response.files.insert(2, URL('static', 'css/jquery-ui.css'))
+
   response.files.insert(2, URL('static', 'js/ide.js'))
+  response.files.insert(2, URL('static', 'js/coding.js'))
   response.files.insert(0, URL('static', 'codemirror/lib/codemirror.js'))
   response.files.insert(0, URL('static', 'codemirror/lib/codemirror.css'))
   response.files.insert(2, URL('static', 'codemirror/mode/python/python.js'))
@@ -24,7 +28,6 @@
   response.files.insert(2, URL('static', 'codemirror/theme/monokai.css'))
   response.files.insert(2, URL('static', 'codemirror/theme/twilight.css'))
   response.files.insert(2, URL('static', 'codemirror/theme/ambiance.css'))
-  response.files.insert(2, URL('static', 'js/coding.js'))
 
   response.include_files()
 }}
@@ -34,7 +37,45 @@
   </div>
 {{ else: }}
   <div>
-    Content
+    <h2>{{=T('The idea behind PythonCheck')}}</h2>
+    <div id="showcase">
+      <div class="col">
+        
+        <div class="imagewrap">
+          <img src="{{=URL('static', 'images/code.png')}}">
+        </div>
+
+        <h4>{{=T('Step 1:')}}</h4>
+        <p>
+          {{=T('Write your code online or easily import your existing files')}}
+        </p>
+
+      </div>
+      <div class="col">
+        
+        <div class="imagewrap">
+          <img src="{{=URL('static', 'images/console.png')}}">
+        </div>
+
+        <h4>{{=T('Step 2:')}}</h4>
+        <p>
+          {{=T('Compile the code online to either test it or to submit it to an exercise. If there are any errors, we\'ll show you what is wrong!')}}
+        </p>
+        
+      </div>
+      <div class="col">
+        
+        <div class="imagewrap">
+          <img src="{{=URL('static', 'images/aplus.png')}}">
+        </div>
+
+        <h4>{{=T('Step 3:')}}</h4>
+        <p>
+          {{=T('Look at your grades and errors to become an even better programmer!')}}
+        </p>
+        
+      </div>
+    </div>
   </div>
 {{pass}}
 
