@@ -34,5 +34,11 @@
 		}
 	};
 
+	if (typeof String.prototype.startsWith != 'function') {
+		String.prototype.startsWith = function (input) {
+			return this.substring(0, input.length) === input;
+		};
+	}
+
 	window.Utils = new Utils();
 })(window);

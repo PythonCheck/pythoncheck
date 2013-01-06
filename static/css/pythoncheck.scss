@@ -13,7 +13,7 @@ $headerHeight: 40px;
 
 $promptWidth: 40px;
 $promptPaddingLeft: 15px;
-$cmdHeight: 21px;
+$cmdHeight: 40px;
 
 $successMessageColor: rgb(118, 184, 42);
 $errorMessageColor: rgb(255, 0, 0);
@@ -27,6 +27,7 @@ MIXINS
 */
 @mixin border-radius($radius) {
 	-webkit-border-radius: $radius;
+	-khtml-border-radius: $radius;
 	-moz-border-radius: $radius;
 	border-radius: $radius;
 }
@@ -126,10 +127,7 @@ header {
 
 .content {
 	background-color: $contentColor;
-	-webkit-border-radius: 10px;
-	-khtml-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
+	@include border-radius(10px);
 	position: absolute;
 	top: 70px;
 	bottom: 70px;
@@ -326,6 +324,7 @@ footer {
 				background-color: #000;
 				outline: none;
 				color: #FFF;
+				height: 100%;
 			}
 		}
 	}

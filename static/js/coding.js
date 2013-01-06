@@ -1,11 +1,8 @@
 $(function() {
-	window.ide = new IDE($('#codingsohard'));
-	window.ide.buildHTMLStructure($('#codingsohard'), true, {
-		theme: "monokai",
-		lineNumbers: true
-	});
+	// intialize the terminal
+	window.term = new Terminal('.output', $('footer .cmd input'));
 
-	window.ide.console.open = function(ide) {
+	term.open = function(term) {
 		$('footer .legal').fadeOut();
 		$('#console').css({
 			'left': $('#console').position().left, 
@@ -32,7 +29,7 @@ $(function() {
 		});
 	}
 
-	window.ide.console.close = function(ide) {
+	term.close = function(term) {
 		$('#console #closeTrigger').fadeOut();
 
 		$('#console').animate({
@@ -60,17 +57,25 @@ $(function() {
 	}
 
 	$('#console .prompt pre').on('click', function() {
-			window.ide.console(true);
+			term.console(true);
 	}.bind(this));
 
 	$('#console #closeTrigger').on('click', function() {
-		window.ide.console(false);
+		term.console(false);
+	});
+
+	// initialize the IDE
+	window.ide = new IDE($('#codingsohard'));
+	window.ide.buildHTMLStructure($('#codingsohard'), true, {
+		theme: "monokai",
+		lineNumbers: true
 	});
 
 	window.ide.dragNDrop($('#codingsohard'));
-	window.ide.cmd($('footer .cmd input'));
 
 	ide.getFileList(ide.populateFilePanel.bind(ide));
 	ide.openFileList();
-	ide.console(true);
+
+	initCommands(term, ide);
+	ide.console(term);
 });

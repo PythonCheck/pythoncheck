@@ -28,9 +28,6 @@
 		defaultTimeout: 1500,
 		maxApiFailures: 4,
 		fileListWidth: 250,
-		errorWrapperClass: 'errorMessage',
-		successWrapperClass: 'successMessage',
-		neutralWrapperClass: 'outputMessage',
 		defaultCommandSuffix: '/index.commandline',
 		loaderImageURL: 'static/images/ajax-loader.gif',
 		loadingImageClass: 'loading',
@@ -87,10 +84,10 @@
 				.append(this.codePanel = $('<div class="' + this.options.codePanelClass + '"></div>'))
 				.append(
 					this.filePanel = $('<div class="' + this.options.filePanelClass + '"></div>')
-						.append(
-							this.filePanelMenu = $('<nav></nav>')
-								.append($('<a>New File</a>'))
-						)
+						// .append(
+						// 	this.filePanelMenu = $('<nav></nav>')
+						// 		 .append($('<a>New File</a>'))
+						// )
 						.append(
 							this.filePanelContent = $('<section class="filelist"></section>')
 						)
@@ -117,7 +114,6 @@
 		// (dropZone) -- initiate the drag'n'drop. Every drop over the dropZone is caught. dropZone can be a selector or a $-Objects
 		// (event) -- reads the dropped files content and sets it as the CodeMirror's content, if the CodeMirror is not readonly
 		dragNDrop: function() {
-			// dragNDrop(jqueryObj or string) initialize the dragNDrop
 			if(!this.dragNDropInitialized && arguments.length == 1 && (typeof(arguments[0]) == 'string' || arguments[0].on)) {
 				var dropZone = $(arguments[0]);
 				dropZone.on('drop', this.dragNDrop.bind(this));
@@ -141,42 +137,20 @@
 			}
 		},
 
-		// instantiates the commandline or executes the command (either sending it to the API or executing it localy)
-		//
-		// returns: undefined
-		//
-		// possible calls:
-		// (commandLine) -- initiate the commandline. The commandline (either selector or $-Object) will be executed and emptied on RETURN (keyCode 13)
-		// (event) -- executes the commandline
-		cmd: function() {
-			// dragNDrop(jqueryObj or string) initialize the dragNDrop
-			if(!this.cmdInitialized && arguments.length == 1 && (typeof(arguments[0]) == 'string' || arguments[0].on)) {
-				var input = $(arguments[0]);
-				input.keypress(function(evt) {
-					if(evt.which == 13) { // enter key
-						evt.preventDefault();
-						this.cmd(evt.target);
-					}
-				}.bind(this));
+		console: function(terminal) {
+			if(arguments.length == 0) {
+				return this.terminal;
 			}
-			else {
-				var target = $(arguments[0]);
-				var input = target.val().split(' ');
-				target.val("");
-				
-				var structure = {
-					command: input[0],
-					args: input.slice(1)
-				};
+			else if(arguments.length >= 1 && 
+				typeof(terminal.output) == 'function' && typeof(terminal.success) == 'function' && typeof(terminal.error) == 'function') {
+				this.terminal = terminal;
 
-				this.success(input.join(' '));
-
-				
-				this.api(structure.command + this.options.defaultCommandSuffix, structure, function(result, resultTextStatus, resultJqXHR) {
-					this.output(result.toString());
-				}.bind(this));
+				this.terminal.remote = function() {
+					// just add the default command suffix and then send it to the api
+					arguments[0] += this.options.defaultCommandSuffix;
+					this.api.apply(this, arguments);
+				}.bind(this);
 			}
-
 		},
 
 		// adds event handlers to the IDE
@@ -283,7 +257,8 @@
 					return false;
 				}
 			}
-			else {
+			else if (typeof(filename) == 'object') {
+				fileInformation = filename;
 				if(!fileInformation.filename || ! fileInformation.project || !fileInformation.course) {
 					return false;
 				}
@@ -860,7 +835,7 @@
 				project: file.project
 			}, function(data) {
 				this.results(data);
-			}.bind(this));
+			}.bind(this), this.serverRespondedWithError.bind(this));
 		},
 
 		// requests a submission on the server.
@@ -881,7 +856,7 @@
 				this.results(data, function() {
 					console.log('submitted');
 				});
-			}.bind(this));
+			}.bind(this), this.serverRespondedWithError.bind(this));
 		},
 
 		// manages results of builds (either run or submit)
@@ -991,77 +966,12 @@
 			return this.internalCodeMirror;
 		},
 
-		// opens or adds output to the console
-		//
-		// for opening the console, this.console.open is called. For closing this.console.close is called. 
-		// both functions have to be defined after initiating the IDE
-		//
-		// text params should always be valid HTML code
-		// after adding output, the pane will scroll to the bottom
-		// 
-		// returns: undefined
-		//
-		// possible calls:
-		// () -- invert the consoles open state
-		// (bool) -- set the consoles open state.
-		// (bool, text) -- set the consoles open state and add the text as output
-		// (text) -- open the console and add the text as output
-		console: function() {
-
-			var doOpen;
-			var str = null;
-			// console() --> inverts console state
-			if(arguments.length == 0) {
-				this.doOpen = !this.consoleIsOpen
-			}
-			
-			// console(bool) --> set console state
-			if(arguments.length >= 1 && typeof(arguments[0]) == 'boolean') {
-				doOpen = arguments[0];
-
-				// console(bool, str) --> set console state and add output
-				if(arguments.length >= 2 && typeof(arguments[1]) == 'string') {
-					str = arguments[1]
-				}
-			}
-			// console(str) --> open console if not open and add output
-			else if (arguments.length >= 1 && (typeof(arguments[0]) == 'string' || typeof(arguments[0]) == 'object')) {
-				doOpen = true;
-				str = arguments[0];
-			}
-
-			if(doOpen || this.consoleIsOpen) {
-				if(doOpen && !this.consoleIsOpen) {
-					//open console
-					if(this.console.open && typeof(this.console.open) == 'function') {
-						this.console.open(this);
-					}
-					this.consoleIsOpen = true;
-				}
-				else if (!doOpen){
-					// close console
-					if(this.console.close && typeof(this.console.close) == 'function') {
-						this.console.close(this);
-					}
-					this.consoleIsOpen = false;
-				}
-			}
-
-			if(str != null) {
-				// add output to console
-				$('.output').append(str).animate({scrollTop: $('.output').prop('scrollHeight')});
-
-			}
-		},
-
 		// adds output to the console
 		//
 		// possible calls:
 		// (string, ...) -- adds output to the console using console(wrapInSpan(htmlify(string)), errorWrapperClass)
 		error: function () {
-			for(var i = 0; i < arguments.length; i++) {
-				this.console(this.wrapInSpan(this.htmlify(arguments[i]), this.options.errorWrapperClass));
-			}
+			this.terminal.error.apply(this.terminal, arguments);
 		},
 
 		// adds output to the console
@@ -1069,9 +979,7 @@
 		// possible calls:
 		// (string, ...) -- adds output to the console using console(wrapInSpan(htmlify(string)), neutralWrapperClass)
 		output: function() {
-			for(var i = 0; i < arguments.length; i++) {
-				this.console(this.wrapInSpan(this.htmlify(arguments[i]), this.options.neutralWrapperClass));
-			}
+			this.terminal.output.apply(this.terminal, arguments);
 		},
 
 		// adds output to the console
@@ -1079,37 +987,7 @@
 		// possible calls:
 		// (string, ...) -- adds output to the console using console(wrapInSpan(htmlify(string)), successWrapperClass)
 		success: function () {
-			for(var i = 0; i < arguments.length; i++) {
-				this.console(this.wrapInSpan(this.htmlify(arguments[i]), this.options.successWrapperClass));
-			}	
-		},
-
-		// htmlifies a string including:
-		// * replacing \n, \r, or \r\n with <br>
-		// * adding a <br> at the end if there isn't any
-		//
-		// returns: a html-string (e.g. 'abc<br>abc<br>')
-		//
-		// possible calls:
-		// (string)
-		htmlify: function(str) {
-			str = str.replace(/(\r\n)|(\r)|(\n)/g, '<br>');
-			if(str.match(/.*<br>$/)) {
-				return str;
-			}
-			else {
-				return str + '<br>';
-			}
-		},
-
-		// wraps a given text into a span, assuming it is valid HTML (see htmlify)
-		// 
-		// returns: the output wrapped in a span of this pattern: <span class="[classes]">[text]</span>
-		//
-		// possible calls:
-		// (textString, classesString) -- both arguments are strings
-		wrapInSpan: function(text, classes) {
-			return $('<span class="' + classes + '">' + text + '</span>')
+			this.terminal.success.apply(this.terminal, arguments);
 		},
 
 		// makes an ajax-call to the api using the global options
@@ -1145,6 +1023,13 @@
 				success: callback, 
 				error: errorCallback
 			});
+		},
+
+		serverRespondedWithError: function(jqXHR, textStatus, errorThrown) {
+			error = $.parseJSON(jqXHR.responseText);
+			if(error.error) {
+				this.error(error.error);
+			}
 		},
 
 		keys: {

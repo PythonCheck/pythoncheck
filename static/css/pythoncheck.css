@@ -95,6 +95,7 @@ header {
         margin: 0px auto;
         background-color: #000;
         -webkit-border-radius: 10px;
+        -khtml-border-radius: 10px;
         -moz-border-radius: 10px;
         border-radius: 10px; }
       .content #showcase .col h4 {
@@ -140,6 +141,7 @@ header {
     padding: 5px;
     font-size: 13px;
     -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px; }
 
@@ -180,9 +182,9 @@ footer {
         margin: 0px;
         line-height: 40px; }
     footer #console .output {
-      height: 179px;
+      height: 160px;
       position: absolute;
-      bottom: 21px;
+      bottom: 40px;
       left: 40px;
       right: 0px;
       padding-left: 20px;
@@ -194,7 +196,7 @@ footer {
       footer #console .output .outputMessage {
         color: white; }
     footer #console .cmd {
-      height: 21px;
+      height: 40px;
       position: absolute;
       left: 40px;
       bottom: 0px;
@@ -209,7 +211,8 @@ footer {
         bottom: 0px;
         background-color: #000;
         outline: none;
-        color: #FFF; }
+        color: #FFF;
+        height: 100%; }
 
 #codingsohard {
   background-color: #AAA;
