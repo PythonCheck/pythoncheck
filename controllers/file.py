@@ -99,7 +99,7 @@ def new():
 			
 			lines.append('# ' + " ".join(line[current_index:]))
 
-		content = '\n'.join(lines) + '\n\n'
+		content = content + '\n'.join(lines) + '\n\n'
 
 		# crazy shit: copyright jonas (wasn't me)
 		# content = "\n".join(['# %(t)s' % dict(t=ex.text[i*70:(i+1)*70]) for i in range(len(ex.text) / 70)])

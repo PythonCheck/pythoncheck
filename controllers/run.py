@@ -16,12 +16,12 @@ def submit():
 	buildId = runsystem.generateBuildId(BUILD_ID_LENGTH)
 
 	if len(course) == 0:
-		raise HTTP(422, 'We can\'t do anything for you until you specify a course')
+		raise HTTP(422, T('We can\'t do anything for you until you specify a course'))
 
 	try:
 		runsystem.invokeBuild(mode='submit', buildId=buildId, project=project, course=course, main=main, userId=auth.user_id)
 	except Exception, e:
-		raise HTTP(500, 'We got an error while trying to build the project: ' + str(e))
+		raise HTTP(500, XML(json(dict(error=T('We got an error while trying to build the project: ') + T(str(e))))))
 	
 
 	return dict(mode='submit', buildId=buildId, timeout=CLIENT_TIMEOUT)
@@ -43,7 +43,7 @@ def run():
 	try:
 		runsystem.invokeBuild(mode='test', buildId=buildId, main=main, project=project, course=course, userId=auth.user_id)
 	except Exception, e:
-		raise HTTP(500, 'We got an error while trying to build the project:' + str(e))
+		raise HTTP(500, XML(json(dict(error=T('We got an error while trying to build the project: ') + T(str(e))))))
 	
 	return dict(mode='run', buildId=buildId, timeout=CLIENT_TIMEOUT)
 
@@ -56,7 +56,7 @@ def result():
 
 	# if the data is not available throw an error
 	if data == None:
-		errorObject = {'message':'Build ID does not exist'}
+		errorObject = {'message': T('Build ID does not exist')}
 		raise HTTP(422, json(errorObject))
 
 	# if data is available and the build has finsihed return the outputs

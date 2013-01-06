@@ -57,7 +57,7 @@ command = ["chroot", buildJail]
 command.extend(buildModule.getInvokeCommand(path=USER_SCRIPT_PATH))
 
 ## ---- BUILD SECTION ----
-
+print 'Spawning build'
 p = subprocess.Popen(command, stdout=PIPE, stderr=PIPE)
 
 # update the buid in the database (for the scheduler)
@@ -66,6 +66,7 @@ db.commit()
 
 # wait until the build has finished
 p.wait()
+print 'Build finished'
 
 errors = p.stderr.read()
 hadBuildErrors = False

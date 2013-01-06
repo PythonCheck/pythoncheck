@@ -154,7 +154,7 @@ db.define_table('files',
     Field('course', 'integer', required=False),
     Field('project', 'string', required=True),
     Field('projectIsExercise', 'boolean', required=True),
-    Field('content', 'string'),
+    Field('content', 'text'),
     Field('version', 'integer'))
 
 db.define_table('grading', 
