@@ -56,7 +56,7 @@ USER_SCRIPT_PATH = '/script.py'
 
 ## BUILDID Settings
 # the length of the whole buildID
-BUILD_ID_LENGTH = 512
+BUILD_ID_LENGTH = 250
 # the length of the shortened buildID used in the filesystem
 BUILD_ID_SHORT_LENGTH = 32
 

@@ -79,6 +79,7 @@ if p.returncode != 0:
 
 # update the database and distribute output
 db(db.current_builds.PID==p.pid).update(output=p.stdout.read(), error=errors, finished=True, buildError=hadBuildErrors)
+db.commit()
 
 ## ---- GRADING SECTION ----
 if buildMode == 'submit':

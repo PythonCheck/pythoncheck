@@ -151,12 +151,11 @@ db.define_table('files',
     Field('user', db.auth_user, required=True),
     Field('filename', 'string', required=True),
     Field('edited', 'datetime', required=True, default='now()'),
-    Field('course', db.course, required=False),
+    Field('course', 'integer', required=False),
     Field('project', 'string', required=True),
     Field('projectIsExercise', 'boolean', required=True),
     Field('content', 'string'),
-    Field('version', 'integer'),
-    primarykey=['user', 'filename', 'course', 'project'])
+    Field('version', 'integer'))
 
 db.define_table('grading', 
     Field('course', db.enrollment, required=True), # contains the userid
