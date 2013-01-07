@@ -5,6 +5,7 @@
 '"update" is an optional expression like "field1=\'newvalue\'". You cannot update or delete the results of a JOIN': '"update" is an optional expression like "field1=\'newvalue\'". You cannot update or delete the results of a JOIN',
 '#': '#',
 '%(points)s points': '%(points)s points',
+'%A, %d %b %Y at %H:%M': '%A, %d %b %Y at %H:%M',
 '%s %%{row} deleted': '%s %%{row} deleted',
 '%s %%{row} updated': '%s %%{row} updated',
 '%s selected': '%s selected',

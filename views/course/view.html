@@ -20,5 +20,7 @@
 <h3>Exercises</h3>
 {{ include request.controller + "/inc/exercise_table.html" }}
 
-<h3>Students</h3>
-{{ include request.controller + "/inc/student_table.html" }}
+{{ if has_role('teacher'): }}
+	<h3>Students</h3>
+	{{ include request.controller + "/inc/student_table.html" }}
+{{ pass }}

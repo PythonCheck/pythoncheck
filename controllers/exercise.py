@@ -8,11 +8,13 @@ def list():
 	if has_role('teacher'):
 		exercises = db(db.exercise).select()
 	elif has_role('student'):
+		import datetime
 		# exercises = db( & (db.course_exercise.exercise == db.exercise.id)) \
 		# 				.select()
 		exercises = {}
 		courses = db((auth.user.id == db.enrollment.student) & (db.enrollment.course == db.course_exercise.course)).select(db.course_exercise.ALL)
 		for c in courses:
+			if c.start_date > datetime.datetime.now(): continue
 			if c.course not in exercises:
 				course = {}
 				course['id'] = c.course

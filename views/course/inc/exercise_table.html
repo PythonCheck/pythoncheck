@@ -56,6 +56,7 @@
 	{{ pass }}
 
 	{{ if len(exercises) > 0: }}
+		{{ import datetime }}
 		<table>
 			<thead>
 				<tr>
@@ -73,12 +74,12 @@
 			{{ n = 0 }}
 			{{ for row in exercises: }}
 				{{ n += 1 }}
-				<tr>
+				<tr{{= " class=inactive" if row.end_date < datetime.datetime.now() else '' }}>
 					<td>{{= n }}</td>
-					<td>{{= row.exercise.name }}</td>
-					<td>{{= row.start_date }}</td>
+					<td><a href="/{{= request.application }}/default/index?exercise={{= row.id }}">{{= row.exercise.name }}<a></td>
+					<td>{{= row.start_date.strftime( T( '%A, %d %b %Y at %H:%M', lazy=False ) ) }}</td>
 					<td>{{= row.end_date }}</td>
-					<td>{{= row.exercise.text }}</td>
+					<td>{{= row.exercise.text[:55] }}…</td>
 				{{ if request.function == 'edit': }}
 					<td>
 						<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/edit_exercise/{{= row.id }}">
