@@ -1,5 +1,8 @@
 {{extend 'layout.html'}}
 <h2>{{=T('My Page')}}</h2>
 	{{
-	=text
+	=T('This page gives you an overview over your activities')
+	}}
+	{{
+	=A(T('Change your password!'), _href=URL('change_password'))
 	}}

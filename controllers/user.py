@@ -19,4 +19,8 @@ def not_authorized() :
 
 @auth.requires_login()
 def me():
-	return dict(text="This page gives you an overview over your activities")
+	return dict()
+
+@auth.requires_login()
+def change_password():
+	return dict(form=auth.change_password())

@@ -55,6 +55,7 @@ mail.settings.login = 'username:password'
 ## configure auth policy
 auth.settings.logged_url = URL(c='user', f='me') # if accessing register or similar as logged in user redirect to the me page
 auth.settings.login_next = URL(c='user', f='me') 
+auth.settings.controller = 'user'
 auth.settings.register_next = URL(c='user', f='me') 
 auth.settings.registration_requires_verification = False
 auth.settings.registration_requires_approval = False
