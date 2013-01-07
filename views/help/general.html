@@ -1,0 +1,16 @@
+{{extend 'layout.html'}}
+<h2>{{=T('Help')}}</h2>
+{{
+=T('You can find all available help topics below')
+}}
+<ul>
+	{{
+	for topic in topics:
+	}}
+	{{
+	=LI(A(topic['text'], _href=topic['url']))
+	}}
+	{{
+	pass
+	}}
+</ul>

@@ -1,0 +1,10 @@
+{{extend 'layout.html'}}
+<h2>{{=T('Help: Users')}}</h2>
+{{
+=T('There are three types of users:')
+}}
+<ul>
+	<li>{{=EM(T('Students'))}} - {{=T('Students can be enrolled to courses and can develop their code online')}}</li>
+	<li>{{=EM(T('Teachers'))}} - {{=T('Teachers can be the owner of a course, edit the course pool, create courses and develop online')}}</li>
+	<li>{{=EM(T('Admins'))}} - {{=T('Admins are special teachers, who can furthermore manage users')}}</li>
+</ul>
