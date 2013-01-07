@@ -827,15 +827,26 @@
 				file = this.getFocusedFile();
 			}
 
-			this.success('Compiling....')
+			var run = function() { 
+				this.success('Compiling....')
 
-			this.api(this.options.apiRun, {
-				execute: file.filename,
-				course: file.course,
-				project: file.project
-			}, function(data) {
-				this.results(data);
-			}.bind(this), this.serverRespondedWithError.bind(this));
+				this.api(this.options.apiRun, {
+					execute: file.filename,
+					course: file.course,
+					project: file.project
+				}, function(data) {
+					this.results(data);
+				}.bind(this), this.serverRespondedWithError.bind(this));
+			}.bind(this);
+
+			if(this.saved(file)) {
+				run();
+			}
+			else {
+				this.saveFile(file, run);
+			}
+
+			
 		},
 
 		// requests a submission on the server.
@@ -848,15 +859,25 @@
 				file = this.getFocusedFile();
 			}
 
-			this.api(this.options.apiSubmit, {
-				execute: file.filename,
-				course: file.course,
-				project: file.project
-			}, function(data) {
-				this.results(data, function() {
-					console.log('submitted');
-				});
-			}.bind(this), this.serverRespondedWithError.bind(this));
+			var submit = function() {
+				this.api(this.options.apiSubmit, {
+					execute: file.filename,
+					course: file.course,
+					project: file.project
+				}, function(data) {
+					this.results(data, function() {
+						console.log('submitted');
+					});
+				}.bind(this), this.serverRespondedWithError.bind(this));
+			}.bind(this);
+
+			if(this.saved(file)) {
+				submit();
+			}
+			else {
+				this.saveFile(file, submit);
+			}
+			
 		},
 
 		// manages results of builds (either run or submit)
