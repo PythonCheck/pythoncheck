@@ -6,6 +6,7 @@ $tabHeight: 40px;
 $backgroundColor: #5B5B5B;
 $contentColor: #404040;
 $fontColor: #FFF;
+$inactiveFontColor: #CCC;
 $linkColor: $fontColor;
 
 $headerColor: #404040;
@@ -78,6 +79,10 @@ a:link, a:visited {
 
 a:hover, a:active, a:focus {
 	text-decoration: underline;
+}
+
+a.inactive {
+	color: $inactiveFontColor;
 }
 
 header {

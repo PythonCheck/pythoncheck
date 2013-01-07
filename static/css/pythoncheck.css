@@ -40,6 +40,9 @@ a:link, a:visited {
 a:hover, a:active, a:focus {
   text-decoration: underline; }
 
+a.inactive {
+  color: #cccccc; }
+
 header {
   background-color: #404040;
   height: 40px; }
