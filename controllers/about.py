@@ -6,3 +6,6 @@ def index():
 				dict(name='Tobias Primus', job=T('Project Manager')), \
 				dict(name='Armin Redzic', job=T('Layout & Design'))] \
 		)
+
+def legal():
+	return dict()
