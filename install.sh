@@ -66,7 +66,7 @@ echo 'Please tell me where the PythonCheck.zip is located so I can install it on
 PCPATH=''
 while [ "$PCPATH" = "" ] || [ ! -e "$PCPATH" ]
 do
-	echo -n '/path/to/pythoncheck.zip [no default!] '
+	echo -n '/path/to/pythoncheck.zip [no default!] or "d" to download it '
 	read PCPATH
 
 	if [ "$PCPATH" = "exit" ]
@@ -98,8 +98,11 @@ do
 	fi
 done
 
-unzip -d $WEB2PY'/applications' $TEMPWEB2PYLOC'/'$TEMPPCNAME || echo 'Couldnt unzip the PythonCheck application.' && exit 1
+unzip -d $WEB2PY'/applications' $TEMPWEB2PYLOC'/'$TEMPPCNAME || (echo 'Couldnt unzip the PythonCheck application.' && exit 1)
 
+echo 'Awesome. It looks like we have successfully unzipped the PythonCheck application'
+echo
+echo ''
 
 
 
