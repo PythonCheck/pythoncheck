@@ -16,7 +16,7 @@ def submit():
 	buildId = runsystem.generateBuildId(BUILD_ID_LENGTH)
 
 	if len(course) == 0:
-		raise HTTP(422, T('We can\'t do anything for you until you specify a course'))
+		raise HTTP(422, XML(json(dict(error=T('We can\'t do anything for you until you specify a course')))))
 
 	try:
 		runsystem.invokeBuild(mode='submit', buildId=buildId, project=project, course=course, main=main, userId=auth.user_id)
