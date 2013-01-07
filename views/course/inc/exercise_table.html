@@ -11,12 +11,19 @@
 	{{ if request.function == 'edit' and request.args(1) == 'add_exercise': }}
 		{{
 		if 'add_exercise_submit' in request.vars:
-			db.course_exercise.insert(
+			import re
+			start = request.vars['start_date']
+			end   = request.vars['end_date']
+			if re.compile('^\d{4}(-\d{1,2}){2} \d{2}(:\d{2}){2}$').match(start) and re.compile('^\d{4}(-\d{1,2}){2} \d{2}(:\d{2}){2}$').match(end):
+				db.course_exercise.insert(
 					course=request.args(0),
 					exercise=request.vars['exercise'],
-					start_date=request.vars['start_date'],
-					end_date=request.vars['end_date']
+					start_date=start,
+					end_date=end
 				)
+			else:
+				session.flash = 'Check the dates!'
+			pass
 			redirect(URL(request.application, request.controller, request.function + '/' + '/'.join(request.args)))
 		pass
 
@@ -78,7 +85,7 @@
 					<td>{{= n }}</td>
 					<td><a href="/{{= request.application }}/default/index?exercise={{= row.id }}">{{= row.exercise.name }}<a></td>
 					<td>{{= row.start_date.strftime( T( '%A, %d %b %Y at %H:%M', lazy=False ) ) }}</td>
-					<td>{{= row.end_date }}</td>
+					<td>{{= row.end_date.strftime( T( '%A, %d %b %Y at %H:%M', lazy=False ) ) }}</td>
 					<td>{{= row.exercise.text[:55] }}…</td>
 				{{ if request.function == 'edit': }}
 					<td>
