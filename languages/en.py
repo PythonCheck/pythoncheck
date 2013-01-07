@@ -31,6 +31,7 @@
 'Cannot be empty': 'Cannot be empty',
 'Change password': 'Change password',
 'Change your password!': 'Change your password!',
+'Changed role!': 'Changed role!',
 'Check to delete': 'Check to delete',
 'Clear CACHE?': 'Clear CACHE?',
 'Clear DISK': 'Clear DISK',
