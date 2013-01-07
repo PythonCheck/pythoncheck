@@ -132,13 +132,14 @@ header {
     .content form table td.w2p_fc {
       display: none; }
   .content input[type="submit"],
-  .content .button {
+  .content a.button {
     background-color: #404040;
     color: white;
     border-width: 1px;
     border-style: solid;
     border-color: white;
     padding: 5px;
+    margin: 5px;
     font-size: 13px;
     -webkit-border-radius: 5px;
     -khtml-border-radius: 5px;

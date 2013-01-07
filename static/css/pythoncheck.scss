@@ -224,13 +224,14 @@ header {
 	}
 
 	input[type="submit"],
-	.button {
+	a.button {
 		background-color: $contentColor;
 		color: $fontColor;
 		border-width: 1px;
 		border-style: solid;
 		border-color: $fontColor;
 		padding: 5px;
+		margin: 5px;
 		font-size: 13px;
 		@include border-radius(5px);
 	}
