@@ -11,7 +11,8 @@ from gluon.custom_import import track_changes; track_changes(True)
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('sqlite://storage.sqlite')
+    # db = DAL('sqlite://storage.sqlite')
+    db = DAL('mysql://school:school@localhost/school')
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -183,10 +184,14 @@ def requires_role(role):
 
 def has_role(role):
     if hasattr(auth.user_groups, 'values') and len(auth.user_groups.values()) > 0:
-        roleId = db(db.auth_group.role.like(role.lower())).select()[0].id
-        for group_key in auth.user_groups.keys():
-            if group_key >= roleId:
-                return True
+        roleId = db(db.auth_group.role.like(role.lower())).select()
+        if roleId:
+            roleId = roleId[0].id
+            for group_key in auth.user_groups.keys():
+                if group_key >= roleId:
+                    return True
+            else:
+                return False
         else:
             return False
     return None
