@@ -139,7 +139,7 @@ header {
 	left: 20px;
 	right: 20px;
 	padding: 20px;
-	overflow-y: scroll;
+	overflow-y: auto;
 
 	#showcase {
 		width: 100%;
@@ -296,7 +296,7 @@ footer {
 			left: $promptWidth;
 			right: 0px;
 			padding-left: 20px;
-			overflow: scroll;
+			overflow: auto;
 
 			.successMessage {
 				color: $successMessageColor;
