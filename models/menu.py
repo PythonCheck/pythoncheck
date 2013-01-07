@@ -24,6 +24,9 @@ response.google_analytics_id = None
 
 response.menu = [  ]
 
+if has_role( 'admin' ):
+    response.menu.append( ( T( 'Admin' ), False, URL( 'admin', 'user' ), [  ] ) )
+
 if has_role( 'teacher' ):
 	response.menu.append( ( T( 'Exercise Pool' ), False, URL( 'exercise', 'list' ), [  ] ) )
 	response.menu.append( ( T( 'Courses' ), False, URL( 'course', 'list' ), [  ] ) )

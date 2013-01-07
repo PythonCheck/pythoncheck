@@ -1,3 +1,6 @@
+def index():
+	redirect(URL('user'))
+
 @requires_role('admin')
 def user():
 	users = db(db.auth_user.id > 0).select(orderby=db.auth_user.last_name|db.auth_user.first_name)
