@@ -1,0 +1,34 @@
+{{ extend 'layout.html' }}
+
+<h2>{{= T('Manage Users') }}</h2>
+<table>
+	<thead>
+		<tr>
+			<td>{{= T('First Name') }}</td>
+			<td>{{= T('Last Name') }}</td>
+			<td></td>
+		</tr>
+	</thead>
+	<tbody>
+	{{ for user in users: }}
+		{{ membership = db(db.auth_membership.user_id == user.id).select(db.auth_membership.group_id)[0].group_id }}
+		<tr>
+			<td>{{= user.last_name }}</td>
+			<td>{{= user.first_name }}</td>
+			<td>
+			{{ for role in roles: }}
+				{{ if membership == role.id: }}
+					<a class="w2p_trap button btn inactive" href="">
+						<span class="buttontext button" title="{{= T(role.role) }}">{{= T(role.role) }}</span>
+					</a>
+				{{ else: }}
+					<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/role/{{= user.id }}/{{= role.id }}">
+						<span class="buttontext button" title="{{= T(role.role) }}">{{= T(role.role) }}</span>
+					</a>
+				{{ pass }}
+			{{ pass }}
+			</td>
+		</tr>
+	{{ pass }}
+	</tbody>
+</table>
