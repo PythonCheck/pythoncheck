@@ -7,6 +7,8 @@ import os
 
 from subprocess import PIPE
 
+print 'Starting invocation'
+
 
 GRADING_FILE = 'grades.grd'
 
@@ -49,8 +51,10 @@ if not os.path.exists(listfile):
 # determine path for the jail
 buildJail = JAIL_BASE_DIR + buildId[:BUILD_ID_SHORT_LENGTH]
 
+print 'Building jail'
 # create jail and copy src code into jail
 subprocess.call([SCRIPT_FILE, buildJail, srcCode, listfile]);
+print 'Jail constructed'
 
 # build command
 command = ["chroot", buildJail]
