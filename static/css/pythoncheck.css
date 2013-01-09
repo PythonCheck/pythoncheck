@@ -170,7 +170,11 @@ footer {
     footer #console #closeTrigger {
       display: none;
       width: 40px;
-      height: 21px; }
+      height: 21px;
+      padding: 5px;
+      text-transform: uppercase;
+      position: relative;
+      top: 5px; }
     footer #console .prompt {
       width: 40px;
       float: left;
@@ -276,4 +280,5 @@ footer {
     height: auto; }
   #codingsohard section.filelist ul {
     color: #000;
-    list-style-image: url("/PythonCheck/static/images/bullet.png"); }
+    list-style-image: url("/PythonCheck/static/images/bullet.png");
+    overflow: auto; }

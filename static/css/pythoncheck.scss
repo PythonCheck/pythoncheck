@@ -269,6 +269,10 @@ footer {
 			display: none;
 			width: $promptWidth;
 			height: 21px;
+			padding: 5px;
+			text-transform: uppercase;
+			position: relative;
+			top: 5px;
 		}
 
 		.prompt {
@@ -423,6 +427,8 @@ footer {
 	
 	section.filelist ul {
 		color: #000;
-		list-style-image: url($baseURL + 'bullet.png')
+		list-style-image: url($baseURL + 'bullet.png');
+		overflow: auto;
+
 	}
 }

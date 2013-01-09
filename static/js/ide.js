@@ -984,6 +984,8 @@
 			}
 			this.internalCodeMirror.IDE = this;
 			this.internalCodeMirror.setOption('readOnly', true);
+			var codemirrorElement = $('div.CodeMirror div.CodeMirror-lines > div:first-child');
+			codemirrorElement.css('max-width', codemirrorElement.css('min-width')); // fixing too long lines bug
 			return this.internalCodeMirror;
 		},
 
