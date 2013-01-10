@@ -503,6 +503,37 @@
 			this.internalCodeMirror.setOption('readOnly', false);
 		},
 
+		close: function(file) {
+			if(arguments.length == 0 || !file) {
+				file = this.getFocusedFile();
+			}
+
+			file = this.getOpenFile(file);
+			if(file === null) {
+				return false;
+			}
+
+			var fileIndex;
+			if((fileIndex = this.getOpenFileIndex(file)) !== null) {
+				// the current file is closed
+				if(file == this.getFocusedFile()) {
+					nextFile = this.currentlyOpenFiles[0];
+					if(nextFile == file) {
+						nextFile = this.currentlyOpenFiles[1];
+					}
+
+					this.focusFile(nextFile);
+				}
+
+				this.currentlyOpenFiles.splice(fileIndex, 1); // delete from currentlyOpenFiles
+
+				file.tab.remove(); //remove tab
+				
+
+				
+			}
+		},
+
 		// saves a files content to the server. on success this.saved(fileObj, true) is called
 		// 
 		// note, that saving a file does also affect the file object, but syncing is recommended!
@@ -759,7 +790,13 @@
 		//
 		// possible calls:
 		// (file) -- focuses the given file
+		// () -- emties the content of CodeMirror
 		focusFile: function(file) {
+			if(arguments.length == 0 || file === null || file === undefined) {
+				this.updateView(true);
+				return;
+			}
+
 			var fileIsOpen = false;
 			var openFile = this.getOpenFile(file);
 
@@ -785,18 +822,23 @@
 		// returns: false
 		//
 		// possible calls:
-		// () -- the content of the file object is set as content of the CodeMirror (which means, that all changes are gone)
+		// () -- the content of the file object (in currentlyOpenFiles) is set as content of the CodeMirror (which means, that all changes are gone)
 		// (openFile) -- the content of openFile is set as content of the CodeMirror. Before setting the content, the CodeMirror's content
 		//					is saved back to the currently focused file object (shortcut for (openFile, false))
 		// (openFile, ignoreContents) -- the content of openFile is set as content of the CodeMirror. If ignoreContents is true, 
 		//									the CodeMirror's content will not be saved to the currently focused file 
 		//									(which means, that all changes are gone)
+		// (bool) -- if true, the changes of the current files will be ignored and the content of CodeMirror emptied
 		updateView: function(openFile, ignoreContents) {
 			// disable the change function
 			var changeFunction = this.internalCodeMirror.getOption('onChange');
 			this.internalCodeMirror.setOption('onChange', function() {});
 
-			if(openFile) {
+			if(arguments.length == 1 && openFile === true) {
+				this.internalCodeMirror.setValue('');
+				this.internalCodeMirror.setOption('readOnly', true);
+			}
+			else if(openFile) {
 				//console.log('updating view with params');
 				var currentlyFocusedFile = this.getFocusedFile();
 				
