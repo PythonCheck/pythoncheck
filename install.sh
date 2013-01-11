@@ -102,7 +102,14 @@ unzip -d $WEB2PY'/applications' $TEMPWEB2PYLOC'/'$TEMPPCNAME || (echo 'Couldnt u
 
 echo 'Awesome. It looks like we have successfully unzipped the PythonCheck application'
 echo
-echo ''
+echo 'Now here are a few things I unfortunatly cant do for you:'
+echo ' - set up mysql-server and client (on Ubuntu this would be "sudo apt-get install mysql-server mysql-client"'
+echo ' - open the mysql-shell "mysql -u user -p"'
+echo ' - type "CREATE DATABASE python_check; exit;"'
+echo ' this sets up your database'
+echo 
+echo 'You should then update the configuration file in models/config.py and then'
+echo 'you are ready to go!'
 
 
 
