@@ -7,12 +7,7 @@ def getInvokeCommand(path):
 	return  [binary(), path]
 
 def buildAssertion(function_name, arguments, expected_result):
-	#output =  'try:' + '\r\n'
 	output = '\t	assert ' + function_name + '( ' + arguments + ' )' + ' == ' + expected_result + '\r\n'
-	#output +=  'except Exception, e:' + '\r\n'
-	#output += '\t	print "failed"' + '\r\n'
-	#output +=  'else:' + '\r\n'
-	#output += '\t	print "passed"' + '\r\n'
 	return output;
 
 def buildPointSet(id, assertions):
