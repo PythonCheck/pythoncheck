@@ -143,8 +143,8 @@ db.define_table('current_builds',
     Field('BuildId', 'string', required=True, unique=True),
     Field('start_time', 'datetime', required=True),
     Field('finished', 'boolean', required=False, default=False),
-    Field('output', 'string', required=False),
-    Field('error', 'string', required=False),
+    Field('output', 'text', required=False),
+    Field('error', 'text', required=False),
     Field('buildError', 'boolean', required=False),
     Field('user', db.auth_user, required=True))
 
