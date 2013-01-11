@@ -261,6 +261,7 @@
 		},
 
 		// htmlifies a string including:
+		// * replacing < and > with &lt; and &gt; respectively
 		// * replacing \n, \r, or \r\n with <br>
 		// * adding a <br> at the end if there isn't any
 		//
@@ -269,7 +270,10 @@
 		// possible calls:
 		// (string)
 		htmlify: function(str) {
+			str = str.replace(/</g, '&lt;');
+			str = str.replace(/>/g, '&gt;');
 			str = str.replace(/(\r\n)|(\r)|(\n)/g, '<br>');
+
 			if(str.match(/.*<br>$/)) {
 				return str;
 			}

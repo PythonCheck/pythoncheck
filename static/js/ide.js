@@ -974,7 +974,7 @@
 							}
 							else if(resultJqXHR.status == 500) {
 								clearInterval(interval);
-								result = $.parseJSON(resultJqXHR.responseText);
+								var result = $.parseJSON(resultJqXHR.responseText);
 								if(result.error) {
 									this.error(result.error);
 								}
