@@ -24,12 +24,12 @@ def invokeBuild(mode, buildId, main, userId, language='Python', project=None, co
 	if rate_limit_exeeded(userId=userId, maxConcurrentBuilds=1):
 		raise StandardError('Rate Limit Exeeded!')
 
-	# import the build system
-	buildModule = '/usr/share/web2py2/applications/PythonCheck/modules/build/' + language.lower() + '.py'
-	build = imp.load_source('buildsystem.module', buildModule)
-
 	env = exec_environment('applications/PythonCheck/models/db.py')
 	config = exec_environment('applications/PythonCheck/models/config.py')
+
+	# import the build system
+	buildModule = config.APPLICATION_PATH + '/modules/build/' + language.lower() + '.py'
+	build = imp.load_source('buildsystem.module', buildModule)
 
 	ass = ''
 	extendedBuildArgs = ''
