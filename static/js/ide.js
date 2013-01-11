@@ -29,7 +29,7 @@
 		maxApiFailures: 4,
 		fileListWidth: 250,
 		defaultCommandSuffix: '/index.commandline',
-		loaderImageURL: 'static/images/ajax-loader.gif',
+		loaderImageURL: 'static/images/icons/ajax-loader.gif',
 		loadingImageClass: 'loading',
 
 		filePanelOptions: {
@@ -620,16 +620,17 @@
 			
 			var statusChanged = previousState != saved;
 
-			var tabText = this.currentlyOpenFiles[index].tab.text();
+			var stateContainer = this.currentlyOpenFiles[index].tab.find('.state');
+			var tabText = stateContainer.text();
 			// file is newly saved
 			if(statusChanged && saved) {
 				// remove the * indicating that the file is unsaved
-				this.currentlyOpenFiles[index].tab.text(tabText.substring(0, tabText.length-1));
+				stateContainer.text(tabText.substring(0, tabText.length-1));
 			}
 			// file is newly not saved (just edited)
 			else if (statusChanged && !saved) {
 				// add the * indicating that the file is unsaved
-				this.currentlyOpenFiles[index].tab.text(tabText + '*');
+				stateContainer.text(tabText + '*');
 			}
 		},
 
@@ -775,10 +776,15 @@
 		// possible calls:
 		// (file, titleAttribute, callback) -- creates a tab
 		createFileTab: function(file, titleAttribute, callback) {
-			var tab = $('<a>' + file[titleAttribute] + '</a>');
+			var tab = $('<a>' + file[titleAttribute] + '<span class=\"state\""></span></a>');
+			var close = $('<span class=\"close trigger icon\""></span>');
+			tab.append(close);
 			tab.on('click', function() {
 				callback(file);
 			});
+			close.on('click', function() {
+				this.close(file);
+			}.bind(this));
 			return tab;
 		},
 

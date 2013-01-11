@@ -380,6 +380,17 @@ footer {
 				position: relative;
 				top: 2px;
 			}
+
+			.close {
+				display: inline-block;
+				background-image: url($baseURL + 'icons/close.png');
+				width: 14px;
+				height: 14px;
+				margin-left: 4px;
+				position: relative;
+				top: 2px;
+
+			}
 		}
 	}
 
