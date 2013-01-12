@@ -1,17 +1,19 @@
 {{extend 'layout.html'}}
 
 <h2>{{= T('Edit »%(course_name)s«') % {'course_name' : record.name} }}</h2>
-<a class="w2p_trap button btn" href="/{{=request.application}}/{{=request.controller}}/">
-	<span class="icon leftarrow icon-arrow-left"></span>
-	<span class="buttontext button" title="{{=T('Course List')}}">{{=T('Course List')}}</span>
-</a>
-<a class="w2p_trap button btn" href="/{{=request.application}}/{{=request.controller}}/view/{{=request.args(0)}}">
-	<span class="icon magnifier icon-zoom-in"></span>
-	<span class="buttontext button" title="{{=T('View')}}">{{=T('View')}}</span>
-</a>
 
-<h3>Exercises</h3>
-{{ include request.controller + "/inc/exercise_table.html" }}
+<nav>
+	<a class="w2p_trap button btn back" href="/{{=request.application}}/{{=request.controller}}/">
+		<span class="icon leftarrow icon-arrow-left"></span>
+		<span class="buttontext button" title="{{=T('Course List')}}">{{=T('Course List')}}</span>
+	</a>
+</nav>
 
-<h3>Students</h3>
-{{ include request.controller + "/inc/student_table.html" }}
+<section>
+	<h3>Exercises</h3>
+	{{ include request.controller + "/inc/exercise_table.html" }}
+</section>
+<section>
+	<h3>Students</h3>
+	{{ include request.controller + "/inc/student_table.html" }}
+</section>

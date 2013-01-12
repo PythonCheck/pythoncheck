@@ -2,12 +2,14 @@
 
 <h2>{{= T('Edit »%(exercise)s«') % {'exercise' : record.name} }}</h2>
 
-<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/">
-	<span class="icon leftarrow icon-arrow-left"></span>
-	<span class="buttontext button" title="{{= T('Exercise Pool') }}">{{= T('Exercise Pool') }}</span>
-</a>
-<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/assertions/{{= record.id }}">
-	<span class="buttontext button" title="{{= T('Assertions') }}">{{= T('Assertions') }}</span>
-</a>
+<nav>
+	<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/">
+		<span class="icon leftarrow icon-arrow-left"></span>
+		<span class="buttontext button" title="{{= T('Exercise Pool') }}">{{= T('Exercise Pool') }}</span>
+	</a>
+	<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/assertions/{{= record.id }}">
+		<span class="buttontext button" title="{{= T('Assertions') }}">{{= T('Assertions') }}</span>
+	</a>
+</nav>
 
 {{= form }}

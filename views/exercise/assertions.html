@@ -2,12 +2,14 @@
 
 <h2>{{= T('Assertions for »%(exercise)s« in %(language)s') % { 'exercise' : exercise.name, 'language' : exercise.language.name } }}</h2>
 
-<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/">
-	<span class="icon leftarrow icon-arrow-left"></span>
-	<span class="buttontext button" title="{{= T('Back to Exercise') }}">{{= T('Back to Exercise') }}</span>
-</a>
+<nav>
+	<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/">
+		<span class="icon leftarrow icon-arrow-left"></span>
+		<span class="buttontext button" title="{{= T('Back to Exercise') }}">{{= T('Back to Exercise') }}</span>
+	</a>
+</nav>
 
-<table border="1">
+<table>
 	<thead>
 		<tr>
 			<th></th>
