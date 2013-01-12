@@ -32,6 +32,9 @@ def details(filename=None, course=None, project=None, includeContent=True):
 	else:
 		result = db(query & (db.files.projectIsExercise == True) & (db.files.course == course)).select()
 
+	if result.first() == None: 
+		return dict()
+
 	result = result.first().as_dict()
 
 	if includeContent == False:
@@ -169,8 +172,8 @@ def list():
 			files['courses'][course.name]['exercises'][exerciseName]['id'] = exerciseDetails.id
 			files['courses'][course.name]['exercises'][exerciseName]['files'] = dict()
 
-			filesPerExercise = db((db.enrollment.student == auth.user_id) & (db.enrollment.course == course) & (db.files.project == exercise.exercise) & (db.files.projectIsExercise == True)).select()
-
+			filesPerExercise = db((db.enrollment.student == auth.user_id) & (db.enrollment.course == course) & (db.files.project == exercise.exercise) & (db.files.projectIsExercise == True) & (db.files.course == course.id)).select()
+			
 			for singleFile in filesPerExercise:
 				files['courses'][course.name]['exercises'][exerciseName]['files'][singleFile.files.filename] = details(filename=singleFile.files.filename, project=exercise.exercise, course=course.id, includeContent=False)
 
