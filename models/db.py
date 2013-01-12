@@ -54,10 +54,10 @@ mail.settings.sender = 'you@gmail.com'
 mail.settings.login = 'username:password'
 
 ## configure auth policy
-auth.settings.logged_url = URL(c='user', f='me') # if accessing register or similar as logged in user redirect to the me page
-auth.settings.login_next = URL(c='user', f='me') 
+auth.settings.logged_url = URL(c='default', f='index') # if accessing register or similar as logged in user redirect to the me page
+auth.settings.login_next = URL(c='default', f='index') 
 auth.settings.controller = 'user'
-auth.settings.register_next = URL(c='user', f='me') 
+auth.settings.register_next = URL(c='default', f='index')
 auth.settings.registration_requires_verification = False
 auth.settings.registration_requires_approval = False
 auth.settings.reset_password_requires_verification = True
@@ -168,6 +168,15 @@ db.define_table('points_grading',
     Field('grading', db.grading, required=True),
     Field('points', db.points, required=True), 
     Field('succeeded', 'boolean', required=True, default=False))
+
+### default values
+## groups
+db.auth_group.update_or_insert(id=1, role='Student')
+db.auth_group.update_or_insert(id=2, role='Teacher')
+db.auth_group.update_or_insert(id=3, role='Admin')
+## programming languages
+db.language.update_or_insert(name='Python')
+
 
 @auth.requires_login()
 def requires_role(role):
