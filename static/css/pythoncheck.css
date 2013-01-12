@@ -12,7 +12,22 @@ html {
 body {
   font-size: 16px;
   font-family: "MyriadPro-Regular", "Myriad Pro", Verdana, Arial, Helvetica, sans-serif;
-  background-color: #5b5b5b;
+  background: #5b5b5b;
+  /* Old browsers */
+  background: -moz-linear-gradient(top, #5b5b5b 0%, #707070 100%);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #5b5b5b), color-stop(100%, #707070));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #5b5b5b 0%, #707070 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #5b5b5b 0%, #707070 100%);
+  /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #5b5b5b 0%, #707070 100%);
+  /* IE10+ */
+  background: linear-gradient(to bottom, #5b5b5b 0%, #707070 100%);
+  /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=$from, endColorstr=$to,GradientType=0 );
+  /* IE6-9 */
   font-weight: normal;
   font-style: normal;
   font-variant: normal;
@@ -23,15 +38,21 @@ body {
 
 h1, h2, h3, h4, h5, h6, p {
   margin-top: 0;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
   padding-right: 15px;
   padding-left: 15px; }
+
+h1, h2 {
+  margin-bottom: 2em; }
 
 ul {
   padding-left: 40px; }
 
 a img {
   border: none; }
+
+table td {
+  padding: 5px; }
 
 a:link, a:visited {
   color: white;
@@ -71,17 +92,23 @@ header {
 
 .content {
   background-color: #404040;
-  -webkit-border-radius: 10px;
-  -khtml-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
+  -webkit-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
   position: absolute;
   top: 70px;
   bottom: 70px;
   left: 20px;
   right: 20px;
   padding: 20px;
-  overflow-y: auto; }
+  overflow-y: auto;
+  /* breadcrumb */ }
+  .content h2:first-child ~ nav {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #505050; }
+    .content h2:first-child ~ nav a {
+      display: inline-block; }
   .content #showcase {
     width: 100%;
     height: 100%; }
@@ -113,20 +140,6 @@ header {
       padding: 5px; }
       .content form table tr td:first-child {
         padding-right: 20px; }
-      .content form table tr td input {
-        padding: 4px; }
-        .content form table tr td input[type='text'], .content form table tr td input[type='password'], .content form table tr td input[type='email'] {
-          width: 200px;
-          border: 1px solid;
-          outline: none; }
-          .content form table tr td input[type='text']:focus, .content form table tr td input[type='password']:focus, .content form table tr td input[type='email']:focus {
-            outline-style: auto;
-            outline-color: #76b82a;
-            outline-width: 5px; }
-          .content form table tr td input[type='text'].invalidinput, .content form table tr td input[type='password'].invalidinput, .content form table tr td input[type='email'].invalidinput {
-            outline-style: auto;
-            outline-color: red;
-            outline-width: 5px; }
       .content form table tr td div.error_wrapper {
         position: relative;
         left: 220px;
@@ -134,6 +147,58 @@ header {
         height: 0px; }
     .content form table td.w2p_fc {
       display: none; }
+  .content form input {
+    padding: 4px; }
+  .content form input[type='text'],
+  .content form input[type='password'],
+  .content form input[type='email'],
+  .content form textarea {
+    width: 200px;
+    border: 1px solid;
+    outline: none; }
+    .content form input[type='text']:focus,
+    .content form input[type='password']:focus,
+    .content form input[type='email']:focus,
+    .content form textarea:focus {
+      outline-style: auto;
+      outline-color: #76b82a;
+      outline-width: 5px; }
+    .content form input[type='text'].invalidinput,
+    .content form input[type='password'].invalidinput,
+    .content form input[type='email'].invalidinput,
+    .content form textarea.invalidinput {
+      outline-style: auto;
+      outline-color: red;
+      outline-width: 5px; }
+  .content form textarea {
+    width: 300px; }
+  .content table {
+    margin-bottom: 20px;
+    border-collapse: collapse;
+    border-spacing: 0px;
+    border: none; }
+    .content table thead {
+      background-color: #505050; }
+      .content table thead th {
+        padding: 5px; }
+    .content table tbody ~ tbody {
+      border-top-width: 1px;
+      border-top-style: solid;
+      border-top-color: #FFF; }
+  .content form.inlineform {
+    background-color: #505050;
+    width: 360px;
+    padding: 10px;
+    margin-bottom: 20px; }
+  .content section {
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: #505050;
+    margin-bottom: 10px; }
+    .content section#main {
+      border-bottom: none; }
+    .content section:last-child {
+      border-bottom: none; }
   .content input[type="submit"],
   .content a.button {
     background-color: #404040;
@@ -148,6 +213,12 @@ header {
     -khtml-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px; }
+  .content a.button ~ * {
+    margin-top: 5px; }
+  .content *.replace {
+    /* for elements replacing emtpy tables */ }
+    .content *.replace.table {
+      margin-top: 20px; }
 
 footer {
   width: 100%;
@@ -156,9 +227,18 @@ footer {
   height: 40px;
   padding: 0;
   bottom: 0; }
-  footer .legal {
-    margin: 5px 0px 0px 5px;
-    float: left; }
+  footer .legal,
+  footer nav.footerLinks {
+    margin: 10px 0px 0px 5px;
+    float: left;
+    font-size: .9em;
+    color: #606060; }
+  footer a, footer a:link, footer a:visited {
+    color: #606060;
+    padding-right: 20px; }
+  footer a:hover, footer a:active, footer a:focus {
+    color: white;
+    text-decoration: none; }
   footer #console {
     overflow: hidden;
     width: 40px;

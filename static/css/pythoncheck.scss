@@ -5,9 +5,11 @@ $tabHeight: 40px;
 
 $backgroundColor: #5B5B5B;
 $contentColor: #404040;
+$accentColor: #505050;
 $fontColor: #FFF;
 $inactiveFontColor: #CCC;
 $linkColor: $fontColor;
+$footerTextColor: #606060;
 
 $headerColor: #404040;
 $headerHeight: 40px;
@@ -22,6 +24,7 @@ $outputMessageColor: $fontColor;
 
 $formFocusOutlineColor: $successMessageColor;
 $formTextfieldWidth: 200px;
+$formTextAreaWidth: 300px;
 
 /*
 MIXINS
@@ -31,6 +34,17 @@ MIXINS
 	-khtml-border-radius: $radius;
 	-moz-border-radius: $radius;
 	border-radius: $radius;
+}
+
+@mixin gradient($from, $to) {
+	background: $from; /* Old browsers */
+	background: -moz-linear-gradient(top,  $from 0%, $to 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$from), color-stop(100%,$to)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  $from 0%,$to 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  $from 0%,$to 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  $from 0%,$to 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  $from 0%,$to 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=$from, endColorstr=$to,GradientType=0 ); /* IE6-9 */
 }
 
 * {
@@ -46,7 +60,8 @@ html {
 body {
 	font-size: 16px;
 	font-family: "MyriadPro-Regular", "Myriad Pro", Verdana, Arial, Helvetica, sans-serif;
-	background-color: $backgroundColor;
+	//background-color: $backgroundColor;
+	@include gradient(#5b5b5b, #707070);
 	font-weight: normal;
 	font-style: normal;
 	font-variant: normal;
@@ -58,10 +73,13 @@ body {
 
 h1, h2, h3, h4, h5, h6, p {
 	margin-top: 0;
-	margin-bottom: 2em;
+	margin-bottom: 1em;
 	padding-right: 15px;
 	padding-left: 15px;
+}
 
+h1, h2 {
+	margin-bottom: 2em;
 }
 
 ul {
@@ -70,6 +88,12 @@ ul {
 
 a img {
 	border: none;
+}
+
+table {
+	td {
+		padding: 5px;	
+	}
 }
 
 a:link, a:visited {
@@ -132,7 +156,7 @@ header {
 
 .content {
 	background-color: $contentColor;
-	@include border-radius(10px);
+	@include border-radius(5px);
 	position: absolute;
 	top: 70px;
 	bottom: 70px;
@@ -140,6 +164,16 @@ header {
 	right: 20px;
 	padding: 20px;
 	overflow-y: auto;
+
+	/* breadcrumb */
+	h2:first-child ~ nav {
+		margin-bottom: 20px;
+		border-bottom: 1px solid $accentColor;
+
+		a {
+			display: inline-block;
+		}
+	}
 
 	#showcase {
 		width: 100%;
@@ -189,29 +223,7 @@ header {
 						padding-right: 20px;
 					}
 
-					input {
-						padding: 4px;
-
-						&[type='text'],
-						&[type='password'],
-						&[type='email'] {
-							width: $formTextfieldWidth;
-							border: 1px solid;
-							outline: none;
-
-							&:focus {
-								outline-style: auto; 
-								outline-color: $formFocusOutlineColor;
-								outline-width: 5px;
-							}
-
-							&.invalidinput {
-								outline-style: auto;
-								outline-color: $errorMessageColor;
-								outline-width: 5px;
-							}
-						}
-					}
+					
 
 					div.error_wrapper {
 						position: relative;
@@ -225,6 +237,77 @@ header {
 			td.w2p_fc {
 				display: none;
 			}
+		}
+
+		input {
+			padding: 4px;
+		}
+
+		input[type='text'],
+		input[type='password'],
+		input[type='email'],
+		textarea {
+			width: $formTextfieldWidth;
+			border: 1px solid;
+			outline: none;
+
+			&:focus {
+				outline-style: auto; 
+				outline-color: $formFocusOutlineColor;
+				outline-width: 5px;
+			}
+
+			&.invalidinput {
+				outline-style: auto;
+				outline-color: $errorMessageColor;
+				outline-width: 5px;
+			}
+		}
+
+		textarea {
+			width: $formTextAreaWidth;
+		}
+	}
+
+	table {
+		margin-bottom: 20px;
+		border-collapse: collapse;
+		border-spacing: 0px;
+		border: none;
+
+		thead {
+			background-color: $accentColor;
+			th {
+				padding: 5px;
+			}
+		}
+
+		tbody ~ tbody {
+			border-top-width: 1px;
+			border-top-style: solid;
+			border-top-color: #FFF;
+		}
+	}
+
+	form.inlineform {
+		background-color: $accentColor;
+		width: 360px;
+		padding: 10px;
+		margin-bottom: 20px;
+	}
+
+	section {
+		border-bottom-width: 2px;
+		border-bottom-style: solid;
+		border-bottom-color: $accentColor;
+		margin-bottom: 10px;
+
+		&#main {
+			border-bottom: none;
+		}
+
+		&:last-child {
+			border-bottom: none;
 		}
 	}
 
@@ -241,6 +324,18 @@ header {
 		@include border-radius(5px);
 	}
 
+	a.button ~ * {
+		margin-top: 5px;
+	}
+
+	*.replace {
+
+		/* for elements replacing emtpy tables */
+		&.table {
+			margin-top: 20px;
+		}
+	}
+
 }
 
 footer {
@@ -251,9 +346,22 @@ footer {
 	padding: 0;
 	bottom: 0;
 
-	.legal {
-		margin: 5px 0px 0px 5px;
+	.legal,
+	nav.footerLinks {
+		margin: 10px 0px 0px 5px;
 		float: left;
+		font-size: .9em;
+		color: $footerTextColor;
+	}
+
+	a, a:link, a:visited {
+		color: $footerTextColor;
+		padding-right: 20px;
+	}
+
+	a:hover, a:active, a:focus {
+		color: $linkColor;
+		text-decoration: none;
 	}
 
 	#console {

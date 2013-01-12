@@ -17,9 +17,11 @@
 	{{
 	response.files.append(URL('static','css/pythoncheck.css'))
 	response.files.append(URL('static','js/jquery.js'))
+	response.files.append(URL('static','js/modernizr.custom.js'))
 	response.files.append(URL('static','js/pythoncheck.js'))
 	response.files.append(URL('static', 'js/calendar.js'))
 	response.files.append(URL('static', 'css/calendar.css'))
+	response.files.append(URL('static', 'css/bootstrap.min.css'))
 	response.include_files()
 
 	# clear the files buffer
@@ -71,9 +73,12 @@
 
 	<footer> 
 		<p class="legal">
-			&amp;copy; 2012 {{= A(T('LEGAL'), _href=URL('about', 'legal')) }}
-
+			&amp;copy; Tobias Primus, 2012
 		</p>
+		<nav class="footerLinks">
+			{{= A(T('LEGAL'), _href=URL('about', 'legal')) }}
+			{{= A(T('Special thanks to HTL3R'), _href='http://www.htl.rennweg.at') }}
+		</nav>
 		<div id="console">
 			<div class="prompt">
 				<a id="closeTrigger">

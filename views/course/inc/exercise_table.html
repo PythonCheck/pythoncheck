@@ -60,6 +60,9 @@
 				window.dateFields.push('{{=startDateID}}');
 				window.dateFields.push('{{=dueDateID}}');
 			</script>
+			{{
+			add_exercise_form.add_class('inlineform');
+			}}
 			{{= add_exercise_form }}
 		{{ else: }}
 			<em>All Exercises added!</em>
@@ -73,7 +76,7 @@
 
 	{{ if len(exercises) > 0: }}
 		{{ import datetime }}
-		<table>
+		<table class="inlineform">
 			<thead>
 				<tr>
 					<th>{{= T('#') }}</th>

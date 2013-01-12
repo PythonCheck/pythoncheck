@@ -8,10 +8,10 @@ def validate_new_course(form):
 def list():
 	new_form = SQLFORM(db.course, fields=['name'])
 	if new_form.accepts(request.vars, session, onvalidation=validate_new_course):
-		session.flash = 'Created course "' + new_form.vars.name + '"'
+		session.flash = T('Created course "') + new_form.vars.name + '"'
 		redirect(URL('list'))
 	elif new_form.errors:
-		response.flash = 'form has errors'
+		response.flash = T('Form has errors')
 
 	course_list_contiditon = db.course if has_role('teacher') else ((db.enrollment.student == auth.user.id) & (db.course.id == db.enrollment.course))
 	course_list_rows = db(course_list_contiditon).select()
@@ -25,7 +25,7 @@ def list():
 def edit():
 	record = db.course(request.args[0])
 	if record.teacher != auth.user.id and has_role('admin') == False:
-		session.flash = 'Unauthorized!'
+		session.flash = T('Unauthorized!')
 		redirect(URL('list'))
 	fields = ['name']
 	grid = SQLFORM(db.course, record, fields=['name'])

@@ -28,15 +28,13 @@
 				<td>{{= row.language.name }}</td>
 				<td>{{= row.text[:50] }}…</td>
 				<td>
-					<td>
-						<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/edit/{{= row.id }}">
-							<span class="icon pen icon-pencil"></span>
-							<span class="buttontext button" title="{{= T('Edit') }}">{{= T('Edit') }}</span>
-						</a>
-						<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/assertions/{{= row.id }}">
-							<span class="buttontext button" title="{{= T('Assertions') }}">{{= T('Assertions') }}</span>
-						</a>
-					</td>
+					<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/edit/{{= row.id }}">
+						<span class="icon pen icon-pencil"></span>
+						<span class="buttontext button" title="{{= T('Edit') }}">{{= T('Edit') }}</span>
+					</a>
+					<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/assertions/{{= row.id }}">
+						<span class="buttontext button" title="{{= T('Assertions') }}">{{= T('Assertions') }}</span>
+					</a>
 				</td>
 			</tr>
 		{{ pass }}

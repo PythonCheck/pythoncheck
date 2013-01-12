@@ -3,7 +3,6 @@ $(function() {
 	window.term = new Terminal('.output', $('footer .cmd input'));
 
 	term.open = function(term) {
-		$('footer .legal').fadeOut();
 		$('#console').css({
 			'left': $('#console').position().left, 
 			'width': 'auto'
@@ -48,7 +47,6 @@ $(function() {
 			height: '40px'
 		}, {
 			complete: function() {
-				$('footer .legal').fadeIn();
 				$('#console').removeAttr('style');
 				$('#output').removeAttr('style');
 				$('#console #closeTrigger').removeAttr('style');
