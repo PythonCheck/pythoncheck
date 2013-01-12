@@ -68,10 +68,12 @@
 			<em>All Exercises added!</em>
 		{{pass}}
 	{{ elif request.function == 'edit': }}
+	<nav class="actions">
 		<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/add_exercise">
 			<span class="icon plus icon-plus"></span>
 			<span class="buttontext button" title="{{=T('Add')}}">{{=T('Add')}}</span>
 		</a>
+	</nav>
 	{{ pass }}
 
 	{{ if len(exercises) > 0: }}

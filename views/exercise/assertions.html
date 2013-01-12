@@ -9,6 +9,7 @@
 	</a>
 </nav>
 
+
 <table>
 	<thead>
 		<tr>
@@ -23,23 +24,36 @@
 			{{ assertions = db( db.assertion.points == point_group.id ).select() }}
 			<tr>
 				<td rowspan="{{= len(assertions) + 1 if len(assertions) > 0 else 2 }}">{{= T('%(points)s points') % { 'points' : point_group.number_of_points } }}</td>
-				{{ if len(assertions) > 0: }}
-					{{ assertion = assertions[0] }}
-					{{ assertions = assertions[1:] }}
-					<td>{{= assertion.function_name }}({{= assertion.arguments }})</td>
-					<td>{{= assertion.expected_result }}</td>
-					<td><a href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/remove/{{= assertion.id }}">Remove</a></td>
-				{{ else: }}
+				{{ 
+				if len(assertions) == 0: 
+				}}
 					<td colspan="3"><em>No assertions in this point group</em></td>
+				{{  
+				else: 
+					first = True
+					for assertion in assertions: 
+					}}
+						{{
+						if first:
+							first = False
+						else: 
+							}}
+							</tr>
+							<tr>
+						{{ pass }}
+
+						<td><code>{{= assertion.function_name }}({{= assertion.arguments }})</code> </td>
+						<td><code>{{= assertion.expected_result }}<code></td>
+						<td>
+							<a class="w2p_trap button btn" 
+							href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/remove/{{= assertion.id }}">
+								<span class="icon trash icon-trash"></span>
+								<span class="buttontext button" title="Remove">Remove</span>
+							</a>
+						</td>
+					{{ pass }}
 				{{ pass }}
 			</tr>
-			{{ for assertion in assertions: }}
-				<tr>
-					<td>{{= assertion.function_name }}({{= assertion.arguments }})</td>
-					<td>{{= assertion.expected_result }}</td>
-					<td><a href="/{{= request.application }}/{{= request.controller }}/{{= request.function }}/{{= request.args(0) }}/remove/{{= assertion.id }}">Remove</a></td>
-				</tr>
-			{{ pass }}
 			<tr>
 				<form method="post">
 					<input type="hidden" name="_formname" value="new_assertion" />
@@ -53,6 +67,7 @@
 	{{ pass }}
 	</tbody>
 </table>
+
 
 {{ if request.args(1) == 'add_point_group': }}
 	{{

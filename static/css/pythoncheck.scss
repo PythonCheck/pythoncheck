@@ -3,6 +3,7 @@
 $baseURL: '/PythonCheck/static/images/';
 $tabHeight: 40px;
 
+$brandColor: #888;
 $backgroundColor: #5B5B5B;
 $contentColor: #404040;
 $accentColor: #505050;
@@ -25,6 +26,7 @@ $outputMessageColor: $fontColor;
 $formFocusOutlineColor: $successMessageColor;
 $formTextfieldWidth: 200px;
 $formTextAreaWidth: 300px;
+$tableWidth: 80%;
 
 /*
 MIXINS
@@ -36,7 +38,7 @@ MIXINS
 	border-radius: $radius;
 }
 
-@mixin gradient($from, $to) {
+@mixin verticalGradient($from, $to) {
 	background: $from; /* Old browsers */
 	background: -moz-linear-gradient(top,  $from 0%, $to 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$from), color-stop(100%,$to)); /* Chrome,Safari4+ */
@@ -61,7 +63,7 @@ body {
 	font-size: 16px;
 	font-family: "MyriadPro-Regular", "Myriad Pro", Verdana, Arial, Helvetica, sans-serif;
 	//background-color: $backgroundColor;
-	@include gradient(#5b5b5b, #707070);
+	@include verticalGradient($backgroundColor, #707070);
 	font-weight: normal;
 	font-style: normal;
 	font-variant: normal;
@@ -94,6 +96,13 @@ table {
 	td {
 		padding: 5px;	
 	}
+
+	td.ellipsis {
+		white-space: nowrap;
+		width: auto;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
 }
 
 a:link, a:visited {
@@ -112,6 +121,22 @@ a.inactive {
 header {
 	background-color: $headerColor;
 	height: $headerHeight;
+
+	#brand {
+		margin: 0px;
+		float: left;
+		display: block;
+		font-size: 1.1em;
+		color: $brandColor;
+		padding: 10px;
+		padding-right: 20px;
+		padding-left: 20px;
+		text-decoration: none;
+
+		&:hover {
+			color: #FFF;
+		}
+	}
 
 	#navlist {
 		float: right;
@@ -166,13 +191,22 @@ header {
 	overflow-y: auto;
 
 	/* breadcrumb */
-	h2:first-child ~ nav {
+	h2:first-child ~ nav,
+	nav.actions {
+		margin-left: auto;
+		margin-right: auto;
 		margin-bottom: 20px;
 		border-bottom: 1px solid $accentColor;
+		background-color: $backgroundColor;
+		@include border-radius(5px);
 
 		a {
 			display: inline-block;
 		}
+	}
+
+	nav.actions {
+		width: $tableWidth;
 	}
 
 	#showcase {
@@ -213,6 +247,7 @@ header {
 	form {
 		table {
 			margin: 0px auto;
+			width: auto;
 
 			tr {
 
@@ -266,6 +301,7 @@ header {
 
 		textarea {
 			width: $formTextAreaWidth;
+			padding: 2px;
 		}
 	}
 
@@ -274,6 +310,12 @@ header {
 		border-collapse: collapse;
 		border-spacing: 0px;
 		border: none;
+		text-align: left;
+
+		//centering table
+		margin-left: auto;
+		margin-right: auto;
+		width: $tableWidth;
 
 		thead {
 			background-color: $accentColor;
@@ -287,13 +329,26 @@ header {
 			border-top-style: solid;
 			border-top-color: #FFF;
 		}
+
+		tbody {
+			td:last-child {
+				text-align: right;
+			}
+		}
+
+		&.inlinetable {
+			margin-left: 0px;
+			margin-right: 0px;
+			width: auto;
+		}
 	}
 
 	form.inlineform {
+		@extend form;
+		@extend table;
+		@include border-radius(5px);
 		background-color: $accentColor;
-		width: 360px;
 		padding: 10px;
-		margin-bottom: 20px;
 	}
 
 	section {
@@ -321,18 +376,20 @@ header {
 		padding: 5px;
 		margin: 5px;
 		font-size: 13px;
+		cursor: pointer;
 		@include border-radius(5px);
 	}
 
-	a.button ~ * {
-		margin-top: 5px;
+	/* for items placed after action-buttons, such as tables after an 'Add' button */
+	a.button ~ table {
+		margin-top: 20px;
 	}
 
 	*.replace {
 
 		/* for elements replacing emtpy tables */
 		&.table {
-			margin-top: 20px;
+			@extend table
 		}
 	}
 

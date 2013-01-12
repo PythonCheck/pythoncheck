@@ -46,9 +46,10 @@
 
 <body>
 	<header>
+		<a href="{{=URL('default', 'index')}}" id="brand">{{=APP_NAME}}</a>
 		<p id="user">
 			{{ if auth.user_id: }}
-				<a href="{{=URL('user', 'logout')}}">Logout&nbsp;&nbsp;&nbsp;<em>{{=auth.user.email}}</em></a>
+				<a href="{{=URL('user', 'logout')}}">Logout<em> {{=auth.user.email}}</em></a>
 			{{ else: }}
 				<a href="{{=URL('user', 'login')}}">Login</a>
 				<a href="{{=URL('user', 'register')}}">Register</a>

@@ -3,7 +3,8 @@
 {{ if has_role('teacher'): }}
 	<h2>{{= T('Exercise Pool') }}</h2>
 
-	<nav>
+	
+	<nav class="actions">
 		<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/new">
 			<span class="icon plus icon-plus"></span>
 			<span class="buttontext button" title="{{=T('Create Exercise')}}">{{=T('Create Exercise')}}</span>
