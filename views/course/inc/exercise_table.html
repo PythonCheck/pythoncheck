@@ -30,6 +30,10 @@
 		exercises_in_this_course = db(db.course_exercise.course == request.args(0))._select(db.course_exercise.exercise)
 		exercises_not_in_this_course = db(~db.exercise.id.belongs(exercises_in_this_course)).select(db.exercise.ALL, orderby=(db.exercise.language, db.exercise.name))
 		exercise_select = SELECT([OPTION(row.language.name, ': ', row.name, _value=row.id) for row in exercises_not_in_this_course], _name='exercise')
+
+		startDateID = 'startdatetime'
+		dueDateID = 'duedatetime' 
+
 		add_exercise_form = FORM(TABLE( 
 									TR(
 										TD(LABEL(T('Exercise'))),
@@ -37,11 +41,11 @@
 									),
 									TR(
 										TD(LABEL(T('Start Date'))),
-										TD(INPUT(_class='datetime', _type='text', _name='start_date'))
+										TD(INPUT(_class='datetime', _type='text', _name='start_date', _id=startDateID))
 									),
 									TR(
 										TD(LABEL(T('Due Date'))),
-										TD(INPUT(_class='datetime', _type='text', _name='end_date'))
+										TD(INPUT(_class='datetime', _type='text', _name='end_date', _id=dueDateID))
 									),
 									TR(
 										TD(),
@@ -51,6 +55,11 @@
 							)
 		}}
 		{{ if len(exercises_not_in_this_course) > 0: }}
+			<script type="text/javascript">
+				console.log(window.dateFields);
+				window.dateFields.push('{{=startDateID}}');
+				window.dateFields.push('{{=dueDateID}}');
+			</script>
 			{{= add_exercise_form }}
 		{{ else: }}
 			<em>All Exercises added!</em>

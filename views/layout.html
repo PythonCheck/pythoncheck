@@ -18,6 +18,8 @@
 	response.files.append(URL('static','css/pythoncheck.css'))
 	response.files.append(URL('static','js/jquery.js'))
 	response.files.append(URL('static','js/pythoncheck.js'))
+	response.files.append(URL('static', 'js/calendar.js'))
+	response.files.append(URL('static', 'css/calendar.css'))
 	response.include_files()
 
 	# clear the files buffer
@@ -25,8 +27,18 @@
 	}}
 </head>
 <script type="text/javascript">
+	window.dateFields = []; // initialize dateFields array
 	$(function() {
 		window.Utils.flash();
+
+		for(var k in dateFields) {
+			Calendar.setup({
+		        trigger: dateFields[k],
+		        inputField: dateFields[k],
+		        showsTime: true,
+		        ifFormat: '%Y-%m-%d %H:%M:%S'
+    		});			
+		}
 	})
 </script>
 
