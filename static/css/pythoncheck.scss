@@ -441,12 +441,10 @@ footer {
 
 		#closeTrigger {
 			display: none;
-			width: $promptWidth;
-			height: 21px;
-			padding: 5px;
-			text-transform: uppercase;
-			position: relative;
-			top: 5px;
+			margin-left: auto;
+			margin-right: auto;
+			padding: 0px;
+			margin-top: 10px;
 		}
 
 		.prompt {
@@ -548,6 +546,10 @@ footer {
 
 			&.active {
 				background-color: #CCC; 
+			}
+
+			&.inactive {
+				color: #CCC;
 			}
 
 			img.loading {
