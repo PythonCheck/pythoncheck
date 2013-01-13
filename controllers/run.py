@@ -84,7 +84,16 @@ def _grading(userId, course, exercise):
 		response['error'] = T('You are not enrolled to the course you tried to get grades for')
 		raise HTTP(422, XML(json(response)))
 
-	grades = db((db.grading.enrollment == enrollment.first()) & (db.grading.exercise == exercise)).select()
+	exerciseAssignment = db((db.course_exercise.exercise == exercise) & (db.course_exercise.course == course)).select()
+
+	# no enrollment found
+	if len(exerciseAssignment) < 1:
+		response['error'] = T('There is no such exercise in this course')
+		raise HTTP(422, XML(json(response)))
+
+	exerciseAssignment = exerciseAssignment.first()
+
+	grades = db((db.grading.enrollment == enrollment.first()) & (db.grading.exercise == exerciseAssignment.id)).select()
 
 	# no grades found
 	if len(grades) < 1:
