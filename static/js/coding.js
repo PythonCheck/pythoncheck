@@ -55,18 +55,28 @@ $(function() {
 	}
 
 	$('#console .prompt pre').on('click', function() {
-			term.console(true);
+		term.console(true);
 	}.bind(this));
 
 	$('#console #closeTrigger').on('click', function() {
 		term.console(false);
 	});
 
+	// initialize AutoComplete
+	CodeMirror.commands.autocomplete = function(cm) {
+		CodeMirror.simpleHint(cm, CodeMirror.pythonHint);
+	}
+
 	// initialize the IDE
 	window.ide = new IDE($('#codingsohard'));
 	window.ide.buildHTMLStructure($('#codingsohard'), true, {
 		theme: "monokai",
-		lineNumbers: true
+		lineNumbers: true,
+		autofocus: true, // autofocus the CodeMirror upon initialization
+		indentWithTabs: true,
+		tabSize: 4,
+		indentUnit:4,
+		extraKeys: {'Ctrl-Space': "autocomplete"}
 	});
 
 	window.ide.dragNDrop($('#codingsohard'));
@@ -75,5 +85,6 @@ $(function() {
 	ide.openFileList();
 
 	initCommands(term, ide);
-	ide.console(term);
+	ide.console(term);	
+
 });

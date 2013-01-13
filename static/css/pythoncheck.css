@@ -327,7 +327,8 @@ footer {
       left: 40px;
       right: 0px;
       padding-left: 20px;
-      overflow: auto; }
+      overflow: auto;
+      font-family: 'Courier New', monospace; }
       footer #console .output .successMessage {
         color: #76b82a; }
       footer #console .output .errorMessage {

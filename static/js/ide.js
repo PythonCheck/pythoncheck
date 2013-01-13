@@ -1032,24 +1032,18 @@
 		// returns: the internalCodeMirror
 		//
 		// possible calls
+		// () -- returns the CodeMirrorInstance
 		// (true, options) -- a new CodeMirror instance will created using the given options + the default options
 		// (codeMirrorInstance) -- the given instance will be used for the IDE
 		codeMirror: function(codeMirror, codeMirrorOptions) {
+			if(arguments.length == 0) {
+				return this.internalCodeMirror;
+			}
 			if(codeMirror === true) {
 				//extend the CodeMirror keyMap adding the IDE keys
 				$.extend(CodeMirror.keyMap.default, this.keys);
 				
-				//default
-				cmOptions = {
-					//keyMap: CodeMirror.keyMap.default,
-					//lineNumbers: true
-				};
-
-				if(codeMirrorOptions) {
-					$.extend(cmOptions, codeMirrorOptions);
-				}
-				
-				this.internalCodeMirror = new CodeMirror(this.codePanel[0], cmOptions);
+				this.internalCodeMirror = new CodeMirror(this.codePanel[0], codeMirrorOptions);
 			}
 			else if(codeMirror) {
 				this.internalCodeMirror = codeMirror;
