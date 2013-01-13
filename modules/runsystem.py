@@ -9,10 +9,8 @@ from gluon.shell import exec_environment
 def generateBuildId(length):
 	return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(length))
 
-def rate_limit_exeeded(userId, maxConcurrentBuilds):
-	env = exec_environment('applications/PythonCheck/models/db.py')
-	db = env.db
-	auth = env.db
+def rate_limit_exeeded(environment, userId, maxConcurrentBuilds):
+	db = environment.db
 
 	query = db((db.current_builds.user == userId) & (db.current_builds.finished==False)).count()
 
@@ -21,11 +19,11 @@ def rate_limit_exeeded(userId, maxConcurrentBuilds):
 
 def invokeBuild(mode, buildId, main, userId, language='Python', project=None, course=None):
 
-	if rate_limit_exeeded(userId=userId, maxConcurrentBuilds=1):
-		raise StandardError('Rate Limit Exeeded!')
-
 	env = exec_environment('applications/PythonCheck/models/db.py')
 	config = exec_environment('applications/PythonCheck/models/config.py')
+
+	if rate_limit_exeeded(env, userId=userId, maxConcurrentBuilds=1):
+		raise StandardError('Rate Limit Exeeded!')
 
 	# import the build system
 	buildModule = config.APPLICATION_PATH + '/modules/build/' + language.lower() + '.py'
