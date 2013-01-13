@@ -1,21 +1,23 @@
 {{ extend 'layout.html' }}
 
 <h2>»{{= record.name }}«</h2>
-{{ if has_role('admin'): }}
-	<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/">
-		<span class="icon leftarrow icon-arrow-left"></span>
-		<span class="buttontext button" title="{{= T('Course List') }}">{{= T('Course List') }}</span>
-	</a>
-	<a class="w2p_trap button btn" href="/{{= request.application}}/{{= request.controller }}/edit/{{= request.args(0) }}">
-		<span class="icon pen icon-pencil"></span>
-		<span class="buttontext button" title="{{= T('Edit') }}">{{= T('Edit') }}</span>
-	</a>
-{{ elif has_role('student'): }}
-	<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/">
-		<span class="icon leftarrow icon-arrow-left"></span>
-		<span class="buttontext button" title="{{= T('My Courses') }}">{{= T('My Courses') }}</span>
-	</a>
-{{ pass }}
+<nav>
+	{{ if has_role('admin'): }}
+		<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/">
+			<span class="icon leftarrow icon-arrow-left"></span>
+			<span class="buttontext button" title="{{= T('Course List') }}">{{= T('Course List') }}</span>
+		</a>
+		<a class="w2p_trap button btn" href="/{{= request.application}}/{{= request.controller }}/edit/{{= request.args(0) }}">
+			<span class="icon pen icon-pencil"></span>
+			<span class="buttontext button" title="{{= T('Edit') }}">{{= T('Edit') }}</span>
+		</a>
+	{{ elif has_role('student'): }}
+		<a class="w2p_trap button btn" href="/{{= request.application }}/{{= request.controller }}/">
+			<span class="icon leftarrow icon-arrow-left"></span>
+			<span class="buttontext button" title="{{= T('My Courses') }}">{{= T('My Courses') }}</span>
+		</a>
+	{{ pass }}
+</nav>
 
 <h3>Exercises</h3>
 {{ include request.controller + "/inc/exercise_table.html" }}

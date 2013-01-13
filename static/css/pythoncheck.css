@@ -1,3 +1,5 @@
+/* header */
+/* footer */
 /*
 MIXINS
 */
@@ -44,6 +46,9 @@ h1, h2, h3, h4, h5, h6, p {
 
 h1, h2 {
   margin-bottom: 2em; }
+
+h2 {
+  font-size: 2em; }
 
 ul {
   padding-left: 40px; }
@@ -116,8 +121,8 @@ header {
   position: absolute;
   top: 70px;
   bottom: 70px;
-  left: 20px;
-  right: 20px;
+  left: 30px;
+  right: 30px;
   padding: 20px;
   overflow-y: auto;
   /* breadcrumb */
@@ -273,7 +278,7 @@ header {
 
 footer {
   width: 100%;
-  background-color: #161915;
+  background-color: #404040;
   position: fixed;
   height: 40px;
   padding: 0;
@@ -283,9 +288,9 @@ footer {
     margin: 10px 0px 0px 5px;
     float: left;
     font-size: .9em;
-    color: #606060; }
+    color: #aaaaaa; }
   footer a, footer a:link, footer a:visited {
-    color: #606060;
+    color: #aaaaaa;
     padding-right: 20px; }
   footer a:hover, footer a:active, footer a:focus {
     color: white;
