@@ -74,7 +74,9 @@ def invokeBuild(mode, buildId, main, userId, language='Python', project=None, co
 	if not os.path.exists(filePath):
 		os.makedirs(filePath)
 
-	for codeFile in env.db((env.db.files.project == project) & (env.db.files.course == course)).select():
+	fileQuery = (env.db.files.project == project) & (env.db.files.course == course)
+
+	for codeFile in env.db(fileQuery).select():
 		# write src code into file
 		file=None
 		
@@ -85,6 +87,10 @@ def invokeBuild(mode, buildId, main, userId, language='Python', project=None, co
 			file = open(filePath + '/' + codeFile.filename, 'w')
 		file.write(codeFile.content or '')
 		file.close()
+
+	# lock files
+	if mode == 'submit':
+		env.db(fileQuery).update(writeable=False)
 
 	buildArgs = buildId + ' ' + filePath + ' ' + buildModule + ' ' + mode + ' ' + extendedBuildArgs
 

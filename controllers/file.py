@@ -117,10 +117,7 @@ def new():
 		if (project == None) or (project.find('/') >= 0):
 			raise HTTP(422, 'invalid project identifier')
 		else:
-			try:
-				db.files.insert(unique_identifier=uniqueIdentifier, user=auth.user_id, filename=filename, project=project, projectIsExercise=False, edited=datetime.today(), course=None, content=content)
-			except Exception, e:
-				raise HTTP(422, 'invalid filename: file exists')
+			course = None
 			
 	
 	elif filetype == 'exercise':
@@ -138,16 +135,15 @@ def new():
 			(db.enrollment.student==auth.user_id)).select()) < 1:
 
 			raise HTTP(422, 'This exercise and course don\'t not exist and therefore we can\'t create a file in it')
-
-		else:
-			try:
-				db.files.insert(unique_identifier=uniqueIdentifier, user=auth.user_id, filename=filename, project=project, projectIsExercise=True, edited=datetime.today(), course=course, content=content)
-			except Exception, e:	
-				raise HTTP(422, 'invalid filename: file exists')
-
 			
 	else:
 		raise HTTP(422, 'no valid filetype specified. please either use project or exercise')
+
+	# will only come here if all params are correct
+	try:
+		db.files.insert(unique_identifier=uniqueIdentifier, user=auth.user_id, filename=filename, project=project, projectIsExercise=(filetype == 'exercise'), edited=datetime.today(), course=course, content=content)
+	except Exception, e:
+		raise HTTP(422, 'invalid filename: file exists')
 
 	return dict(success=True)
 

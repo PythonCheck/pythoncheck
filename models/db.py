@@ -157,7 +157,8 @@ db.define_table('files',
     Field('project', 'string', required=True),
     Field('projectIsExercise', 'boolean', required=True),
     Field('content', 'text'),
-    Field('version', 'integer'))
+    Field('version', 'integer'),
+    Field('writeable', 'boolean', required=True, default=True))
 
 db.define_table('grading', 
     Field('enrollment', db.enrollment, required=True), # contains the userid
