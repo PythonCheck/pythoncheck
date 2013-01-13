@@ -5,7 +5,15 @@
 		session.flash = 'Changed Exercise'
 		redirect(URL(request.function + '/' + request.args(0)))
 	pass
+
+	startDateID = 'course_exercise_start_date'
+	dueDateID = 'course_exercise_end_date'
+
 	}}
+	<script type="text/javascript">
+		window.dateFields.push('{{=startDateID}}');
+		window.dateFields.push('{{=dueDateID}}');
+	</script>
 	{{= form }}
 {{ else: }}
 	{{ if request.function == 'edit' and request.args(1) == 'add_exercise': }}
@@ -56,7 +64,6 @@
 		}}
 		{{ if len(exercises_not_in_this_course) > 0: }}
 			<script type="text/javascript">
-				console.log(window.dateFields);
 				window.dateFields.push('{{=startDateID}}');
 				window.dateFields.push('{{=dueDateID}}');
 			</script>
