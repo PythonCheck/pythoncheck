@@ -824,6 +824,24 @@
 			}
 		}, 
 
+		cycleFiles: function(jump) {
+			var index = this.getOpenFileIndex(this.getFocusedFile()); //this is the current file index
+			index += jump;
+			if(index < 0) {
+				while(index < 0) {
+					index += this.currentlyOpenFiles.length; // normalize
+				}
+			}
+			else if (index > this.currentlyOpenFiles.length-1) {
+				while(index > this.currentlyOpenFiles.length-1) {
+					index -= this.currentlyOpenFiles.length;
+				}
+			}
+
+			this.focusFile(this.currentlyOpenFiles[index]);
+
+		},
+
 		// updates the CodeMirror view (e.g. switching files)
 		//
 		// returns: false
@@ -1124,14 +1142,36 @@
 		keys: {
 			"Ctrl-R": function(cm) {
 				cm.IDE.run();
-			}, 
-			"Alt-Tab": function(cm) {
-				console.log(cm);
 			},
+
+			"Cmd-B": function(cm) {
+				cm.IDE.run();
+			},
+
+			"Alt-Tab": function(cm) {
+				cm.IDE.cycleFiles(+1);
+			},
+
 			"Cmd-S": function(cm) {
 				cm.IDE.syncFile();
+			}, 
+
+			"Cmd-1": function(cm) {
+				cm.IDE.console().console(true);
 			}
 		},
+
+		keysText: {
+			"Ctrl-R": "Run",
+
+			"Cmd-B": "Run",
+
+			"Alt-Tab": "Cycle Tabs",
+
+			"Cmd-S": "Save File",
+
+			"Cmd-1": "Open Terminal"
+		}
 	};
 
 	window.IDE = IDE;

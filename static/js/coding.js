@@ -24,6 +24,7 @@ $(function() {
 		}, {
 			complete: function() {
 				$('#console #closeTrigger').fadeIn();
+				$('#console div.cmd input').focus();
 			}
 		});
 	}

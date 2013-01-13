@@ -33,6 +33,18 @@ function initCommands(terminal, ide) {
 		},
 		'close': function() {
 			ide.console.call(ide, false);
+		}, 
+		'shortcuts': function(){
+			for(var k in ide.keys) {
+				out(k + ': ' + ide.keysText[k]);
+			}
+		},
+		'e': function() {
+			var js = ''
+			for(var k in arguments) {
+				js += arguments[k] + ' ';
+			}
+			eval(js);
 		}
 	});
 }	
