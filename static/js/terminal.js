@@ -9,7 +9,10 @@
 	}
 
 	var Terminal = function(output, input, options) {
-		this.log = $(output);
+		this.scrollPane = $(output);
+		this.log = $('<pre></pre>');
+		this.scrollPane.append(this.log);
+
 		this.commandline = $(input);
 
 		//-- set options
@@ -221,9 +224,63 @@
 
 			if(str != null) {
 				// add output to console
-				this.log.append(str).animate({scrollTop: this.log.prop('scrollHeight')});
+				this.log.append(str);
+				this.scrollPane.animate({scrollTop: this.log.prop('scrollHeight')});
 
 			}
+		},
+
+
+		table: function(tableData) {
+			var maxChars = [];
+			var line, column;
+
+			// determine column size
+			for(var l in tableData) {
+				line = tableData[l];
+
+				for(var col in line) {
+					column = line[col];
+
+					if(column.length > maxChars[col] || !maxChars[col]) {
+						maxChars[col] = column.length;
+					}
+				}
+			}
+
+			// build lines
+			var separationLine = ''
+			for(var l in maxChars) {
+				separationLine += '+';
+
+				for(var i = 0; i < maxChars[l] + 2 /* two char padding */; i++) {
+					separationLine += '-';
+				}
+			}
+			separationLine += '+\n';
+
+
+			var output = '';
+			// build table
+			for(var l in tableData) {
+				line = tableData[l];
+
+				output += separationLine;
+
+				for(var col in line) {
+					column = line[col] + '';
+
+					while(column.length < maxChars[col]) {
+						column += ' ';
+					}
+
+					output += '| ' + column + ' ';
+				}
+
+				output += '|\n';
+			}
+
+			return output + separationLine;
 		},
 
 		// adds output to the console

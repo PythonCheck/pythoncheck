@@ -25,6 +25,7 @@
 		apiRun: 'run/run.json',
 		apiSubmit: 'run/submit.json',
 		apiResult: 'run/result.json',
+		apiGrading: 'run/grading.json',
 		defaultTimeout: 1500,
 		maxApiFailures: 4,
 		fileListWidth: 250,
@@ -994,6 +995,29 @@
 					this.output(output);
 				}
 			}
+		},
+
+		grading: function(course, exercise) {
+			this.api(this.options.apiGrading, {course: course, exercise: exercise}, function(result, resultTextStatus, resultJqXHR) {
+				result = result.grades;
+
+				var currentExercise, currentPointGroup, lines;
+				for(var k in result) {
+					currentExercise = result[k];
+
+					lines = [['Points', 'Recieved']];
+
+					for(var n in currentExercise.pointGroups) {
+						currentPointGroup = currentExercise.pointGroups[n];
+
+						lines.push([currentPointGroup.number, currentPointGroup.passed]);
+					}
+
+					this.output(this.console().table(lines));
+					this.output('Overall: ' + currentExercise.overallPoints);
+				}
+
+			}.bind(this));
 		},
 
 		// calls to the api, retrieving the file list. On success callback will be called (see this.api for signature).

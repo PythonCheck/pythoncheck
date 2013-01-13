@@ -71,3 +71,61 @@ def result():
 	# if data is available and the build is still running tell the client to wait
 	else:
 		return dict(finished=data.finished, timeout=CLIENT_TIMEOUT)
+
+# retrieve the grading of a user and exercise
+def _grading(userId, course, exercise):
+
+	response = dict()
+
+	enrollment = db((db.enrollment.course == course) & (db.enrollment.student == userId)).select()
+
+	# no enrollment found
+	if len(enrollment) < 1:
+		response['error'] = T('You are not enrolled to the course you tried to get grades for')
+		raise HTTP(422, XML(json(response)))
+
+	grades = db((db.grading.enrollment == enrollment.first()) & (db.grading.exercise == exercise)).select()
+
+	# no grades found
+	if len(grades) < 1:
+		response['error'] = T('It seems like there is no grading for this exercise')
+		raise HTTP(422, XML(json(response)))
+
+	# in an exercise is assigned multiple times
+	response['grades'] = []
+	for grade in grades:
+		# get the point groups
+		currentGrading = dict()
+		pointGroups = db((db.points_grading.grading == grade.id)).select()
+		
+		currentGrading['overallPoints'] = 0
+		currentGrading['pointGroups'] = []
+
+		# iterate over them and build processable dicts
+		for pointGroup in pointGroups:
+			# fetch the referenced point group to gather data
+			referencedPointGroup = db((db.points.id == pointGroup.points)).select().first()
+
+			currentGrading['pointGroups'].append(dict(number=referencedPointGroup.number_of_points, passed=pointGroup.succeeded))
+			
+			# sum up the results
+			if pointGroup.succeeded:
+				currentGrading['overallPoints'] += referencedPointGroup.number_of_points
+
+		# put the grading into the array
+		response['grades'].append(currentGrading)
+
+	return response	
+
+# exposes grading
+def grading():
+	userId = auth.user_id
+	course = request.vars.course
+	exercise = request.vars.exercise
+
+	return _grading(userId = userId, course = course, exercise = exercise)
+
+	
+
+
+
