@@ -91,7 +91,7 @@ if buildMode == 'submit':
 	enrollmentId = db((db.enrollment.student == user) & (db.enrollment.course == course)).select().first().id
 	exerciseCourseId = db((db.course_exercise.exercise == project) & (db.course_exercise.course == course)).select().first().id
 
-	grading = db.grading.insert(course=enrollmentId, exercise=exerciseCourseId, unique_identifier=(str(enrollmentId) + '::' + str(exerciseCourseId)))
+	grading = db.grading.insert(enrollment=enrollmentId, exercise=exerciseCourseId, unique_identifier=(str(enrollmentId) + '::' + str(exerciseCourseId)))
 
 	if os.path.exists(buildJail + '/' + GRADING_FILE):
 		grades = open(buildJail + '/' + GRADING_FILE)

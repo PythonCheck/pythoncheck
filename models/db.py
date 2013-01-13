@@ -160,7 +160,7 @@ db.define_table('files',
     Field('version', 'integer'))
 
 db.define_table('grading', 
-    Field('course', db.enrollment, required=True), # contains the userid
+    Field('enrollment', db.enrollment, required=True), # contains the userid
     Field('exercise', db.course_exercise, required=True),
     Field('unique_identifier', 'string', unique=True, required=True))
 

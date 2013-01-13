@@ -51,7 +51,7 @@ def invokeBuild(mode, buildId, main, userId, language='Python', project=None, co
 			raise StandardError('Start or Enddate dont match')
 
 		# check if the exercise was graded before
-		if len(env.db((env.db.grading.course==enrollment.id) & (env.db.grading.exercise==course_exercise.id)).select()) != 0:
+		if len(env.db((env.db.grading.enrollment==enrollment.id) & (env.db.grading.exercise==course_exercise.id)).select()) != 0:
 			raise StandardError('Exercise was graded before')
 
 		pointCode = []

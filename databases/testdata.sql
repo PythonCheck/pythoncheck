@@ -1,5 +1,4 @@
 USE `python_check`;
-INSERT INTO language(id, name, description) VALUES (1, 'Python', '');
 INSERT INTO exercise(id, name, text, language, preset) VALUES (5, 'Kreisberechnung', 'Schreibe Funktionen um den Umfang und die Fläche anhand eines Radiuses zu berechnen. Verwende dazu die pi Variable.', 1, 'pi = 3.1415926
 
 def umfang(radius):
@@ -74,9 +73,6 @@ INSERT INTO auth_event(id, time_stamp, client_ip, user_id, origin, description) 
 INSERT INTO auth_event(id, time_stamp, client_ip, user_id, origin, description) VALUES (37, '2012-12-11 10:59:43', '192.168.71.1', 5, 'auth', 'User 5 Logged-in');
 INSERT INTO auth_event(id, time_stamp, client_ip, user_id, origin, description) VALUES (38, '2012-12-11 12:56:24', '192.168.71.1', 5, 'auth', 'User 5 Logged-in');
 INSERT INTO auth_event(id, time_stamp, client_ip, user_id, origin, description) VALUES (39, '2012-12-16 11:33:21', '192.168.71.1', 5, 'auth', 'User 5 Logged-in');
-INSERT INTO auth_group(id, role, description) VALUES (1, 'Student', '');
-INSERT INTO auth_group(id, role, description) VALUES (2, 'Teacher', '');
-INSERT INTO auth_group(id, role, description) VALUES (3, 'Admin', '');
 INSERT INTO auth_membership(id, user_id, group_id) VALUES (1, 1, 3);
 INSERT INTO auth_membership(id, user_id, group_id) VALUES (5, 5, 3);
 
