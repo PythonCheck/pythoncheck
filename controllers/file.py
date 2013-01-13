@@ -135,7 +135,7 @@ def new():
 			db((db.course_exercise.exercise==project) & \
 			(db.course_exercise.course==course) & \
 			(db.enrollment.course==course) & \
-			(db.enrollment.student==auth.user_id)).select()) != 1:
+			(db.enrollment.student==auth.user_id)).select()) < 1:
 
 			raise HTTP(422, 'This exercise and course don\'t not exist and therefore we can\'t create a file in it')
 
