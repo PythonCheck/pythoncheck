@@ -71,6 +71,33 @@
 		this.focusedFileReadURL = null;
 	};
 
+	var menuItems = [
+		{
+			'title': 'Run',
+			'function': function() { this.run(); },
+			'tooltip': '',
+			'disabledInReadOnly': true
+		}, 
+		{
+			'title': 'Save',
+			'function': function() { this.syncFile(); },
+			'tooltip': '',
+			'disabledInReadOnly': true
+		}, 
+		{
+			'title': 'Submit',
+			'function': function() { this.submit(); },
+			'tooltip': '',
+			'disabledInReadOnly': true
+		},
+		{
+			'title': 'Files',
+			'tooltip': '',
+			'disabledInReadOnly': false,
+			'classesFromOptions': ['listTriggerClass']
+		}
+	];
+
 	IDE.fn = IDE.prototype = {
 		constructor: IDE,
 
@@ -94,17 +121,100 @@
 						)
 				);
 
-			this.menuPanel
-				.append($('<a>Run</a>').on('click',    function() { this.run();      }.bind(this)))
-				.append($('<a>Save</a>').on('click',   function() { this.syncFile(); }.bind(this)))
-				.append($('<a>Submit</a>').on('click', function() { this.submit();   }.bind(this)))
-				.append(this.listPuller = $('<a class="' + this.options.listTriggerClass + '">Files</a>'));
+			// .write-action symbolizes that the menu item is disabled if the file is readOnly
+			this.menu(this.menuPanel); // initialize menu
+
+			this.listPuller = this.menuPanel.children('a:last-child'); //$('<a class="' + this.options.listTriggerClass + '">Files</a>'));
 
 			if(arguments.length > 1) {
 				this.codeMirror(arguments[1], arguments[2]);
 			}
 
 			this.registerActions();
+		},
+
+
+		// instantiates the menu or sets readOnly mode
+		//
+		// possible calls:
+		// (element) -- initialization
+		// (bool) -- set readOnly mode
+		menu: function() {
+			var nextState;
+			// setting readOnly mode
+			if(typeof arguments[0] == 'boolean') {
+				nextState = arguments[0];
+			}
+			// init
+			else {
+				var menuPanel = arguments[0];
+				var item, element;
+				for(var i = 0; i < menuItems.length; i++) {
+					item = menuItems[i];
+					element = $('<a data-item="' + i + '">' + item.title + '</a>');
+
+					if(item.classes) {
+						element.addClass(item.classes);
+					}
+
+					if(item.classesFromOptions) {
+						var classes = '';
+
+						for(var k in item.classesFromOptions) {
+							classes += this.options[item.classesFromOptions[k]] + ' ';
+						}
+
+						element.addClass(classes);
+					}
+
+					// add events for buttons that are always enabled
+					if(!item.disabledInReadOnly && item.function) {
+						element.on('click', item.function.bind(this));
+					}
+					else if(item.disabledInReadOnly) {
+						element.addClass('inactive');
+					}
+
+					// disable everything
+					nextState = false;
+					this.menuDisabled = true;
+
+					menuPanel.append(element);
+				}
+			}
+
+			// enabling
+			if(nextState === true && this.menuDisabled) {
+				this.menuPanel.children('a').each(function(index, element) {
+					element = $(element);
+					var item = menuItems[element.attr('data-item')];
+					
+					// only add if there is a function
+					// and it wasn't removed before
+					if(item.function && item.disabledInReadOnly) {
+						element.on('click', item.function.bind(this));
+						element.removeClass('inactive');
+					}	
+				}.bind(this));
+
+				this.menuDisabled = false;
+			}
+			// disabling
+			else if(nextState === false && this.menuDisabled == false) {
+				this.menuPanel.children('a').each(function(index, element) {
+					element = $(element);
+					var item = menuItems[element.attr('data-item')];
+					
+					// only remove if it should be disabled
+					// and it was added before
+					if(item.function && item.disabledInReadOnly) {
+						// the opposite of this
+						element.off('click');
+						element.addClass('inactive');
+					}	
+				}.bind(this));
+				this.menuDisabled = true;
+			}
 		},
 
 		// instantiates drag'n'drop or reads the text of the dropped file and sets it as content of CodeMirror
@@ -167,6 +277,13 @@
 
 			// save/edit actions
 			this.internalCodeMirror.setOption('onChange', this.contentUpdated.bind(this));
+		},
+
+		// focuses the CodeMirror
+		//
+		// returns: undefined
+		focus: function() {
+			this.codeMirror().focus();
 		},
 
 		// checks if the focused file is saved or not
@@ -473,7 +590,8 @@
 				'version': fileObj.version,
 				'edited': fileObj.edited,
 				'project': fileObj.project,
-				'course': fileObj.course
+				'course': fileObj.course,
+				'readonly': !fileObj.writeable
 			};
 		},
 
@@ -856,31 +974,37 @@
 		// (bool) -- if true, the changes of the current files will be ignored and the content of CodeMirror emptied
 		updateView: function(openFile, ignoreContents) {
 			// disable the change function
-			var changeFunction = this.internalCodeMirror.getOption('onChange');
-			this.internalCodeMirror.setOption('onChange', function() {});
+			var changeFunction = this.codeMirror().getOption('onChange');
+			this.codeMirror().setOption('onChange', function() {});
 
+			// (true) -- emptying CodeMirror
 			if(arguments.length == 1 && openFile === true) {
 				this.internalCodeMirror.setValue('');
 				this.internalCodeMirror.setOption('readOnly', true);
-			}
-			else if(openFile) {
-				//console.log('updating view with params');
-				var currentlyFocusedFile = this.getFocusedFile();
-				
-				if(!ignoreContents) {
-					currentlyFocusedFile.content = this.internalCodeMirror.getValue();	
-				}
-				this.internalCodeMirror.setValue(openFile.content || '');
+				this.menu(false);
 			}
 			else {
-				//console.log('updating current view');
-				var openFile = this.getFocusedFile();
-				
-				this.internalCodeMirror.setValue(openFile.content);
+				if(openFile) {
+					//console.log('updating view with params');
+					var currentlyFocusedFile = this.getFocusedFile();
+					
+					if(!ignoreContents) {
+						currentlyFocusedFile.content = this.internalCodeMirror.getValue();	
+					}
+					this.internalCodeMirror.setValue(openFile.content || '');
+				}
+				else {
+					openFile = this.getFocusedFile();
+					
+					this.internalCodeMirror.setValue(openFile.content);
+				}
+
+				this.codeMirror().setOption('readOnly', openFile.readonly);
+				this.menu(!openFile.readonly);
 			}
 
 			// enable the change function
-			this.internalCodeMirror.setOption('onChange', changeFunction);
+			this.codeMirror().setOption('onChange', changeFunction);
 
 		},
 
@@ -895,7 +1019,7 @@
 			}
 
 			var run = function() { 
-				this.success('Compiling....')
+				this.success('Compiling...');
 
 				this.api(this.options.apiRun, {
 					execute: file.filename,
@@ -927,6 +1051,8 @@
 			}
 
 			var submit = function() {
+				this.success('Compiling and submitting...');
+
 				this.api(this.options.apiSubmit, {
 					execute: file.filename,
 					course: file.course,
@@ -934,7 +1060,8 @@
 				}, function(data) {
 					this.results(data, function() {
 						console.log('submitted');
-					});
+						this.grading(file.course, file.project);
+					}.bind(this));
 				}.bind(this), this.serverRespondedWithError.bind(this));
 			}.bind(this);
 
