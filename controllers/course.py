@@ -50,7 +50,7 @@ def view():
 	if has_role('teacher'):
 		exercises = db(db.course_exercise.course == request.args(0)).select(orderby=db.course_exercise.start_date)
 	else:
-		exercises = db((db.course_exercise.course == request.args(0)) & (db.course_exercise.start_date <= datetime.datetime.now())).select(orderby=db.course_exercise.start_date)
+		exercises = db((db.course_exercise.course == request.args(0)) & (db.course_exercise.start_date <= datetime.datetime.now()) & (db.course_exercise.end_date >= datetime.datetime.now())).select(orderby=db.course_exercise.start_date)
 
 	return dict(record = record,
 				exercises = exercises,
