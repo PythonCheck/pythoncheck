@@ -387,6 +387,11 @@ header {
 		font-size: 13px;
 		cursor: pointer;
 		@include border-radius(5px);
+
+		&.inactive {
+			color: #999;
+			border-color: #999;
+		}
 	}
 
 	/* for items placed after action-buttons, such as tables after an 'Add' button */
@@ -497,6 +502,7 @@ footer {
 			right: 0px;
 
 			input {
+				font-family: 'Courier New', monospace;
 				border: none;
 				position: absolute;
 				display: block;
@@ -527,6 +533,10 @@ footer {
 		width: 100%;
 		background-color: #FFF; 
 
+		&.tabs a {
+			background-color: #CCC;
+		}
+
 		a {
 			display: block;
 			width: auto;
@@ -545,7 +555,7 @@ footer {
 			}
 
 			&.active {
-				background-color: #CCC; 
+				background-color: #FFF; 
 			}
 
 			&.inactive {

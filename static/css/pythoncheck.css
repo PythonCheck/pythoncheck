@@ -271,6 +271,10 @@ header {
     -khtml-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px; }
+    .content input[type="submit"].inactive,
+    .content a.button.inactive {
+      color: #999;
+      border-color: #999; }
   .content a.button ~ table, .content a.button ~ form.inlineform, .content a.button ~ *.replace.table {
     margin-top: 20px; }
   .content *.replace {
@@ -345,6 +349,7 @@ footer {
       bottom: 0px;
       right: 0px; }
       footer #console .cmd input {
+        font-family: 'Courier New', monospace;
         border: none;
         position: absolute;
         display: block;
@@ -369,6 +374,8 @@ footer {
     height: 40px;
     width: 100%;
     background-color: #FFF; }
+    #codingsohard nav.tabs a {
+      background-color: #CCC; }
     #codingsohard nav a {
       display: block;
       width: auto;
@@ -381,7 +388,7 @@ footer {
       color: #000;
       cursor: default; }
       #codingsohard nav a.active {
-        background-color: #CCC; }
+        background-color: #FFF; }
       #codingsohard nav a.inactive {
         color: #CCC; }
       #codingsohard nav a img.loading {
