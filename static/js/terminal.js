@@ -43,6 +43,13 @@
 		this.commandHistory = [];
 		this.commandHistoryIndex = -1;
 
+		// close on ESC
+		$(this.log).add(this.commandline).keydown(function(e) {
+			if(e.which == 27) { 
+				this.console(false);
+			}
+		}.bind(this));
+
 	}
 
 	Terminal.fn = Terminal.prototype = {

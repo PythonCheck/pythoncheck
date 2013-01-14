@@ -10,7 +10,12 @@ function initCommands(terminal, ide) {
 			term.clear();
 		},
 		'do': function(args) {
-			console.log('lol');
+			var str = '';
+			console.log(arguments);
+			for(var i = 0; i < arguments.length; i++) {
+				str += arguments[i] + ' ';
+			}
+			ide.success('done ' + str);
 		},
 		'new': function(project, filename) {
 			if(arguments.length < 2) {
@@ -32,7 +37,7 @@ function initCommands(terminal, ide) {
 			}
 		},
 		'close': function() {
-			ide.console.call(ide, false);
+			ide.console().console(false);
 		}, 
 		'shortcuts': function(){
 			for(var k in ide.keys) {

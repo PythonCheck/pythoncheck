@@ -2,6 +2,39 @@ $(function() {
 	// intialize the terminal
 	window.term = new Terminal('.output', $('footer .cmd input'));
 
+	$('#console .prompt pre').on('click', function() {
+		term.console(true);
+	}.bind(this));
+
+	$('#console #closeTrigger').on('click', function() {
+		term.console(false);
+	});
+
+	// initialize AutoComplete
+	CodeMirror.commands.autocomplete = function(cm) {
+		CodeMirror.simpleHint(cm, CodeMirror.pythonHint);
+	}
+
+	// initialize the IDE
+	window.ide = new IDE($('#codingsohard'));
+	window.ide.buildHTMLStructure($('#codingsohard'), true, {
+		theme: "monokai",
+		lineNumbers: true,
+		autofocus: true, // autofocus the CodeMirror upon initialization
+		indentWithTabs: true,
+		tabSize: 4,
+		indentUnit:4,
+		extraKeys: {'Ctrl-Space': "autocomplete"}
+	});
+
+	window.ide.dragNDrop($('#codingsohard'));
+
+	ide.getFileList(ide.populateFilePanel.bind(ide));
+	ide.openFileList();
+
+	initCommands(term, ide);
+	ide.console(term);	
+
 	term.open = function(term) {
 		$('#console').css({
 			'left': $('#console').position().left, 
@@ -51,41 +84,9 @@ $(function() {
 				$('#console').removeAttr('style');
 				$('#output').removeAttr('style');
 				$('#console #closeTrigger').removeAttr('style');
+				ide.focus();
 			}
 		});
 	}
-
-	$('#console .prompt pre').on('click', function() {
-		term.console(true);
-	}.bind(this));
-
-	$('#console #closeTrigger').on('click', function() {
-		term.console(false);
-	});
-
-	// initialize AutoComplete
-	CodeMirror.commands.autocomplete = function(cm) {
-		CodeMirror.simpleHint(cm, CodeMirror.pythonHint);
-	}
-
-	// initialize the IDE
-	window.ide = new IDE($('#codingsohard'));
-	window.ide.buildHTMLStructure($('#codingsohard'), true, {
-		theme: "monokai",
-		lineNumbers: true,
-		autofocus: true, // autofocus the CodeMirror upon initialization
-		indentWithTabs: true,
-		tabSize: 4,
-		indentUnit:4,
-		extraKeys: {'Ctrl-Space': "autocomplete"}
-	});
-
-	window.ide.dragNDrop($('#codingsohard'));
-
-	ide.getFileList(ide.populateFilePanel.bind(ide));
-	ide.openFileList();
-
-	initCommands(term, ide);
-	ide.console(term);	
 
 });
