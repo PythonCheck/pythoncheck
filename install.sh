@@ -98,7 +98,7 @@ do
 	fi
 done
 
-unzip -d $WEB2PY'/applications' $TEMPWEB2PYLOC'/'$TEMPPCNAME || (echo 'Couldnt unzip the PythonCheck application.' && exit 1)
+unzip -d $WEB2PY'/applications' $PCPATH || (echo 'Couldnt unzip the PythonCheck application.' && exit 1)
 
 echo 'Awesome. It looks like we have successfully unzipped the PythonCheck application'
 echo
