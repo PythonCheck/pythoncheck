@@ -22,12 +22,12 @@ def invokeBuild(mode, buildId, main, userId, language='Python', project=None, co
 	env = exec_environment('applications/PythonCheck/models/db.py')
 	config = exec_environment('applications/PythonCheck/models/config.py')
 
-	if rate_limit_exeeded(env, userId=userId, maxConcurrentBuilds=1):
+	if config.RATE_LIMIT_ENABLED and rate_limit_exeeded(env, userId=userId, maxConcurrentBuilds=1):
 		raise StandardError('Rate Limit Exeeded!')
 
 	# import the build system
-	buildModule = config.APPLICATION_PATH + '/modules/build/' + language.lower() + '.py'
-	build = imp.load_source('buildsystem.module', buildModule)
+	buildModulePath = config.APPLICATION_PATH + '/modules/build/'
+	build = imp.load_source('buildsystem.module', buildModulePath + language.lower() + '.py')
 
 	ass = ''
 	extendedBuildArgs = ''
@@ -81,7 +81,7 @@ def invokeBuild(mode, buildId, main, userId, language='Python', project=None, co
 		file=None
 		
 		if codeFile.filename == main:
-			file = open(filePath + config.USER_SCRIPT_PATH, 'w')
+			file = open(filePath + build.mainFile(), 'w')
 			codeFile.content = (codeFile.content or '') + '\r\n' + ass
 		else:
 			file = open(filePath + '/' + codeFile.filename, 'w')
@@ -92,8 +92,7 @@ def invokeBuild(mode, buildId, main, userId, language='Python', project=None, co
 	if mode == 'submit':
 		env.db(fileQuery).update(writeable=False)
 
-	buildArgs = buildId + ' ' + filePath + ' ' + buildModule + ' ' + mode + ' ' + extendedBuildArgs
-
+	buildArgs = buildId + ' ' + filePath + ' ' + buildModulePath + ' ' + language.lower() + ' ' + mode + ' ' + extendedBuildArgs
 
 	# write into database before creating the jail
 	env.db.current_builds.insert(PID=None, BuildId=buildId, start_time=datetime.today(), user=userId)

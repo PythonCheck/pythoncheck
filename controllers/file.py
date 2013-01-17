@@ -1,5 +1,6 @@
 from datetime import datetime
 from array import array
+import imp
 
 # opens a file
 @auth.requires_login()
@@ -73,13 +74,16 @@ def save():
 	response.view = 'file/save.json'
 	return dict(success=True)
 
-@auth.requires_login()
-def new():
-	filename = request.vars.filename
-	filetype = request.vars.type
-	project = request.vars.project
-	course = request.vars.course
-	content = '# -*- coding: utf-8 -*-\n'
+
+def _new(filename, filetype, project, course, content, language):
+	
+	languageModule = None
+	fileContents = content or '' # comments and so go in there
+
+	try:
+		languageModule = imp.load_source('language.module', APPLICATION_PATH + '/modules/build/' + language.lower() + '.py')
+	except Exception, e:
+		raise HTTP(422, T('It seems like our plattform currently does not support the language ' + language + '.'))
 
 	# rename the file to whatever the mainfile is called in every exercise
 	if filetype == 'exercise' and EXERCISE_CONTAINS_SINGLE_FILE:
@@ -87,7 +91,7 @@ def new():
 		text = db(db.exercise.id == project).select().first().text
 		
 		# insert instructions
-		text_lines = [ line.split() for line in text.split('\n')]
+		text_lines = [ line.split() for line in text.split('\n') ]
 		lines = []
 
 		for line in text_lines:
@@ -95,20 +99,20 @@ def new():
 			current_index = 0
 			for i in range(len(line)):
 				if char_count > 70:
-					lines.append('# ' + " ".join(line[current_index:i]))
+					lines.append(" ".join(line[current_index:i]))
 					current_index = i
 					char_count = 0
 				char_count += len(line[i])
 			
-			lines.append('# ' + " ".join(line[current_index:]))
+			lines.append(" ".join(line[current_index:]))
 
-		content = content + '\n'.join(lines) + '\n\n'
+		fileContents = fileContents + languageModule.blockComment('\n'.join(lines)) + '\n\n'
 
 		# crazy shit: copyright jonas (wasn't me)
 		# content = "\n".join(['# %(t)s' % dict(t=ex.text[i*70:(i+1)*70]) for i in range(len(ex.text) / 70)])
 
 		# insert presets (eg function signatures, ...)
-		content += db(db.exercise.id == project).select().first().preset
+		fileContents += db(db.exercise.id == project).select().first().preset
 
 
 	uniqueIdentifier = str(filename) + '::' + str(course) + '::' + str(project) + '::' + str(auth.user_id)	
@@ -118,7 +122,6 @@ def new():
 			raise HTTP(422, 'invalid project identifier')
 		else:
 			course = None
-			
 	
 	elif filetype == 'exercise':
 
@@ -140,12 +143,29 @@ def new():
 		raise HTTP(422, 'no valid filetype specified. please either use project or exercise')
 
 	# will only come here if all params are correct
+	content = languageModule.buildFile(filename=filename, contents=fileContents)
+
 	try:
 		db.files.insert(unique_identifier=uniqueIdentifier, user=auth.user_id, filename=filename, project=project, projectIsExercise=(filetype == 'exercise'), edited=datetime.today(), course=course, content=content)
 	except Exception, e:
 		raise HTTP(422, 'invalid filename: file exists')
 
 	return dict(success=True)
+
+@auth.requires_login()
+def new():
+	filename = request.vars.filename
+	filetype = request.vars.type
+	project = request.vars.project
+	course = request.vars.course
+	language = request.vars.language or 'python'
+	content = None 
+
+	return _new(filename=filename, filetype=filetype, project=project, course=course, content=content, language=language)
+
+	
+
+	
 
 def list():
 	files = dict()

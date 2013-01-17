@@ -25,88 +25,61 @@ srcCode = args[1]
 # retrieve module path
 modulePath = args[2]
 
+# language
+language = args[3]
+
 # retrieve build mode
-buildMode = args[3]
+buildMode = args[4]
 
 course, project, user = None, None, None
 
 if buildMode == 'submit':
-	course = args[4]
-	project = args[5]
-	user = args[6]
+	course = args[5]
+	project = args[6]
+	user = args[7]
 
 # retrieve build module
-buildModule = imp.load_source('buildsystem.module', modulePath)
-
-# determine distro and therefore distro's .list file
-listfile = DISTOLIST_PATH + platform.dist()[0].lower() + "_" + platform.dist()[1].lower() + '.list'
+buildModule = imp.load_source('buildsystem.module', modulePath + language.lower() + '.py')
+BuildException = imp.load_source('BuildException', modulePath + 'BuildException.py').BuildException
 
 ## ---- PREPARING SECTION ----
-
-# check if we found a valid listfile. if not generate an error and stop building
-if not os.path.exists(listfile):
-	db(db.current_builds.BuildId == buildId).update(buildError=True, error='No correct distfile found', finished=True)
+try:
+	buildArgs = buildModule.preBuild(db = db, buildId = buildId, sourceCodeFolder = srcCode, env = locals())
+except Exception, e:
+	db(db.current_builds.BuildId == buildId).update(buildError=True, error=str(e), finished=True)
 	exit(1)
 
-# determine path for the jail
-buildJail = JAIL_BASE_DIR + buildId[:BUILD_ID_SHORT_LENGTH]
+buildResults = None
 
-print 'Building jail'
-# create jail and copy src code into jail
-subprocess.call([SCRIPT_FILE, buildJail, srcCode, listfile]);
-print 'Jail constructed'
+try:
+	buildResults = buildModule.executeBuild(db, buildId = buildId, buildArgs = buildArgs, env = locals())
 
-# build command
-command = ["chroot", buildJail]
-command.extend(buildModule.getInvokeCommand(path=USER_SCRIPT_PATH))
+# if a build error occurs
+except BuildException, e:
+	print str(e)
+	db(db.current_builds.BuildId == buildId).update(output=e.stdout, error=e.stderr, finished=True, buildError=True)
 
-## ---- BUILD SECTION ----
-print 'Spawning build'
-p = subprocess.Popen(command, stdout=PIPE, stderr=PIPE)
+except Exception, ex:
+	print str(ex)
 
-# update the buid in the database (for the scheduler)
-db(db.current_builds.BuildId == buildId).update(PID=p.pid, start_time=datetime.datetime.today())
-db.commit()
+# if the build finishes successfully
+else:
+	db(db.current_builds.BuildId == buildId).update(output=buildResults['stdout'], error=buildResults['stderr'], finished=True, buildError=False)
 
-# wait until the build has finished
-p.wait()
-print 'Build finished'
+buildJail = buildArgs['buildJail']
 
-errors = p.stderr.read()
-hadBuildErrors = False
-
-if p.returncode != 0:
-	hadBuildErrors = True
-
-	# killed by build_monitor
-	if p.returncode == -9:
-		errors='The build timed out!'
-
-# update the database and distribute output
-db(db.current_builds.PID==p.pid).update(output=p.stdout.read(), error=errors, finished=True, buildError=hadBuildErrors)
+# commit
 db.commit()
 
 ## ---- GRADING SECTION ----
 if buildMode == 'submit':
-	enrollmentId = db((db.enrollment.student == user) & (db.enrollment.course == course)).select().first().id
-	exerciseCourseId = db((db.course_exercise.exercise == project) & (db.course_exercise.course == course)).select().first().id
-
-	grading = db.grading.insert(enrollment=enrollmentId, exercise=exerciseCourseId, unique_identifier=(str(enrollmentId) + '::' + str(exerciseCourseId)))
-
-	if os.path.exists(buildJail + '/' + GRADING_FILE):
-		grades = open(buildJail + '/' + GRADING_FILE)
-		lines = grades.read().strip().split('\r')
-		for assessment in lines:
-			pointId, passed = assessment.strip().split(':')
-			db.points_grading.insert(grading=grading, points=pointId, succeeded=(passed=='1'))
-	else:
-		db(db.current_builds.BuildId == buildId).update(buildError=True, error='No grading file found', finished=True)
+	buildModule.grading(db = db, buildId = buildId, project = project, course = course, user = user, buildArgs = buildArgs, env = locals())
 
 
 ## ---- CLEANUP SECTION ----
+buildModule.cleanup(db = db, buildId = buildId, buildArgs = buildArgs, sourceCodeFolder = srcCode, env = locals())
 
-#cleanupProcess = subprocess.Popen([CLEANUP_FILE, buildJail, srcCode]);
-#cleanupProcess.wait()
+
 
 
 
