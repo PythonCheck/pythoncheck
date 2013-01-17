@@ -26,7 +26,7 @@ function initCommands(terminal, ide) {
 			}
 			else {
 				ide.currentProject = project;
-				ide.newFile.call(ide, filename);
+				ide.newFile.call(ide, {filename: filename, project: project, type: 'project'});
 			}
 		},
 		'help': function() {

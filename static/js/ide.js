@@ -348,8 +348,9 @@
 		// (fileName) -- 	if both currentCourse and currentProject are set a new file in the current exercise is created
 		//					or
 		//					if only currentProject is set, a new file in the current project is created
-		// ({project: ..., course: ..., filename: ...}) -- a option object is given including project, course and filename,
-		// 													then a file is created using all this information (only for exercises!)
+		// ({project: ..., course: ..., filename: ..., type: (optional, ...)}) 
+		//						-- a option object is given including project, course and filename,
+		// 							then a file is created using all this information (default is exercise)
 		// 
 		// returns: true if all neccessary information was given, false otherwise
 		newFile: function(filename) {
@@ -373,11 +374,12 @@
 			}
 			else if (typeof(filename) == 'object') {
 				fileInformation = filename;
-				if(!fileInformation.filename || ! fileInformation.project || !fileInformation.course) {
+				fileInformation['type'] = fileInformation['type'] || 'exercise';
+
+				if(!fileInformation.filename || ! fileInformation.project || (fileInformation['type'] == 'exercise' && !fileInformation.course)) {
 					return false;
 				}
-
-				fileInformation['type'] = 'exercise';
+				
 				fileInformation.project = filename.project;
 				fileInformation.course = filename.course;
 			}
