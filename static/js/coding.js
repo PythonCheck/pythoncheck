@@ -51,8 +51,8 @@ $(function() {
 		});
 
 		$('footer').animate({
-			margin: '0px 20px',
-			width: '-=40px',
+			margin: '0px 30px',
+			width: '-=60px',
 			height: '200px'
 		}, {
 			complete: function() {

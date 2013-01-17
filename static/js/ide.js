@@ -311,8 +311,6 @@
 				left: ($(this.codePanel).width() - this.options.fileListWidth) + 'px'
 			}, 'fast');
 
-			$(this.listPuller).removeClass('icon-chevron-left').addClass('icon-chevron-right');
-
 			// unbind current handlers
 			$(this.listPuller).off('click');
 
@@ -333,8 +331,6 @@
 			$(this.filePanel).animate({
 				left: '100%'
 			}, 'fast');
-
-			$(this.listPuller).removeClass('icon-chevron-right').addClass('icon-chevron-left');
 
 			// unbind current handlers
 			$(this.listPuller).add(editArea).off('click');
