@@ -2,22 +2,20 @@ import platform
 import subprocess
 import os
 import datetime
+import imp
 from subprocess import PIPE
 
 GRADING_FILE = '/grades.grd'
 
-# path where the distrolists are located
-DISTOLIST_PATH = '$APP/scripts/jail/' 
-
-# path of the create script that creates the jail
-SCRIPT_FILE = DISTOLIST_PATH + 'create.sh'
-
 # path of the cleanup script that cleans up a build
-CLEANUP_FILE = DISTOLIST_PATH + 'cleanup.sh'
+CLEANUP_FILE = '$APP/scripts/jail/' + 'cleanup.sh'
 
 ## JAIL SETTINGS 
 # location of the main script in the jail 
-USER_SCRIPT_PATH = '/script.py'
+USER_SCRIPT_PATH = '/tmp/script.py'
+
+PYPYINTERACT = '/root/pypyt/pypy/translator/sandbox/pypy_interact.py'
+PYPYC = '/root/pypyt/pypy/translator/goal/pypy-c'
 
 # create files
 
@@ -33,30 +31,14 @@ def blockComment(str):
 # build
 
 def preBuild(db, buildId, sourceCodeFolder, env):
-	# determine distro and therefore distro's .list file
-	listfile = path(DISTOLIST_PATH, env) + platform.dist()[0].lower() + "_" + platform.dist()[1].lower() + '.list'
-
-	# check if we found a valid listfile. if not generate an error and stop building
-	if not os.path.exists(listfile):
-		raise StandardError('No correct distfile found')
-
-	# determine path for the jail
-	buildJail = env['JAIL_BASE_DIR'] + buildId[:env['BUILD_ID_SHORT_LENGTH']]
-
-	print 'Building jail'
-	# create jail and copy src code into jail
-	subprocess.call([path(SCRIPT_FILE, env), buildJail, sourceCodeFolder, listfile]);
-	print 'Jail constructed'
-
-	return dict(buildJail = buildJail)
+	return dict(tmp = sourceCodeFolder)
 
 def path(path, env):
 	return path.replace('$APP', env['APPLICATION_PATH'])
 
 def executeBuild(db, buildId, buildArgs, env):
 	# build command
-	command = ["chroot", buildArgs['buildJail']]
-	command.extend(getInvokeCommand(path=USER_SCRIPT_PATH))
+	command = [PYPYINTERACT, '--tmp=' + buildArgs['tmp'], PYPYC, '/tmp/script.py']
 
 	## ---- BUILD SECTION ----
 	print 'Spawning build'
@@ -83,9 +65,9 @@ def executeBuild(db, buildId, buildArgs, env):
 			raise env['BuildException'](stdout = output, stderr = errors, exceptionDescription = errors)
 
 
-	return dict(
-		stdout = output,
-		stderr = errors,
+	return dict( \
+		stdout = output, \
+		stderr = errors, \
 		)
 
 def grading(db, buildId, project, course, user, buildArgs, env):
@@ -94,8 +76,8 @@ def grading(db, buildId, project, course, user, buildArgs, env):
 
 	grading = db.grading.insert(enrollment=enrollmentId, exercise=exerciseCourseId, unique_identifier=(str(enrollmentId) + '::' + str(exerciseCourseId)))
 
-	if os.path.exists(buildArgs['buildJail'] + '/' + GRADING_FILE):
-		grades = open(buildArgs['buildJail'] + '/' + GRADING_FILE)
+	if os.path.exists(buildArgs['tmp'] + '/' + GRADING_FILE):
+		grades = open(buildArgs['tmp'] + '/' + GRADING_FILE)
 		lines = grades.read().strip().split('\r')
 		for assessment in lines:
 			pointId, passed = assessment.strip().split(':')
@@ -104,11 +86,11 @@ def grading(db, buildId, project, course, user, buildArgs, env):
 		db(db.current_builds.BuildId == buildId).update(buildError=True, error='No grading file found', finished=True)
 
 def cleanup(db, buildId, buildArgs, sourceCodeFolder, env):
-	cleanupProcess = subprocess.Popen([path(CLEANUP_FILE, env), buildArgs['buildJail'], sourceCodeFolder])
+	cleanupProcess = subprocess.Popen([path(CLEANUP_FILE, env), buildArgs['tmp']])
 	cleanupProcess.wait()
 
 def mainFile():
-	return USER_SCRIPT_PATH
+	return '/script.py'
 
 
 def binary():
