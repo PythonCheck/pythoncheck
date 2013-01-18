@@ -61,12 +61,11 @@ except BuildException, e:
 
 except Exception, ex:
 	print str(ex)
+	db(db.current_builds.BuildId == buildId).update(output='', error='', finished=True, buildError=True)
 
 # if the build finishes successfully
 else:
 	db(db.current_builds.BuildId == buildId).update(output=buildResults['stdout'], error=buildResults['stderr'], finished=True, buildError=False)
-
-buildJail = buildArgs['buildJail']
 
 # commit
 db.commit()
