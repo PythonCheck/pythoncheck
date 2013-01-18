@@ -26,11 +26,6 @@ CLIENT_TIMEOUT = 1500
 MAX_BUILD_TIME = 10 # specify in seconds
 RATE_LIMIT_ENABLED = False
 
-
-###
-### change only if you relocate the distolitsts, the jail-files or the build scripts
-###
-
 # path of the build script responsible for the build
 BUILD_SCRIPT = APPLICATION_PATH + '/private/build.py'
 
