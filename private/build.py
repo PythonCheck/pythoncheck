@@ -34,6 +34,7 @@ buildMode = args[4]
 course, project, user = None, None, None
 
 if buildMode == 'submit':
+
 	course = args[5]
 	project = args[6]
 	user = args[7]
@@ -46,7 +47,9 @@ BuildException = imp.load_source('BuildException', modulePath + 'BuildException.
 try:
 	buildArgs = buildModule.preBuild(db = db, buildId = buildId, sourceCodeFolder = srcCode, env = locals())
 except Exception, e:
+	print str(e)
 	db(db.current_builds.BuildId == buildId).update(buildError=True, error=str(e), finished=True)
+	db.commit()
 	exit(1)
 
 buildResults = None
@@ -57,7 +60,11 @@ try:
 # if a build error occurs
 except BuildException, e:
 	print str(e)
-	db(db.current_builds.BuildId == buildId).update(output=e.stdout, error=e.stderr, finished=True, buildError=True)
+	db(db.current_builds.BuildId == buildId).update( \
+		output=buildModule.output(db = db, buildId = buildId, buildArgs = buildArgs, env = locals(), output = e.stdout), \
+		error=buildModule.error(db = db, buildId = buildId, buildArgs = buildArgs, env = locals(), error = e.stderr), \
+		finished=True, \
+		buildError=True)
 
 except Exception, ex:
 	print str(ex)
@@ -65,18 +72,25 @@ except Exception, ex:
 
 # if the build finishes successfully
 else:
-	db(db.current_builds.BuildId == buildId).update(output=buildResults['stdout'], error=buildResults['stderr'], finished=True, buildError=False)
+	db(db.current_builds.BuildId == buildId).update( \
+		output=buildModule.output(db = db, buildId = buildId, buildArgs = buildArgs, env = locals(), output = buildResults['stdout']), \
+		error=buildModule.error(db = db, buildId = buildId, buildArgs = buildArgs, env = locals(), error = buildResults['stderr']), \
+		finished=True, \
+		buildError=False)
 
 # commit
 db.commit()
 
 ## ---- GRADING SECTION ----
 if buildMode == 'submit':
-	buildModule.grading(db = db, buildId = buildId, project = project, course = course, user = user, buildArgs = buildArgs, env = locals())
+	buildModule.grading(db = db, buildId = buildId, project = project, course = course, user = user, buildArgs = buildArgs, env = locals(), buildResults = buildResults)
 
+db.commit()
 
 ## ---- CLEANUP SECTION ----
 buildModule.cleanup(db = db, buildId = buildId, buildArgs = buildArgs, sourceCodeFolder = srcCode, env = locals())
+
+db.commit()
 
 
 

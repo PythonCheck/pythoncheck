@@ -22,7 +22,7 @@ SRC_DIR = '/res/scripts/'
 ###
 
 # depends on the speed of the server. this should be the average build time of a project
-CLIENT_TIMEOUT = 1500
+CLIENT_TIMEOUT = 500
 MAX_BUILD_TIME = 10 # specify in seconds
 RATE_LIMIT_ENABLED = False
 

@@ -5,8 +5,6 @@ import datetime
 import imp
 from subprocess import PIPE
 
-GRADING_FILE = '/grades.grd'
-
 # path of the cleanup script that cleans up a build
 CLEANUP_FILE = '$APP/scripts/jail/' + 'cleanup.sh'
 
@@ -70,20 +68,25 @@ def executeBuild(db, buildId, buildArgs, env):
 		stderr = errors, \
 		)
 
-def grading(db, buildId, project, course, user, buildArgs, env):
+def grading(db, buildId, project, course, user, buildArgs, env, buildResults):
+	print 'starting grading'
 	enrollmentId = db((db.enrollment.student == user) & (db.enrollment.course == course)).select().first().id
 	exerciseCourseId = db((db.course_exercise.exercise == project) & (db.course_exercise.course == course)).select().first().id
 
 	grading = db.grading.insert(enrollment=enrollmentId, exercise=exerciseCourseId, unique_identifier=(str(enrollmentId) + '::' + str(exerciseCourseId)))
 
-	if os.path.exists(buildArgs['tmp'] + '/' + GRADING_FILE):
-		grades = open(buildArgs['tmp'] + '/' + GRADING_FILE)
-		lines = grades.read().strip().split('\r')
-		for assessment in lines:
-			pointId, passed = assessment.strip().split(':')
-			db.points_grading.insert(grading=grading, points=pointId, succeeded=(passed=='1'))
-	else:
-		db(db.current_builds.BuildId == buildId).update(buildError=True, error='No grading file found', finished=True)
+	lines = buildResults['stdout'].split(buildId[:30])[1].strip().split('\r')
+	for assessment in lines:
+		pointId, passed = assessment.strip().split(':')
+		db.points_grading.insert(grading=grading, points=pointId, succeeded=(passed=='1'))
+
+	db.commit()
+
+def output(db, buildId, buildArgs, output, env):
+	return output.strip().split(buildId[:30])[0]
+
+def error(db, buildId, buildArgs, error, env):
+	return error
 
 def cleanup(db, buildId, buildArgs, sourceCodeFolder, env):
 	cleanupProcess = subprocess.Popen([path(CLEANUP_FILE, env), buildArgs['tmp']])
@@ -92,34 +95,32 @@ def cleanup(db, buildId, buildArgs, sourceCodeFolder, env):
 def mainFile():
 	return '/script.py'
 
-
 def binary():
 	return 'python'
 
 def getInvokeCommand(path):
 	return  [binary(), path]
 
-def buildAssertion(function_name, arguments, expected_result):
+def buildAssertion(function_name, arguments, expected_result, buildId):
 	output = '\t	assert ' + function_name + '( ' + arguments + ' )' + ' == ' + expected_result + '\r\n'
 	return output;
 
-def buildPointSet(id, assertions):
+def buildPointSet(id, assertions, buildId):
 	output =  'try:' + '\r\n'
 
 	output += '\r\n'.join(assertions)
 
 	#output += '\t	assert ' + function_name + '( ' + arguments + ' )' + ' == ' + expected_result + '\r\n'
 	output +=  'except Exception, e:' + '\r\n'
-	output += '\t	print "failed"' + '\r\n'
-	output += '\t	rating.write("' + str(id) + ':0\\r\\n")' + '\r\n'
+	output += '\t	rating += "' + str(id) + ':0\\r\\n"' + '\r\n'
 	output +=  'else:' + '\r\n'
-	output += '\t	print "passed"' + '\r\n'
-	output += '\t	rating.write("' + str(id) + ':1\\r\\n")' + '\r\n'
+	output += '\t	rating += "' + str(id) + ':1\\r\\n"' + '\r\n'
 	return output;
 
-def buildTests(points):
-	output =  'rating = open(\'' + GRADING_FILE + '\', \'w\')\r\n'
+def buildTests(points, buildId):
+	output =  'rating = ""\r\n'
 	output += ''
 	output += '\r\n'.join(points)
-	output += 'rating.close()\r\n'
+	output += 'print "' + buildId[:30] + '"\r\n'
+	output += 'print rating'
 	return output

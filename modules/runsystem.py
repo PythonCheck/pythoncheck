@@ -56,12 +56,12 @@ def invokeBuild(mode, buildId, main, userId, language='Python', project=None, co
 		for pointSet in env.db((env.db.points.exercise == project)).select():
 			assertionCode = []
 			for assertion in env.db((env.db.assertion.points == pointSet.id)).select():
-				assertionCode.append(build.buildAssertion(function_name=assertion.function_name, arguments=assertion.arguments, expected_result=assertion.expected_result))
+				assertionCode.append(build.buildAssertion(function_name=assertion.function_name, arguments=assertion.arguments, expected_result=assertion.expected_result, buildId = buildId))
 				#print buildAssertion(function_name=assertion.function_name, arguments=assertion.arguments, expected_result=assertion.expected_result)
 
-			pointCode.append(build.buildPointSet(id=pointSet.id, assertions=assertionCode))
+			pointCode.append(build.buildPointSet(id=pointSet.id, assertions=assertionCode, buildId = buildId))
 		
-		ass = build.buildTests(pointCode)
+		ass = build.buildTests(points = pointCode, buildId = buildId)
 
 		extendedBuildArgs += str(course) + ' ' + str(project) + ' ' + str(userId)
 	else:
