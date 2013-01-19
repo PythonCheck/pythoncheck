@@ -9,10 +9,10 @@ APP_NAME = 'PythonCheck'
 JAIL_BASE_DIR = '/tmp/jails/' 
 
 # path to the application in the web2py folder
-APPLICATION_PATH = '/usr/share/web2py2/applications/' + APP_NAME
+APPLICATION_PATH = '/usr/share/web2py/applications/' + APP_NAME
 
 # path to the web2py binary/.py-file
-WEB2PY_BIN = '/usr/share/web2py2/web2py.py'
+WEB2PY_BIN = '/usr/share/web2py/web2py.py'
 
 # directory the scripts of the user are stored temporarily
 SRC_DIR = '/res/scripts/'
