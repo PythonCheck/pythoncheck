@@ -9,9 +9,6 @@ from subprocess import PIPE
 
 print 'Starting invocation'
 
-
-GRADING_FILE = 'grades.grd'
-
 ## ---- ENVIRONMENT SECTION ----
 
 args = sys.argv[1].split(' ')
@@ -34,7 +31,6 @@ buildMode = args[4]
 course, project, user = None, None, None
 
 if buildMode == 'submit':
-
 	course = args[5]
 	project = args[6]
 	user = args[7]
