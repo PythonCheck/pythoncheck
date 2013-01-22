@@ -127,6 +127,15 @@ a.inactive {
 	color: $inactiveFontColor;
 }
 
+.white-background {
+	background-color: #FFF !important;
+}
+
+img.centered {
+	display: block;
+	margin: auto;
+}
+
 header {
 	background-color: $headerColor;
 	height: $headerHeight;
@@ -178,7 +187,8 @@ header {
 			float: left;
 
 			a {
-				color: #FFF
+				color: #FFF;
+				padding: 5px;
 			}
 		}
 
@@ -423,6 +433,12 @@ footer {
 		float: left;
 		font-size: .9em;
 		color: $footerTextColor;
+	}
+
+	.legal {
+		a, a:link, a:visited {
+			padding-right: 0px;
+		}
 	}
 
 	a, a:link, a:visited {
