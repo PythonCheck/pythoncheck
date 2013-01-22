@@ -40,12 +40,41 @@ response.generic_patterns = ['*'] if request.is_local else []
 ## (more options discussed in gluon/tools.py)
 #########################################################################
 
+
+def process_login_accept(f):
+    user_has_membership = db(db.auth_membership.user_id == auth.user_id)
+    if user_has_membership.count() < 1:
+        import re
+        group_id = 1 if re.compile('^\d+$').match(f.vars['username']) else 2
+        db.auth_membership.insert(user_id=auth.user_id,
+                                  group_id=group_id)
+    print f.vars;
+
+
 from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
+from gluon.contrib.login_methods.ldap_auth import ldap_auth
 auth = Auth(db)
 crud, service, plugins = Crud(db), Service(), PluginManager()
 
 ## create all tables needed by auth if not custom tables
-auth.define_tables(username=False, signature=False)
+# auth.define_tables(username=False, signature=False
+auth.define_tables(username=True)
+auth.settings.create_user_groups=False
+# all we need is login
+auth.settings.actions_disabled=['register','change_password','request_reset_password','retrieve_username']
+
+# you don't have to remember me
+auth.settings.remember_me_form = False
+
+auth.settings.login_methods = [ldap_auth(mode='ad',
+   server='deepspace.htlw3r.ac.at',
+   # server='localhost',
+   base_dn='dc=htlw3r,dc=ac,dc=at',
+   manage_user=True,
+   user_firstname_attrib='givenName',
+   user_lastname_attrib='sn',
+   db=db)]
+
 
 ## configure email
 mail = auth.settings.mailer
@@ -63,6 +92,7 @@ auth.settings.registration_requires_approval = False
 auth.settings.reset_password_requires_verification = True
 auth.settings.create_user_groups = False
 auth.settings.register_onaccept = (lambda f: auth.add_membership(1, auth.user_id))
+auth.settings.login_onaccept = (process_login_accept)
 
 ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
 ## register with janrain.com, write your domain:api_key in private/janrain.key
