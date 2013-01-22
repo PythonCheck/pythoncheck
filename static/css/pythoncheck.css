@@ -74,6 +74,13 @@ a:hover, a:active, a:focus {
 a.inactive {
   color: #cccccc; }
 
+.white-background {
+  background-color: #FFF !important; }
+
+img.centered {
+  display: block;
+  margin: auto; }
+
 header {
   background-color: #404040;
   height: 40px; }
@@ -108,7 +115,8 @@ header {
   header p#user {
     float: left; }
     header p#user a {
-      color: white; }
+      color: #FFF;
+      padding: 5px; }
   header p.flash {
     float: left; }
 
@@ -293,6 +301,8 @@ footer {
     float: left;
     font-size: .9em;
     color: #aaaaaa; }
+  footer .legal a, footer .legal a:link, footer .legal a:visited {
+    padding-right: 0px; }
   footer a, footer a:link, footer a:visited {
     color: #aaaaaa;
     padding-right: 20px; }
