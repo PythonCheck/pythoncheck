@@ -90,7 +90,7 @@ db.define_table('course_exercise',
 
 db.define_table('enrollment',
     Field('course', db.course, required=True, label=T('Course')),
-    Field('student', 'reference auth_user', required=True, label=T('Student')),
+    Field('student', 'integer', required=True, label=T('Student')),
     format='%(student)s in %(course)s')
 
 db.define_table('points',
@@ -145,4 +145,3 @@ if not runningModelStandalone:
     db.auth_group.update_or_insert(id=3, role='Admin')
     ## programming languages
     db.language.update_or_insert(name='Python')
-    
