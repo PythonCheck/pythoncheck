@@ -11,7 +11,7 @@ print 'Starting invocation'
 
 ## ---- ENVIRONMENT SECTION ----
 
-args = sys.argv[1].split(' ')
+args = sys.argv[1:]
 
 # retrieve build id
 buildId = args[0]
@@ -22,18 +22,28 @@ srcCode = args[1]
 # retrieve module path
 modulePath = args[2]
 
+APPLICATION_PATH = args[3]
+
 # language
-language = args[3]
+language = args[4]
 
 # retrieve build mode
-buildMode = args[4]
+buildMode = args[5]
 
 course, project, user = None, None, None
 
 if buildMode == 'submit':
-	course = args[5]
-	project = args[6]
-	user = args[7]
+	course = args[6]
+	project = args[7]
+	user = args[8]
+
+env = imp.load_source('env', APPLICATION_PATH + '/models/config.py')
+
+sys.path.append(env.WEB2PY_PATH)
+
+db = imp.load_source('env', APPLICATION_PATH + '/models/db.py').db
+
+configVars = env.__dict__
 
 # retrieve build module
 buildModule = imp.load_source('buildsystem.module', modulePath + language.lower() + '.py')
@@ -41,7 +51,7 @@ BuildException = imp.load_source('BuildException', modulePath + 'BuildException.
 
 ## ---- PREPARING SECTION ----
 try:
-	buildArgs = buildModule.preBuild(db = db, buildId = buildId, sourceCodeFolder = srcCode, env = locals())
+	buildArgs = buildModule.preBuild(db = db, buildId = buildId, sourceCodeFolder = srcCode, env = configVars)
 except Exception, e:
 	print str(e)
 	db(db.current_builds.BuildId == buildId).update(buildError=True, error=str(e), finished=True)
@@ -51,14 +61,14 @@ except Exception, e:
 buildResults = None
 
 try:
-	buildResults = buildModule.executeBuild(db, buildId = buildId, buildArgs = buildArgs, env = locals())
+	buildResults = buildModule.executeBuild(db, buildId = buildId, buildArgs = buildArgs, env = configVars)
 
 # if a build error occurs
 except BuildException, e:
 	print str(e)
 	db(db.current_builds.BuildId == buildId).update( \
-		output=buildModule.output(db = db, buildId = buildId, buildArgs = buildArgs, env = locals(), output = e.stdout), \
-		error=buildModule.error(db = db, buildId = buildId, buildArgs = buildArgs, env = locals(), error = e.stderr), \
+		output=buildModule.output(db = db, buildId = buildId, buildArgs = buildArgs, env = configVars, output = e.stdout), \
+		error=buildModule.error(db = db, buildId = buildId, buildArgs = buildArgs, env = configVars, error = e.stderr), \
 		finished=True, \
 		buildError=True)
 
@@ -69,8 +79,8 @@ except Exception, ex:
 # if the build finishes successfully
 else:
 	db(db.current_builds.BuildId == buildId).update( \
-		output=buildModule.output(db = db, buildId = buildId, buildArgs = buildArgs, env = locals(), output = buildResults['stdout']), \
-		error=buildModule.error(db = db, buildId = buildId, buildArgs = buildArgs, env = locals(), error = buildResults['stderr']), \
+		output=buildModule.output(db = db, buildId = buildId, buildArgs = buildArgs, env = configVars, output = buildResults['stdout']), \
+		error=buildModule.error(db = db, buildId = buildId, buildArgs = buildArgs, env = configVars, error = buildResults['stderr']), \
 		finished=True, \
 		buildError=False)
 
@@ -84,7 +94,7 @@ if buildMode == 'submit':
 db.commit()
 
 ## ---- CLEANUP SECTION ----
-buildModule.cleanup(db = db, buildId = buildId, buildArgs = buildArgs, sourceCodeFolder = srcCode, env = locals())
+buildModule.cleanup(db = db, buildId = buildId, buildArgs = buildArgs, sourceCodeFolder = srcCode, env = configVars)
 
 db.commit()
 

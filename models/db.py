@@ -1,19 +1,26 @@
 # -*- coding: utf-8 -*-
-from gluon.custom_import import track_changes; track_changes(True)
-#########################################################################
-## This scaffolding model makes your app work on Google App Engine too
-## File is released under public domain and you can use without limitations
-#########################################################################
+from imp import load_source
+import os
 
+## has to stay in there!!!!
+runningModelStandalone = not 'request' in globals()
 
-## if SSL/HTTPS is properly configured and you want all HTTP requests to
-## be redirected to HTTPS, uncomment the line below:
-# request.requires_https()
+if runningModelStandalone:
+    from gluon.dal import DAL, Field
+    global db
 
-if not request.env.web2py_runtime_gae:
+    def T(str):
+        return T
+
+    config = load_source('config', os.path.dirname(locals()['__file__']) + '/config.py')
+
+    db = DAL(config.DB_CONNECTION, folder=config.APPLICATION_PATH + '/databases')
+
+elif not request.env.web2py_runtime_gae:
+
     ## if NOT running on Google App Engine use SQLite or other DB
     # db = DAL('sqlite://storage.sqlite')
-    db = DAL('mysql://root:root@localhost/python_check')
+    db = DAL(DB_CONNECTION)
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -23,52 +30,6 @@ else:
     ## from gluon.contrib.memdb import MEMDB
     ## from google.appengine.api.memcache import Client
     ## session.connect(request, response, db = MEMDB(Client()))
-
-## by default give a view/generic.extension to all actions from localhost
-## none otherwise. a pattern can be 'controller/function.extension'
-response.generic_patterns = ['*'] if request.is_local else []
-## (optional) optimize handling of static files
-# response.optimize_css = 'concat,minify,inline'
-# response.optimize_js = 'concat,minify,inline'
-
-#########################################################################
-## Here is sample code if you need for
-## - email capabilities
-## - authentication (registration, login, logout, ... )
-## - authorization (role based authorization)
-## - services (xml, csv, json, xmlrpc, jsonrpc, amf, rss)
-## - old style crud actions
-## (more options discussed in gluon/tools.py)
-#########################################################################
-
-from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
-auth = Auth(db)
-crud, service, plugins = Crud(db), Service(), PluginManager()
-
-## create all tables needed by auth if not custom tables
-auth.define_tables(username=False, signature=False)
-
-## configure email
-mail = auth.settings.mailer
-mail.settings.server = 'logging' or 'smtp.gmail.com:587'
-mail.settings.sender = 'you@gmail.com'
-mail.settings.login = 'username:password'
-
-## configure auth policy
-auth.settings.logged_url = URL(c='default', f='index') # if accessing register or similar as logged in user redirect to the me page
-auth.settings.login_next = URL(c='default', f='index') 
-auth.settings.controller = 'user'
-auth.settings.register_next = URL(c='default', f='index')
-auth.settings.registration_requires_verification = False
-auth.settings.registration_requires_approval = False
-auth.settings.reset_password_requires_verification = True
-auth.settings.create_user_groups = False
-auth.settings.register_onaccept = (lambda f: auth.add_membership(1, auth.user_id))
-
-## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
-## register with janrain.com, write your domain:api_key in private/janrain.key
-from gluon.contrib.login_methods.rpx_account import use_janrain
-use_janrain(auth, filename='private/janrain.key')
 
 #########################################################################
 ## Define your tables below (or better in another model file) for example
@@ -87,8 +48,13 @@ use_janrain(auth, filename='private/janrain.key')
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
 
-## after defining tables, uncomment below to enable auditing
-# auth.enable_record_versioning(db)
+if not runningModelStandalone:
+    from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
+    auth = Auth(db)
+    crud, service, plugins = Crud(db), Service(), PluginManager()
+
+    ## create all tables needed by auth if not custom tables
+    auth.define_tables(username=False, signature=False)
 
 db.define_table('course', 
                 Field('name', 
@@ -124,7 +90,7 @@ db.define_table('course_exercise',
 
 db.define_table('enrollment',
     Field('course', db.course, required=True, label=T('Course')),
-    Field('student', db.auth_user, required=True, label=T('Student')),
+    Field('student', 'reference auth_user', required=True, label=T('Student')),
     format='%(student)s in %(course)s')
 
 db.define_table('points',
@@ -147,11 +113,11 @@ db.define_table('current_builds',
     Field('output', 'text', required=False),
     Field('error', 'text', required=False),
     Field('buildError', 'boolean', required=False),
-    Field('user', db.auth_user, required=True))
+    Field('user', 'reference auth_user', required=True))
 
 db.define_table('files',
     Field('unique_identifier', required=True, unique=True),
-    Field('user', db.auth_user, required=True),
+    Field('user', 'reference auth_user', required=True),
     Field('filename', 'string', required=True),
     Field('edited', 'datetime', required=True, default='now()'),
     Field('course', 'integer', required=False),
@@ -171,39 +137,12 @@ db.define_table('points_grading',
     Field('points', db.points, required=True), 
     Field('succeeded', 'boolean', required=True, default=False))
 
-### default values
-## groups
-db.auth_group.update_or_insert(id=1, role='Student')
-db.auth_group.update_or_insert(id=2, role='Teacher')
-db.auth_group.update_or_insert(id=3, role='Admin')
-## programming languages
-db.language.update_or_insert(name='Python')
-
-
-@auth.requires_login()
-def requires_role(role):
-    def decorator(fn):
-        def f():
-            hasRole = has_role(role)
-            if hasRole is None:
-                redirect(URL(request.application, 'user', 'login?_next=' + request.env.path_info))
-            elif hasRole == True:
-                return fn()
-            else:
-                redirect(URL(request.application, 'user', 'not_authorized'))
-        return f
-    return decorator
-
-def has_role(role):
-    if hasattr(auth.user_groups, 'values') and len(auth.user_groups.values()) > 0:
-        roleId = db(db.auth_group.role.like(role.lower())).select()
-        if roleId:
-            roleId = roleId[0].id
-            for group_key in auth.user_groups.keys():
-                if group_key >= roleId:
-                    return True
-            else:
-                return False
-        else:
-            return False
-    return None
+if not runningModelStandalone:
+    ### default values
+    ## groups
+    db.auth_group.update_or_insert(id=1, role='Student')
+    db.auth_group.update_or_insert(id=2, role='Teacher')
+    db.auth_group.update_or_insert(id=3, role='Admin')
+    ## programming languages
+    db.language.update_or_insert(name='Python')
+    

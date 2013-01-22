@@ -46,4 +46,3 @@ databases/356132473fb7f426732509c8cc8e64ee_scheduler_run.table
 databases/356132473fb7f426732509c8cc8e64ee_scheduler_task.table
 databases/356132473fb7f426732509c8cc8e64ee_scheduler_worker.table
 models/config.py
-models/db.py

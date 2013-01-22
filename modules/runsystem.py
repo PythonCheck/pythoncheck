@@ -4,7 +4,6 @@ import random
 import string
 import os
 from datetime import datetime
-from gluon.shell import exec_environment
 
 def generateBuildId(length):
 	return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(length))
@@ -19,8 +18,14 @@ def rate_limit_exeeded(environment, userId, maxConcurrentBuilds):
 
 def invokeBuild(mode, buildId, main, userId, language='Python', project=None, course=None):
 
-	env = exec_environment('applications/PythonCheck/models/db.py')
-	config = exec_environment('applications/PythonCheck/models/config.py')
+	env = imp.load_source('env', 'applications/PythonCheck/models/db.py')
+
+	from gluon.tools import Auth
+	auth = Auth(env.db)
+	## create all tables needed by auth if not custom tables
+	auth.define_tables(username=False, signature=False)
+
+	config = imp.load_source('config', 'applications/PythonCheck/models/config.py')
 
 	if config.RATE_LIMIT_ENABLED and rate_limit_exeeded(env, userId=userId, maxConcurrentBuilds=1):
 		raise StandardError('Rate Limit Exeeded!')
@@ -32,8 +37,8 @@ def invokeBuild(mode, buildId, main, userId, language='Python', project=None, co
 	ass = ''
 	extendedBuildArgs = ''
 
-	if env.EXERCISE_CONTAINS_SINGLE_FILE:
-		main = env.EXERCISE_MAIN_FILE
+	if config.EXERCISE_CONTAINS_SINGLE_FILE:
+		main = config.EXERCISE_MAIN_FILE
 
 	# check if we are developing for an exercise or just so
 	if (project != None) & (course != None) & (mode=='submit'):	
@@ -92,12 +97,16 @@ def invokeBuild(mode, buildId, main, userId, language='Python', project=None, co
 	if mode == 'submit':
 		env.db(fileQuery).update(writeable=False)
 
-	buildArgs = buildId + ' ' + filePath + ' ' + buildModulePath + ' ' + language.lower() + ' ' + mode + ' ' + extendedBuildArgs
+	buildArgs = [buildId, filePath, buildModulePath, config.APPLICATION_PATH, language.lower(), mode]
+	buildArgs.extend(extendedBuildArgs.split(' '))
 
 	# write into database before creating the jail
 	env.db.current_builds.insert(PID=None, BuildId=buildId, start_time=datetime.today(), user=userId)
 	env.db.commit()
 
-	p = subprocess.Popen(['python', config.WEB2PY_BIN, '-S', 'PythonCheck', '-M', '-R', config.BUILD_SCRIPT, '-A', buildArgs])
+	command = ['python', config.BUILD_SCRIPT]
+	command.extend(buildArgs)
+
+	p = subprocess.Popen(command)
 
 
