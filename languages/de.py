@@ -111,7 +111,7 @@
 'Number of Points': 'Punkteanzahl',
 'or import from csv file': 'oder .csv Datei importieren',
 'Overview': 'Überblick',
-'Phone': 'Telefen',
+'Phone': 'Telefon',
 'Points': 'Punkte',
 'previous 100 rows': 'vorherige 100 Zeilen',
 'Programmer': 'Entwickler',
