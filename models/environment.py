@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from gluon.custom_import import track_changes; track_changes(True)
+from gluon.contrib.login_methods.ldap_auth import ldap_auth
 
 ## by default give a view/generic.extension to all actions from localhost
 ## none otherwise. a pattern can be 'controller/function.extension'
@@ -17,6 +18,32 @@ response.generic_patterns = ['*'] if request.is_local else []
 ## - old style crud actions
 ## (more options discussed in gluon/tools.py)
 #########################################################################
+
+def process_login_accept(f):
+    user_has_membership = db(db.auth_membership.user_id == auth.user_id)
+    if user_has_membership.count() < 1:
+        import re
+        group_id = 1 if re.compile('^\d+$').match(f.vars['username']) else 2
+        db.auth_membership.insert(user_id=auth.user_id,
+                                  group_id=group_id)
+    print f.vars;
+
+# all we need is login
+auth.settings.actions_disabled=['register','change_password','request_reset_password','retrieve_username']
+
+# you don't have to remember me
+auth.settings.remember_me_form = False
+
+auth.settings.login_methods = [ldap_auth(mode='ad',
+   server='deepspace.htlw3r.ac.at',
+   # server='localhost',
+   base_dn='dc=htlw3r,dc=ac,dc=at',
+   manage_user=True,
+   user_firstname_attrib='givenName',
+   user_lastname_attrib='sn',
+   db=db)]
+
+auth.settings.login_onaccept = (process_login_accept)
 
 ## configure email
 mail = auth.settings.mailer

@@ -49,7 +49,7 @@
 		<a href="{{=URL('default', 'index')}}" id="brand">{{=APP_NAME}}</a>
 		<p id="user">
 			{{ if auth.user_id: }}
-				<a href="{{=URL('user', 'logout')}}">Logout<em> {{=auth.user.email}}</em></a>
+				<a href="{{=URL('user', 'logout')}}">Logout<em>&nbsp;&nbsp; {{=auth.user.first_name}} {{=auth.user.last_name}}</em></a>
 			{{ else: }}
 				<a href="{{=URL('user', 'login')}}">Login</a>
 				<a href="{{=URL('user', 'register')}}">Register</a>

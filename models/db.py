@@ -54,7 +54,8 @@ if not runningModelStandalone:
     crud, service, plugins = Crud(db), Service(), PluginManager()
 
     ## create all tables needed by auth if not custom tables
-    auth.define_tables(username=False, signature=False)
+    auth.define_tables(username=True, signature=False)
+
 
 db.define_table('course', 
                 Field('name', 

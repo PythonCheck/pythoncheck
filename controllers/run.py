@@ -19,7 +19,7 @@ def submit():
 		raise HTTP(422, XML(json(dict(error=T('We can\'t do anything for you until you specify a course')))))
 
 	try:
-		runsystem.invokeBuild(mode='submit', buildId=buildId, project=project, course=course, main=main, userId=auth.user_id)
+		runsystem.invokeBuild(mode='submit', buildId=buildId, project=project, course=course, main=main, userId=auth.user_id, appPath=APPLICATION_PATH)
 	except Exception, e:
 		raise HTTP(500, XML(json(dict(error=T('We got an error while trying to build the project: ') + T(str(e))))))
 	
@@ -41,7 +41,7 @@ def run():
 		course = None
 
 	try:
-		runsystem.invokeBuild(mode='test', buildId=buildId, main=main, project=project, course=course, userId=auth.user_id)
+		runsystem.invokeBuild(mode='test', buildId=buildId, main=main, project=project, course=course, userId=auth.user_id, appPath=APPLICATION_PATH)
 	except Exception, e:
 		raise HTTP(500, XML(json(dict(error=T('We got an error while trying to build the project: ') + T(str(e))))))
 	

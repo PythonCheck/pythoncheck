@@ -16,16 +16,16 @@ def rate_limit_exeeded(environment, userId, maxConcurrentBuilds):
 	return query > maxConcurrentBuilds
 
 
-def invokeBuild(mode, buildId, main, userId, language='Python', project=None, course=None):
-
-	env = imp.load_source('env', 'applications/PythonCheck/models/db.py')
+def invokeBuild(mode, buildId, main, userId, language='Python', project=None, course=None, appPath=None):
+	
+	env = imp.load_source('env', (appPath or 'applications/PythonCheck') + '/models/db.py')
 
 	from gluon.tools import Auth
 	auth = Auth(env.db)
 	## create all tables needed by auth if not custom tables
 	auth.define_tables(username=False, signature=False)
 
-	config = imp.load_source('config', 'applications/PythonCheck/models/config.py')
+	config = imp.load_source('config', (appPath or 'applications/PythonCheck') + '/models/config.py')
 
 	if config.RATE_LIMIT_ENABLED and rate_limit_exeeded(env, userId=userId, maxConcurrentBuilds=1):
 		raise StandardError('Rate Limit Exeeded!')
@@ -37,11 +37,11 @@ def invokeBuild(mode, buildId, main, userId, language='Python', project=None, co
 	ass = ''
 	extendedBuildArgs = ''
 
-	if config.EXERCISE_CONTAINS_SINGLE_FILE:
-		main = config.EXERCISE_MAIN_FILE
-
 	# check if we are developing for an exercise or just so
 	if (project != None) & (course != None) & (mode=='submit'):	
+
+		if config.EXERCISE_CONTAINS_SINGLE_FILE:
+			main = config.EXERCISE_MAIN_FILE
 
 		# check if exercise exists
 		enrollment = env.db((env.db.enrollment.student==userId) & (env.db.enrollment.course==course)).select().first()
